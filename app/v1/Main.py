@@ -42,6 +42,7 @@ class App(tk.CTk):
         screen_w, screen_h = self.winfo_screenwidth(), self.winfo_screenheight() # Get screen dimensions (1536, 864)
         self.windims = (int(screen_w // 2 - 0.105*screen_w), int(screen_h * 0.95))  # Set to Left half of screen (Split Screen view)
 
+
         x = -(int(0.0057 * screen_w)) # Keep as 0 if outside screen  
         y = int(((screen_h / 2) - (self.windims[1] / 2)) - (0.023 * screen_h))
         self.geometry(f"{self.windims[0]}x{self.windims[1]}+{x}+{y}") # Dimensions and Position
@@ -52,6 +53,7 @@ class App(tk.CTk):
         self.iconphoto(False, icon_path) # Set window icon
 
         self.pages() # Setup the page structure for user inputs
+        self.after(500, lambda : self.focus())  # Lock focus on preview
         docgen.insert_static_content()  # Setup document basics on app launch
 
 # ---------------------------------------------------------------------------------
@@ -67,8 +69,8 @@ class App(tk.CTk):
         # 2. Input type (entry or text)
         # 3. Height of the field
         self.pages = [
-            [("Project Title", "entry", 1)],
-            [("Address", "text", 3)],
+            [("Project Title", "entry", 1), ("Name And USN", "text", 3), ("Guide Name", "entry", 1)],
+            [("Name USN", "text", 3), ("Sem", "entry", 1), ("Year", "entry", 1)],  
             [("Summary", "text", 5), ("Time", "entry", 1)],
             [("Signature", "entry", 1), ("Date", "entry", 1)]
         ]
