@@ -835,32 +835,32 @@ def insert_static_content():
     cursor.InsertParagraphAfter()
     cursor.Collapse(c.wdCollapseEnd)
     cursor.Select()
-
     # time.sleep(0.1)
 
-    cursor = table.Range.Duplicate
-    cursor.Collapse(c.wdCollapseEnd)
-    cursor.InsertBreak(c.wdPageBreak)
-
-    cursor.Collapse(c.wdCollapseEnd)
-    cursor.InsertBreak(c.wdSectionBreakNextPage)
-    
-    cursor.Collapse(c.wdCollapseEnd)
-    cursor.Select()
-
-# ================================================================================= 
-
-# Chapter 1–5 with Bookmarks 
-    cursor.Collapse(c.wdCollapseEnd)
-    cursor = doc.Range(doc.Content.End - 1, doc.Content.End - 1) 
+# _________________________________________________________________________________
 
     for i in range(1, 6):
-        # Title - Center aligned
+        # ------------------------------------------
+        # Section 1: Centered vertically (Title_2)
+        # ------------------------------------------        
+        cursor.Collapse(c.wdCollapseEnd)
+        cursor = doc.Range(doc.Content.End - 1, doc.Content.End - 1)
+        cursor.InsertBreak(c.wdSectionBreakNextPage)
+        cursor.Collapse(c.wdCollapseEnd)
+        cursor.Select()
+
         word.Selection.Font.Name = "Times New Roman"
         word.Selection.Font.Size = 16
         word.Selection.Font.Bold = True
         word.Selection.ParagraphFormat.Alignment = c.wdAlignParagraphCenter
 
+        center_pad_lines = 10
+        for _ in range(center_pad_lines):
+            word.Selection.TypeParagraph()
+    
+        # Title_2
+        word.Selection.TypeText(f"Chapter {i}")
+        word.Selection.TypeParagraph()
         placeholder = "___"
         word.Selection.TypeText(placeholder)
         bm_range = word.Selection.Range.Duplicate
@@ -869,28 +869,40 @@ def insert_static_content():
         doc.Bookmarks.Add(f"Chapter{i}Title_2", bm_range)
         word.Selection.TypeParagraph()
 
+        # -----------------------------------------------------
+        # Section 2: Normal top alignment (Title_3 + Content)
+        # -----------------------------------------------------
+        cursor.Collapse(c.wdCollapseEnd)
+        cursor = doc.Range(doc.Content.End - 1, doc.Content.End - 1)
+        cursor.InsertBreak(c.wdPageBreak)
+        cursor.Collapse(c.wdCollapseEnd)
+        cursor.Select()
+
+
+        placeholder = "___"
+        word.Selection.TypeText(placeholder)
+        bm_range = word.Selection.Range.Duplicate
+        bm_start = bm_range.Start - len(placeholder)
+        bm_range = doc.Range(bm_start, bm_start + len(placeholder))
+        doc.Bookmarks.Add(f"Chapter{i}Title_3", bm_range)
+        word.Selection.TypeParagraph()
+
+        # Content
         word.Selection.Font.Size = 12
         word.Selection.Font.Bold = False
         word.Selection.ParagraphFormat.Alignment = c.wdAlignParagraphJustify
 
         placeholder = "___"
-        word.Selection.TypeText(placeholder)        
+        word.Selection.TypeText(placeholder)
         bm_range = word.Selection.Range.Duplicate
         bm_start = bm_range.Start - len(placeholder)
         bm_range = doc.Range(bm_start, bm_start + len(placeholder))
         doc.Bookmarks.Add(f"Chapter{i}Content", bm_range)
         word.Selection.TypeParagraph()
 
-        # Page break
-        if i < 5:
-            cursor.Collapse(c.wdCollapseEnd)
-            cursor = doc.Range(doc.Content.End - 1, doc.Content.End - 1)
-            cursor.InsertBreak(c.wdPageBreak)
-            cursor.Collapse(c.wdCollapseEnd)
-            cursor.Select()
-            # time.sleep(0.1)
-
-    # Final section break after chapters
+    # ---------------------------------------------
+    # Final section break to isolate the next part
+    # ---------------------------------------------
     cursor.Collapse(c.wdCollapseEnd)
     cursor = doc.Range(doc.Content.End - 1, doc.Content.End - 1)
     cursor.InsertBreak(c.wdSectionBreakNextPage)
@@ -935,11 +947,12 @@ def insert_static_content():
 
 
 # =================================================================================
-
+    make_borders() # Call the function to set borders
+    page_numbers() # Call the function to set page numbers
 
 # _________________________________________________________________________________
 # _________________________________________________________________________________
-
+def make_borders():
     sec1 = doc.Sections(1) # Get the first section
     borders = sec1.Borders
     borders.DistanceFromTop = borders.DistanceFromBottom = 24
@@ -956,6 +969,37 @@ def insert_static_content():
         br.Color = c.wdColorAutomatic # Automatic color (Black)
 
     # time.sleep(0.1)
+# _________________________________________________________________________________
+# _________________________________________________________________________________
+def page_numbers():
+
+    for idx, sec in enumerate(doc.Sections, start=1):
+        for hf_type in [c.wdHeaderFooterPrimary, c.wdHeaderFooterFirstPage]:
+            sec.Footers(hf_type).LinkToPrevious = False
+
+        if idx == 1 or idx == 2:
+            for hf_type in [c.wdHeaderFooterPrimary, c.wdHeaderFooterFirstPage]:
+                sec.Footers(hf_type).Range.Text = ""
+            continue
+
+        if idx == 3:
+            sec.PageSetup.DifferentFirstPageHeaderFooter = False
+            footer = sec.Footers(c.wdHeaderFooterPrimary)
+            pnums = footer.PageNumbers
+            pnums.RestartNumberingAtSection = True
+            pnums.StartingNumber = 1
+            pnums.Add(c.wdAlignParagraphCenter, False)
+
+        if idx >= 4 and idx < 8:
+            sec.PageSetup.DifferentFirstPageHeaderFooter = True
+            pfooter = sec.Footers(c.wdHeaderFooterPrimary)
+            ppnums = pfooter.PageNumbers
+            ppnums.RestartNumberingAtSection = False
+            ppnums.Add(c.wdAlignParagraphCenter, False)
+            sec.Footers(c.wdHeaderFooterFirstPage).Range.Text = ""
+
+
+# _________________________________________________________________________________
 # _________________________________________________________________________________
 
 
@@ -1011,7 +1055,7 @@ def replace_bookmarks(data_dict: dict):
             
 # ---------------------------------------------------------------------------------
 
-def update_page_numbers():
+def update_index_page_numbers():
     for i in range(1, 6):
         title_bm = f"Chapter{i}Title_2"
         page_bm = f"Chapter{i}Page"  # This is in the index table
@@ -1042,11 +1086,11 @@ def update_page_numbers():
             bm_range.Text = str(ref_page - offset)
 
             # Re-bookmark the range so that the bookmark persists
-            new_range = doc.Range(bm_start, bm_start + len(str(page_number)))
+            new_range = doc.Range(bm_start, bm_start + len(str(ref_page)))
             try:
                 doc.Bookmarks.Add("RefPage", new_range)
             except:
-                print(f"⚠️ Could not re-add bookmark: {page_bm}")
+                print(f"⚠️ Could not re-add bookmark: RefPage")
 
 # ================================================================================= 
 # =================================================================================
@@ -1055,7 +1099,7 @@ def save_document():
     """
     Saves the current Word document to the specified path.
     """
-    update_page_numbers()
+    update_index_page_numbers()
     doc.Fields.Update()
     for field in doc.Fields:
         field.Update()
