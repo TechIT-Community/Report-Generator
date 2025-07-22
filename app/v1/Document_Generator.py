@@ -974,12 +974,16 @@ def make_borders():
 def page_numbers():
 
     for idx, sec in enumerate(doc.Sections, start=1):
-        for hf_type in [c.wdHeaderFooterPrimary, c.wdHeaderFooterFirstPage]:
-            sec.Footers(hf_type).LinkToPrevious = False
+        sec.Range.InsertAfter("\r")
+        if idx > 1:
+            for hf_type in [c.wdHeaderFooterPrimary, c.wdHeaderFooterFirstPage]:
+                sec.Footers(hf_type).LinkToPrevious = False
+                sec.Headers(hf_type).LinkToPrevious = False
 
         if idx == 1 or idx == 2:
             for hf_type in [c.wdHeaderFooterPrimary, c.wdHeaderFooterFirstPage]:
                 sec.Footers(hf_type).Range.Text = ""
+                sec.Headers(hf_type).Range.Text = ""
             continue
 
         if idx == 3:
@@ -996,6 +1000,7 @@ def page_numbers():
             ppnums = pfooter.PageNumbers
             ppnums.RestartNumberingAtSection = False
             ppnums.Add(c.wdAlignParagraphCenter, False)
+
             sec.Footers(c.wdHeaderFooterFirstPage).Range.Text = ""
 
 
@@ -1052,6 +1057,48 @@ def replace_bookmarks(data_dict: dict):
                 doc.Bookmarks.Add(name, rng)
             except:
                 print(f"⚠️ Could not re-add bookmark: {name}")
+
+    title = data_dict.get("ProjectTitle")
+    year = data_dict.get("Year")
+
+    if title or year:
+        for idx, section in enumerate(doc.Sections, start=1):
+            if idx == 1 or idx == 2:
+                continue
+
+            # HEADER: Left-align project title
+            header = section.Headers(c.wdHeaderFooterPrimary)
+            header.LinkToPrevious = False
+            if title:
+                header.Range.Text = title
+                header.Range.ParagraphFormat.Alignment = c.wdAlignParagraphLeft
+
+            # FOOTER: Left = dept, Center = year, Right = page number
+            footer = section.Footers(c.wdHeaderFooterPrimary)
+            footer.LinkToPrevious = False
+            rng = footer.Range
+            rng.Text = ""
+
+            table = rng.Tables.Add(rng, NumRows=1, NumColumns=3)
+            table.PreferredWidthType = c.wdPreferredWidthPercent
+            table.PreferredWidth = 100
+            table.Borders.Enable = False
+
+            # Left = Dept.
+            table.Cell(1, 1).Range.Text = "Dept. of CSE, BNMIT"
+            table.Cell(1, 1).Range.ParagraphFormat.Alignment = c.wdAlignParagraphLeft
+
+            # Center = Year (only if provided)
+            if year:
+                table.Cell(1, 2).Range.Text = year
+            table.Cell(1, 2).Range.ParagraphFormat.Alignment = c.wdAlignParagraphCenter
+
+            # Right = Page number
+            right_range = table.Cell(1, 3).Range
+            right_range.Collapse(c.wdCollapseStart)
+            right_range.Fields.Add(right_range, c.wdFieldPage)
+            right_range.ParagraphFormat.Alignment = c.wdAlignParagraphRight
+
             
 # ---------------------------------------------------------------------------------
 
