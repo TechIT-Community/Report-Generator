@@ -19,6 +19,8 @@ import win32gui # For GUI window management
 import win32con # For window constants
 import time # for pauses
 import ctypes # For getting screen dimensions
+from CTkMessagebox import CTkMessagebox
+import re
 
 # ================================================================================= 
 # =================================================================================
@@ -879,6 +881,7 @@ def insert_static_content():
         cursor.Select()
 
 
+        # Title_3
         placeholder = "___"
         word.Selection.TypeText(placeholder)
         bm_range = word.Selection.Range.Duplicate
@@ -894,11 +897,14 @@ def insert_static_content():
 
         placeholder = "___"
         word.Selection.TypeText(placeholder)
-        bm_range = word.Selection.Range.Duplicate
-        bm_start = bm_range.Start - len(placeholder)
-        bm_range = doc.Range(bm_start, bm_start + len(placeholder))
-        doc.Bookmarks.Add(f"Chapter{i}Content", bm_range)
+        content_range = word.Selection.Range.Duplicate  
+        bm_start = content_range.Start - len(placeholder)
+        content_bm_range = doc.Range(bm_start, bm_start + len(placeholder))
+        doc.Bookmarks.Add(f"Chapter{i}Content", content_bm_range)
         word.Selection.TypeParagraph()
+
+        # Insert images after Chapter{i}Content
+
 
     # ---------------------------------------------
     # Final section break to isolate the next part
@@ -952,6 +958,8 @@ def insert_static_content():
 
 # _________________________________________________________________________________
 # _________________________________________________________________________________
+
+
 def make_borders():
     sec1 = doc.Sections(1) # Get the first section
     borders = sec1.Borders
@@ -1009,55 +1017,168 @@ def page_numbers():
 
 
 # ---------------------------------------------------------------------------------
+# def replace_bookmarks(data_dict: dict):
+#     """
+#     Replaces bookmarks in the Word document with values from a dictionary.
+#     This function iterates through the provided dictionary and checks if each key exists as a bookmark in the document.
+#     If a bookmark exists, it replaces the text of that bookmark with the corresponding value from the dictionary.
+
+#     :param data_dict: A dictionary where keys are bookmark names and values are the text to replace them with.
+#     :type data_dict: dict
+#     """
+    
+#     all_bm_names = [bm.Name for bm in doc.Bookmarks] # Get all bookmark names in the document
+
+#     # Only these exact bookmarks will get a newline after replacement
+#     newline_bookmark_names = {
+#         "ProjectTitle", "NameAndUSN", "GuideName",
+#         "Chapter1Title", "Chapter2Title", "Chapter3Title", "Chapter4Title", "Chapter5Title",
+#         "Chapter1Content", "Chapter2Content", "Chapter3Content", "Chapter4Content", "Chapter5Content"
+#     }
+    
+#     rebookmarks = [] # To store bookmarks that are re-added after replacement
+    
+#     for key, value in data_dict.items(): # Iterate through the dictionary
+#         matching_bms = [bm for bm in all_bm_names if bm.startswith(key)] # Find all bookmarks that start with the key
+#         if not matching_bms:
+#             continue # If no matching bookmarks found, skip to the next key
+        
+#         for name in matching_bms:
+#             if not doc.Bookmarks.Exists(name):
+#                 continue # If the bookmark does not exist, skip
+            
+#             bm_range = doc.Bookmarks(name).Range # range of bookmark
+#             bm_start = bm_range.Start # start position of bookmark
+#             add_newline = name in newline_bookmark_names # Check if this bookmark should have a newline after it
+#             insert_text = value + ("\n" if add_newline else " ") # Replace bookmark text with value
+            
+#             bm_range.Text = insert_text # Replace bookmark text with value
+            
+#             new_range = doc.Range(bm_start, bm_start + len(insert_text)) # create a new range for the bookmark
+#             rebookmarks.append((name, new_range)) # Store the bookmark name and new range
+            
+#             new_range.Select() # Select the new range
+#             word.ActiveWindow.ScrollIntoView(word.Selection.Range, True) # Scroll to the new range
+
+#         for name, rng in rebookmarks: # Re-add the bookmarks with the new ranges
+#             try:
+#                 doc.Bookmarks.Add(name, rng)
+#             except:
+#                 print(f"⚠️ Could not re-add bookmark: {name}")
+
+#     title = data_dict.get("ProjectTitle")
+#     year = data_dict.get("Year")
+
+#     if title or year:
+#         for idx, section in enumerate(doc.Sections, start=1):
+#             if idx == 1 or idx == 2:
+#                 continue
+
+#             # HEADER: Left-align project title
+#             header = section.Headers(c.wdHeaderFooterPrimary)
+#             header.LinkToPrevious = False
+#             if title:
+#                 header.Range.Text = title
+#                 header.Range.ParagraphFormat.Alignment = c.wdAlignParagraphLeft
+
+#             # FOOTER: Left = dept, Center = year, Right = page number
+#             footer = section.Footers(c.wdHeaderFooterPrimary)
+#             footer.LinkToPrevious = False
+#             rng = footer.Range
+#             rng.Text = ""
+
+#             table = rng.Tables.Add(rng, NumRows=1, NumColumns=3)
+#             table.PreferredWidthType = c.wdPreferredWidthPercent
+#             table.PreferredWidth = 100
+#             table.Borders.Enable = False
+
+#             # Left = Dept.
+#             table.Cell(1, 1).Range.Text = "Dept. of CSE, BNMIT"
+#             table.Cell(1, 1).Range.ParagraphFormat.Alignment = c.wdAlignParagraphLeft
+
+#             # Center = Year (only if provided)
+#             if year:
+#                 table.Cell(1, 2).Range.Text = year
+#             table.Cell(1, 2).Range.ParagraphFormat.Alignment = c.wdAlignParagraphCenter
+
+#             # Right = Page number
+#             right_range = table.Cell(1, 3).Range
+#             right_range.Collapse(c.wdCollapseStart)
+#             right_range.Fields.Add(right_range, c.wdFieldPage)
+#             right_range.ParagraphFormat.Alignment = c.wdAlignParagraphRight
+
+
 def replace_bookmarks(data_dict: dict):
     """
     Replaces bookmarks in the Word document with values from a dictionary.
-    This function iterates through the provided dictionary and checks if each key exists as a bookmark in the document.
-    If a bookmark exists, it replaces the text of that bookmark with the corresponding value from the dictionary.
-
-    :param data_dict: A dictionary where keys are bookmark names and values are the text to replace them with.
-    :type data_dict: dict
+    Also inserts images after Chapter{i}Content bookmarks if matching files are found.
     """
-    
-    all_bm_names = [bm.Name for bm in doc.Bookmarks] # Get all bookmark names in the document
 
-    # Only these exact bookmarks will get a newline after replacement
+    all_bm_names = [bm.Name for bm in doc.Bookmarks]  # Get all bookmark names in the document
+
+    # These bookmarks should have a newline after the inserted value
     newline_bookmark_names = {
         "ProjectTitle", "NameAndUSN", "GuideName",
         "Chapter1Title", "Chapter2Title", "Chapter3Title", "Chapter4Title", "Chapter5Title",
         "Chapter1Content", "Chapter2Content", "Chapter3Content", "Chapter4Content", "Chapter5Content"
     }
-    
-    rebookmarks = [] # To store bookmarks that are re-added after replacement
-    
-    for key, value in data_dict.items(): # Iterate through the dictionary
-        matching_bms = [bm for bm in all_bm_names if bm.startswith(key)] # Find all bookmarks that start with the key
+
+    rebookmarks = []  # To store bookmarks that need to be re-added after replacement
+
+    for key, value in data_dict.items():
+        matching_bms = [bm for bm in all_bm_names if bm.startswith(key)]
         if not matching_bms:
-            continue # If no matching bookmarks found, skip to the next key
-        
+            continue
+
         for name in matching_bms:
             if not doc.Bookmarks.Exists(name):
-                continue # If the bookmark does not exist, skip
-            
-            bm_range = doc.Bookmarks(name).Range # range of bookmark
-            bm_start = bm_range.Start # start position of bookmark
-            add_newline = name in newline_bookmark_names # Check if this bookmark should have a newline after it
-            insert_text = value + ("\n" if add_newline else " ") # Replace bookmark text with value
-            
-            bm_range.Text = insert_text # Replace bookmark text with value
-            
-            new_range = doc.Range(bm_start, bm_start + len(insert_text)) # create a new range for the bookmark
-            rebookmarks.append((name, new_range)) # Store the bookmark name and new range
-            
-            new_range.Select() # Select the new range
-            word.ActiveWindow.ScrollIntoView(word.Selection.Range, True) # Scroll to the new range
+                continue
 
-        for name, rng in rebookmarks: # Re-add the bookmarks with the new ranges
-            try:
-                doc.Bookmarks.Add(name, rng)
-            except:
-                print(f"⚠️ Could not re-add bookmark: {name}")
+            bm_range = doc.Bookmarks(name).Range
+            bm_start = bm_range.Start
+            add_newline = name in newline_bookmark_names
+            insert_text = value + ("\n" if add_newline else " ")
 
+            # Replace bookmark text
+            bm_range.Text = insert_text
+
+            # Create new range for re-bookmarking
+            new_range = doc.Range(bm_start, bm_start + len(insert_text))
+            rebookmarks.append((name, new_range))
+
+            # Scroll to new location
+            new_range.Select()
+            word.ActiveWindow.ScrollIntoView(word.Selection.Range, True)
+
+            # --- 🔽 Insert images if it's a Chapter{i}Content bookmark ---
+            chapter_match = re.match(r"Chapter(\d)Content", name)
+            if chapter_match:
+                chapter_num = int(chapter_match.group(1))
+
+                image_files = sorted(
+                    ASSET_DIR.glob(f"Fig {chapter_num}.*"),
+                    key=lambda p: float(p.stem.split('.')[1])
+                )
+
+                if image_files:
+                    insert_range = doc.Range(new_range.End, new_range.End)
+                    insert_range.Collapse(c.wdCollapseEnd)
+                    insert_range.Select()
+
+                    for img in image_files:
+                        word.Selection.InlineShapes.AddPicture(
+                            str(img.resolve()), LinkToFile=False, SaveWithDocument=True
+                        )
+                        word.Selection.TypeParagraph()
+                        word.Selection.TypeParagraph()
+    # --- Re-add bookmarks ---
+    for name, rng in rebookmarks:
+        try:
+            doc.Bookmarks.Add(name, rng)
+        except:
+            print(f"⚠️ Could not re-add bookmark: {name}")
+
+    # --- Header/Footer logic ---
     title = data_dict.get("ProjectTitle")
     year = data_dict.get("Year")
 
@@ -1098,6 +1219,7 @@ def replace_bookmarks(data_dict: dict):
             right_range.Collapse(c.wdCollapseStart)
             right_range.Fields.Add(right_range, c.wdFieldPage)
             right_range.ParagraphFormat.Alignment = c.wdAlignParagraphRight
+
 
             
 # ---------------------------------------------------------------------------------
@@ -1154,7 +1276,7 @@ def save_document():
         section.Headers(c.wdHeaderFooterPrimary).Range.Fields.Update()
         section.Footers(c.wdHeaderFooterPrimary).Range.Fields.Update()
     doc.SaveAs(str(DOC_PATH), FileFormat=c.wdFormatDocumentDefault)
-    print("✅ Saved:", DOC_PATH.resolve())
+    CTkMessagebox(title="Saved", message=f"The report has been successfully saved.\n\nSave Location: {DOC_PATH.resolve()}", icon="check")
     
 # ================================================================================= 
 # =================================================================================

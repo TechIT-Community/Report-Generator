@@ -14,9 +14,14 @@ Uses a backend module `Document_Generator` for document handling.
 
 from tkinter import *  # Standard Tkinter for basic GUI
 import customtkinter as tk  # Modern UI
+from CTkMessagebox import CTkMessagebox
 from PIL import ImageTk  # Image handling
 import Document_Generator as docgen  # backend module
 from pathlib import Path  # Path handling
+import os
+from tkinter import filedialog
+import shutil
+
 
 # =================================================================================
 
@@ -40,10 +45,23 @@ class App(tk.CTk):
         icon_path = str(ASSET_DIR / "icon.ico")
         self.iconbitmap(icon_path)
 
+        self.uploaded_files = []
+
         self.pages()
         self.after(500, lambda: self.focus())
         docgen.insert_static_content()
 
+
+
+# ---------------------------------------------------------------------------------
+    def on_close(self):
+        for file in self.uploaded_files:
+            if file.exists() and file.name.startswith("Fig"):
+                try:
+                    file.unlink()
+                except Exception as e:
+                    print(f"⚠️ Couldn't delete {file.name}: {e}")
+        self.destroy()
 
 # ---------------------------------------------------------------------------------
 
@@ -114,6 +132,42 @@ class App(tk.CTk):
                     widget.insert("1.0", saved_data[label_key])
 
             self.entries.append((label_key, widget, input_type))
+            
+            # If this is a chapter content field, allow image upload
+            if label_key.startswith("Chapter") and "Content" in label_key and 3 <= self.current_page <= 7:
+                chapter_number = self.current_page - 2  # Pages 4 to 8 → Chapters 1 to 5
+
+                image_upload_frame = tk.CTkFrame(self.input_frame, fg_color="#2b2b2b")
+                image_upload_frame.pack(pady=(0, 10))
+
+                upload_label = tk.CTkLabel(image_upload_frame, text=f"Upload images for Chapter {chapter_number}:", font=("Arial", 14))
+                upload_label.pack()
+
+                def upload_images(ch_num=chapter_number):
+
+                    files = filedialog.askopenfilenames(
+                        title="Select image(s)",
+                        filetypes=[("Image Files", "*.png *.jpg *.jpeg *.bmp *.gif")],
+                    )
+                    if not files:
+                        return
+
+                    existing = list(ASSET_DIR.glob(f"Fig {ch_num}.*"))
+                    next_idx = 1 + max(
+                        [int(p.stem.split('.')[1]) for p in existing if p.stem.startswith(f"Fig {ch_num}.") and '.' in p.stem] + [0]
+                    )
+
+                    for i, path in enumerate(files, start=next_idx):
+                        ext = Path(path).suffix.lower()
+                        dest = ASSET_DIR / f"Fig {ch_num}.{i}{ext}"
+                        shutil.copy(path, dest)
+                        CTkMessagebox(title="Upload Successful", message=f"Saved as: {dest.name}", icon="check")
+                        self.uploaded_files.append(dest)
+
+
+                upload_btn = tk.CTkButton(image_upload_frame, text="Upload Images", command=upload_images)
+                upload_btn.pack(pady=(5, 0))
+
 
         self.prev_button.configure(state="normal" if self.current_page > 0 else "disabled")
         self.next_button.configure(text="Done" if self.current_page == len(self.pages) - 1 else "Next →")
@@ -142,7 +196,7 @@ class App(tk.CTk):
     def go_next(self):
         self.save_current_inputs()
         docgen.replace_bookmarks(self.user_inputs[self.current_page])
-
+        
         if self.current_page < len(self.pages) - 1:
             self.current_page += 1
             self.load_page()
@@ -153,6 +207,7 @@ class App(tk.CTk):
 
 def main():
     app = App()
+    app.protocol("WM_DELETE_WINDOW", app.on_close)
     app.mainloop()
 
 # =================================================================================
