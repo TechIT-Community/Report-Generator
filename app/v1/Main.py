@@ -15,10 +15,8 @@ Uses a backend module `Document_Generator` for document handling.
 from tkinter import *  # Standard Tkinter for basic GUI
 import customtkinter as tk  # Modern UI
 from CTkMessagebox import CTkMessagebox
-from PIL import ImageTk  # Image handling
 import Document_Generator as docgen  # backend module
 from pathlib import Path  # Path handling
-import os
 from tkinter import filedialog
 import shutil
 
