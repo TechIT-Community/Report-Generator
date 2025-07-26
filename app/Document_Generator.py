@@ -226,7 +226,7 @@ def insert_static_content():
 
     cursor = inline_shape.Range.Duplicate # Duplicate the range of the inserted image
     cursor = doc.Range(doc.Content.End - 1, doc.Content.End - 1)
-    cursor.InsertParagraphAfter() # Insert a paragraph break after the image
+    # cursor.InsertParagraphAfter() # Insert a paragraph break after the image
     cursor.Collapse(c.wdCollapseEnd)
     cursor.Select()
     # time.sleep(0.1)
@@ -263,7 +263,12 @@ def insert_static_content():
     # time.sleep(0.1)
 
     word.Selection.Font.Bold = True
-    word.Selection.TypeText("Computer Science and Engineering")
+    placeholder = "___"
+    word.Selection.TypeText(placeholder)
+    bm_range = word.Selection.Range.Duplicate
+    bm_start = bm_range.Start - len(placeholder)
+    bm_range = doc.Range(bm_start, bm_start + len(placeholder))
+    doc.Bookmarks.Add("Department", bm_range)
     word.Selection.TypeParagraph()    
 
     word.Selection.Font.Bold = False
@@ -294,6 +299,18 @@ def insert_static_content():
     bm_start = bm_range.Start - len(placeholder)
     bm_range = doc.Range(bm_start, bm_start + len(placeholder))
     doc.Bookmarks.Add("GuideName", bm_range)
+    word.Selection.TypeParagraph()
+ 
+    # time.sleep(0.1)
+# _________________________________________________________________________________
+
+    word.Selection.Font.Bold = False
+    placeholder = "___\n"
+    word.Selection.TypeText(placeholder)
+    bm_range = word.Selection.Range.Duplicate
+    bm_start = bm_range.Start - len(placeholder)
+    bm_range = doc.Range(bm_start, bm_start + len(placeholder))
+    doc.Bookmarks.Add("Designation", bm_range)
     # time.sleep(0.1)
 # _________________________________________________________________________________
 
@@ -314,14 +331,20 @@ def insert_static_content():
 
     cursor = inline_shape.Range.Duplicate 
     cursor = doc.Range(doc.Content.End - 1, doc.Content.End - 1)
-    cursor.InsertParagraphAfter()
+    # cursor.InsertParagraphAfter()
     cursor.Collapse(c.wdCollapseEnd)
     cursor.Select()
     # time.sleep(0.1)
 # _________________________________________________________________________________
 
     word.Selection.Font.Bold = True
-    word.Selection.TypeText("DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING")
+    placeholder = "___\n"
+    word.Selection.TypeText(placeholder)
+    bm_range = word.Selection.Range.Duplicate
+    bm_start = bm_range.Start - len(placeholder)
+    bm_range = doc.Range(bm_start, bm_start + len(placeholder))
+    doc.Bookmarks.Add("Department_2", bm_range)
+    bm_range.Case = c.wdUpperCase 
     # time.sleep(0.1)
 # _________________________________________________________________________________
 
@@ -340,7 +363,7 @@ def insert_static_content():
 
     cursor = inline_shape.Range.Duplicate 
     cursor = doc.Range(doc.Content.End - 1, doc.Content.End - 1)
-    cursor.InsertParagraphAfter()
+    # cursor.InsertParagraphAfter()
     cursor.Collapse(c.wdCollapseEnd)
     cursor.Select()
     # time.sleep(0.1)
@@ -378,7 +401,13 @@ def insert_static_content():
     # time.sleep(0.1)
 # _________________________________________________________________________________
 
-    word.Selection.TypeText("DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING")
+    placeholder = "___\n"
+    word.Selection.TypeText(placeholder)
+    bm_range = word.Selection.Range.Duplicate
+    bm_start = bm_range.Start - len(placeholder)
+    bm_range = doc.Range(bm_start, bm_start + len(placeholder))
+    doc.Bookmarks.Add("Department_3", bm_range)
+    bm_range.Case = c.wdUpperCase 
     # time.sleep(0.1)
 # _________________________________________________________________________________
 
@@ -468,10 +497,17 @@ def insert_static_content():
 
     word.Selection.TypeText("Semester B.E., B.N.M. Institute of Technology, an Autonomous Institution "
                             "under Visvesvaraya Technological University, Belagavi submitted in partial "
-                            "fulfilment for the award of "
+                            "fulfilment for the award of Bachelor of Engineering in "
     )
     word.Selection.Font.Bold = True
-    word.Selection.TypeText("Bachelor of Engineering in COMPUTER SCIENCE AND ENGINEERING, ")
+    placeholder = "___ "
+    word.Selection.TypeText(placeholder)
+    bm_range = word.Selection.Range.Duplicate
+    bm_start = bm_range.Start - len(placeholder)
+    bm_range = doc.Range(bm_start, bm_start + len(placeholder))
+    doc.Bookmarks.Add("Department_4", bm_range)
+    bm_range.Case = c.wdUpperCase 
+    # time.sleep(0.1)
     word.Selection.Font.Bold = False
     
     word.Selection.TypeText("during the year ")
@@ -494,9 +530,9 @@ def insert_static_content():
 # _________________________________________________________________________________
 
     data = [
-        ["___",     "Dr. Chayadevi M L", "Dr. S Y Kulkarni"],
-        ["Professor,",       "Professor and HOD,", "Additional Director"],
-        ["Dept. of CSE,",     "Dept. of CSE,",      "and Principal,"],
+        ["___",     "___", "Dr. S Y Kulkarni"],
+        ["___,",       "Professor and HOD,", "Additional Director"],
+        ["___,",     "___,",      "and Principal,"],
         ["BNMIT, Bengaluru", "BNMIT, Bengaluru",   "BNMIT, Bengaluru"]
     ]
     
@@ -528,11 +564,33 @@ def insert_static_content():
             if (i, j) == (0, 0):
                 placeholder = "___"
                 cell.Range.Text = placeholder
-                
-                # Place bookmark over the exact range
                 bm_start = cell.Range.Start
                 bm_range = doc.Range(bm_start, bm_start + len(placeholder))
                 doc.Bookmarks.Add("GuideName_2", bm_range)
+            if (i, j) == (1, 0):
+                placeholder = "___"
+                cell.Range.Text = placeholder
+                bm_start = cell.Range.Start
+                bm_range = doc.Range(bm_start, bm_start + len(placeholder))
+                doc.Bookmarks.Add("Designation_2", bm_range)
+            if (i, j) == (0, 1):
+                placeholder = "___"
+                cell.Range.Text = placeholder
+                bm_start = cell.Range.Start
+                bm_range = doc.Range(bm_start, bm_start + len(placeholder))
+                doc.Bookmarks.Add("Department_5", bm_range)
+            if (i, j) == (2, 0):
+                placeholder = "___"
+                cell.Range.Text = placeholder + ","
+                bm_start = cell.Range.Start
+                bm_range = doc.Range(bm_start, bm_start + len(placeholder))
+                doc.Bookmarks.Add("Department_6", bm_range)
+            if (i, j) == (2, 1):
+                placeholder = "___"
+                cell.Range.Text = placeholder + ","
+                bm_start = cell.Range.Start
+                bm_range = doc.Range(bm_start, bm_start + len(placeholder))
+                doc.Bookmarks.Add("Department_7", bm_range)
 
     for border_id in [
         c.wdBorderTop, c.wdBorderBottom, c.wdBorderLeft, c.wdBorderRight,
@@ -681,12 +739,51 @@ def insert_static_content():
         "Eishwar N Maanay, for providing the resources and a conducive environment to undertake this project. "
         "Their constant support and emphasis on innovation inspired me to push my boundaries.\n\n"
 
-        "I am immensely grateful to our Head of the Department, Dr. Chayadevi M.L, Professor, Dept. of CSE, "
-        "for their unwavering support and guidance. Their insights and suggestions played a crucial role in shaping "
+        "I am immensely grateful to our Head of the Department, ")
+
+    placeholder = "___ "
+    word.Selection.TypeText(placeholder)
+    bm_range = word.Selection.Range.Duplicate
+    bm_start = bm_range.Start - len(placeholder)
+    bm_range = doc.Range(bm_start, bm_start + len(placeholder))
+    doc.Bookmarks.Add("Department_8", bm_range)
+
+    word.Selection.TypeText(", ")
+
+    # Department_9
+    placeholder = "___ "
+    word.Selection.TypeText(placeholder)
+    bm_range = word.Selection.Range.Duplicate
+    bm_start = bm_range.Start - len(placeholder)
+    bm_range = doc.Range(bm_start, bm_start + len(placeholder))
+    doc.Bookmarks.Add("Department_9", bm_range)
+
+    word.Selection.TypeText(
+        " for their unwavering support and guidance. Their insights and suggestions played a crucial role in shaping "
         "the direction of this project. Their encouragement throughout the process has been a source of great motivation.\n\n"
 
-        "A special note of appreciation goes to my Guide, Dr. Anitha N, Professor, for her invaluable mentorship, "
-        "technical expertise, and constructive feedback. Their patient guidance, timely advice, and constant "
+        "A special note of appreciation goes to my Guide, "
+    )
+    
+    placeholder = "___ "
+    word.Selection.TypeText(placeholder)
+    bm_range = word.Selection.Range.Duplicate
+    bm_start = bm_range.Start - len(placeholder)
+    bm_range = doc.Range(bm_start, bm_start + len(placeholder))
+    doc.Bookmarks.Add("GuideName_3", bm_range)
+
+    word.Selection.TypeText(", ")
+
+    # Designation_3
+    placeholder = "___ "
+    word.Selection.TypeText(placeholder)
+    bm_range = word.Selection.Range.Duplicate
+    bm_start = bm_range.Start - len(placeholder)
+    bm_range = doc.Range(bm_start, bm_start + len(placeholder))
+    doc.Bookmarks.Add("Designation_3", bm_range)
+
+    word.Selection.TypeText(
+        " technical expertise, and constructive feedback. Their patient guidance, timely advice, and constant "
         "encouragement helped me overcome challenges and refine the project to its current form.\n\n"
 
         "I also wish to express my deepest gratitude to my parents for their unconditional love, support, and "
@@ -903,8 +1000,6 @@ def insert_static_content():
         doc.Bookmarks.Add(f"Chapter{i}Content", content_bm_range)
         word.Selection.TypeParagraph()
 
-        # Insert images after Chapter{i}Content
-
 
     # ---------------------------------------------
     # Final section break to isolate the next part
@@ -1113,17 +1208,75 @@ def replace_bookmarks(data_dict: dict):
     Replaces bookmarks in the Word document with values from a dictionary.
     Also inserts images after Chapter{i}Content bookmarks if matching files are found.
     """
+    transformed_data = {}
+    
+    dept_short_forms = {
+        "COMPUTER SCIENCE AND ENGINEERING": "Dept. of CSE",
+        "ELECTRICAL AND COMMUNICATION ENGINEERING": "Dept. of ECE",
+        "INFORMATION SCIENCE AND ENGINEERING": "Dept. of ISE",
+        "MECHANICAL ENGINEERING": "Dept. of ME",
+        "CIVIL ENGINEERING": "Dept. of CE",
+        "ELECTRONICS AND INSTRUMENTATION ENGINEERING": "Dept. of EIE",
+        "ARTIFICIAL INTELLIGENCE AND MACHINE LEARNING": "Dept. of AIML",
+        "ELECTRICAL AND ELECTRONICS ENGINEERING": "Dept. of EEE"
+    }
+    
+    hod_titles = {
+        "COMPUTER SCIENCE AND ENGINEERING": "Dr. Chayadevi M.L",
+        "ELECTRICAL AND COMMUNICATION ENGINEERING": "xyz",
+        "INFORMATION SCIENCE AND ENGINEERING": "xyz",
+        "MECHANICAL ENGINEERING": "xyz",
+        "CIVIL ENGINEERING": "xyz",
+        "ELECTRONICS AND INSTRUMENTATION ENGINEERING": "xyz",
+        "ARTIFICIAL INTELLIGENCE AND MACHINE LEARNING": "xyz",
+        "ELECTRICAL AND ELECTRONICS ENGINEERING": "xyz"
+    }
 
+    department_value = data_dict.get("Department", "").strip()
+
+    # Apply transformed values based on that single input
+    if department_value:
+        # HOD full name → for Department_5
+        hod_value = hod_titles.get(department_value, department_value)
+        transformed_data["Department_5"] = hod_value
+        transformed_data["Department_8"] = hod_value
+
+        # Short form dept → for Department_6 and Department_7
+        short_form = dept_short_forms.get(department_value, department_value)
+        transformed_data["Department_6"] = short_form
+        transformed_data["Department_7"] = short_form
+        transformed_data["Department_9"] = short_form
+
+    # Also carry over other keys from data_dict directly
+    for key, value in data_dict.items():
+        if key != "Department":  # Already handled separately
+            transformed_data[key] = value
+            
     all_bm_names = [bm.Name for bm in doc.Bookmarks]  # Get all bookmark names in the document
 
     # These bookmarks should have a newline after the inserted value
     newline_bookmark_names = {
-        "ProjectTitle", "NameAndUSN", "GuideName",
+        "ProjectTitle", "NameAndUSN", "GuideName", "Designation",
+        "Department_2", "Department_3",
         "Chapter1Title", "Chapter2Title", "Chapter3Title", "Chapter4Title", "Chapter5Title",
         "Chapter1Content", "Chapter2Content", "Chapter3Content", "Chapter4Content", "Chapter5Content"
     }
 
     rebookmarks = []  # To store bookmarks that need to be re-added after replacement
+
+    for key, value in transformed_data.items():
+        match = re.match(r"Department_(\d+)", key)
+        if match:
+            if doc.Bookmarks.Exists(key):
+                bm_range = doc.Bookmarks(key).Range
+                bm_start = bm_range.Start
+                insert_text = value
+                bm_range.Text = insert_text
+                new_range = doc.Range(bm_start, bm_start + len(insert_text))
+                rebookmarks.append((key, new_range))
+                new_range.Select()
+                word.ActiveWindow.ScrollIntoView(word.Selection.Range, True)
+
 
     for key, value in data_dict.items():
         matching_bms = [bm for bm in all_bm_names if bm.startswith(key)]
@@ -1155,22 +1308,67 @@ def replace_bookmarks(data_dict: dict):
             if chapter_match:
                 chapter_num = int(chapter_match.group(1))
 
+                def extract_figure_index(p):
+                    match = re.search(rf"Fig {chapter_num}\.(\d+)", p.stem)
+                    if match:
+                        return float(match.group(1))
+                    return float('inf')
+
                 image_files = sorted(
                     ASSET_DIR.glob(f"Fig {chapter_num}.*"),
-                    key=lambda p: float(p.stem.split('.')[1])
+                    key=extract_figure_index
                 )
 
                 if image_files:
-                    insert_range = doc.Range(new_range.End, new_range.End)
-                    insert_range.Collapse(c.wdCollapseEnd)
-                    insert_range.Select()
+                    # Step 1: Define start of insertion range
+                    chapter_end = new_range.End
+
+                    # Step 2: Define end of chapter by checking next chapter title
+                    next_title = f"Chapter{chapter_num + 1}Title_2"
+                    if next_title in [b.Name for b in doc.Bookmarks]:
+                        chapter_limit = doc.Bookmarks(next_title).Range.Start
+                    else:
+                        chapter_limit = doc.Content.End
+
+                    # Step 3: Define range to check for existing figure captions
+                    safe_start = min(chapter_end, chapter_limit)
+                    safe_end = max(chapter_end, chapter_limit)
+                    if safe_end > doc.Content.End:
+                        safe_end = doc.Content.End
+
+                    scan_range = doc.Range(safe_start, safe_end)
+                    existing_text = scan_range.Text
+
+                    # Step 4: Begin inserting images in order using a safe advancing range
+                    insert_range = doc.Range(chapter_end, chapter_end)
+                    insert_range.Collapse(c.wdCollapseStart)
 
                     for img in image_files:
-                        word.Selection.InlineShapes.AddPicture(
-                            str(img.resolve()), LinkToFile=False, SaveWithDocument=True
-                        )
-                        word.Selection.TypeParagraph()
-                        word.Selection.TypeParagraph()
+                        fig_index = img.stem.split('.')[-1]
+                        fig_label = f"Fig {chapter_num}.{fig_index}"
+
+                        if fig_label in existing_text:
+                            continue  # Already inserted
+
+                        # Step 1: Remember where image is being inserted
+                        image_start = insert_range.Start
+
+                        # Step 2: Insert image
+                        insert_range.InlineShapes.AddPicture(str(img.resolve()), LinkToFile=False, SaveWithDocument=True)
+
+                        # Step 3: Move to just after image and insert a newline to force it down
+                        image_end = doc.Range(image_start, image_start).End
+                        para_after_img = doc.Range(image_end, image_end)
+                        para_after_img.InsertAfter("\r")
+
+                        # Step 4: Insert caption in new paragraph
+                        caption_range = doc.Range(para_after_img.End + 2, para_after_img.End + 2)
+                        caption_range.InsertAfter(fig_label)
+                        caption_range.InsertParagraphAfter()
+
+                        # Step 5: Move insert_range forward for next image
+                        insert_range = doc.Range(caption_range.End + 2, caption_range.End + 2)
+
     # --- Re-add bookmarks ---
     for name, rng in rebookmarks:
         try:
@@ -1188,37 +1386,38 @@ def replace_bookmarks(data_dict: dict):
                 continue
 
             # HEADER: Left-align project title
-            header = section.Headers(c.wdHeaderFooterPrimary)
-            header.LinkToPrevious = False
-            if title:
-                header.Range.Text = title
-                header.Range.ParagraphFormat.Alignment = c.wdAlignParagraphLeft
+            if idx > 1:
+                header = section.Headers(c.wdHeaderFooterPrimary)
+                header.LinkToPrevious = False
+                if title:
+                    header.Range.Text = title
+                    header.Range.ParagraphFormat.Alignment = c.wdAlignParagraphLeft
 
-            # FOOTER: Left = dept, Center = year, Right = page number
-            footer = section.Footers(c.wdHeaderFooterPrimary)
-            footer.LinkToPrevious = False
-            rng = footer.Range
-            rng.Text = ""
+                # FOOTER: Left = dept, Center = year, Right = page number
+                footer = section.Footers(c.wdHeaderFooterPrimary)
+                footer.LinkToPrevious = False
+                rng = footer.Range
+                rng.Text = ""
 
-            table = rng.Tables.Add(rng, NumRows=1, NumColumns=3)
-            table.PreferredWidthType = c.wdPreferredWidthPercent
-            table.PreferredWidth = 100
-            table.Borders.Enable = False
+                table = rng.Tables.Add(rng, NumRows=1, NumColumns=3)
+                table.PreferredWidthType = c.wdPreferredWidthPercent
+                table.PreferredWidth = 100
+                table.Borders.Enable = False
 
-            # Left = Dept.
-            table.Cell(1, 1).Range.Text = "Dept. of CSE, BNMIT"
-            table.Cell(1, 1).Range.ParagraphFormat.Alignment = c.wdAlignParagraphLeft
+                # Left = Dept.
+                table.Cell(1, 1).Range.Text = "Dept. of CSE, BNMIT"
+                table.Cell(1, 1).Range.ParagraphFormat.Alignment = c.wdAlignParagraphLeft
 
-            # Center = Year (only if provided)
-            if year:
-                table.Cell(1, 2).Range.Text = year
-            table.Cell(1, 2).Range.ParagraphFormat.Alignment = c.wdAlignParagraphCenter
+                # Center = Year (only if provided)
+                if year:
+                    table.Cell(1, 2).Range.Text = year
+                table.Cell(1, 2).Range.ParagraphFormat.Alignment = c.wdAlignParagraphCenter
 
-            # Right = Page number
-            right_range = table.Cell(1, 3).Range
-            right_range.Collapse(c.wdCollapseStart)
-            right_range.Fields.Add(right_range, c.wdFieldPage)
-            right_range.ParagraphFormat.Alignment = c.wdAlignParagraphRight
+                # Right = Page number
+                right_range = table.Cell(1, 3).Range
+                right_range.Collapse(c.wdCollapseStart)
+                right_range.Fields.Add(right_range, c.wdFieldPage)
+                right_range.ParagraphFormat.Alignment = c.wdAlignParagraphRight
 
 
             
