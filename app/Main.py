@@ -20,7 +20,15 @@ class StartScreen(tk.CTk):
         self.title("Start Report Generator")
         self.geometry("700x450")
         self.resizable(False, False)
-        self.eval('tk::PlaceWindow . center')
+        self.update_idletasks()
+        w = 700
+        h = 450
+        screen_w = self.winfo_screenwidth()
+        screen_h = self.winfo_screenheight()
+
+        x = int((screen_w - w) / 2 + 0.05 * screen_w)  
+        y = int((screen_h - h) / 2)
+        self.geometry(f"{w}x{h}+{x}+{y}")
 
         logo_path = ASSET_DIR / "icon.png"
         logo_image = Image.open(logo_path)
@@ -40,9 +48,14 @@ class StartScreen(tk.CTk):
         self.dept_var = tk.StringVar(value="Select Department")
         self.dept_menu = tk.CTkOptionMenu(
             self, values=[
-                "Computer Science and Engineering",
-                "Electrical and Communication Engineering",
-                "more coming soon"
+                "COMPUTER SCIENCE AND ENGINEERING",
+                "ELECTRICAL AND COMMUNICATION ENGINEERING",
+                "INFORMATION SCIENCE AND ENGINEERING",
+                "MECHANICAL ENGINEERING",
+                "CIVIL ENGINEERING",
+                "ELECTRONICS AND INSTRUMENTATION ENGINEERING",
+                "ARTIFICIAL INTELLIGENCE AND MACHINE LEARNING",
+                "ELECTRICAL AND ELECTRONICS ENGINEERING"
             ],
             variable=self.dept_var
         )

@@ -29,6 +29,9 @@ ASSET_DIR = BASE_DIR / "assets"  # Directory for assets
 class App(tk.CTk):
     def __init__(self, user_inputs):
         super().__init__()
+        tk.set_appearance_mode("dark")
+        tk.set_default_color_theme("dark-blue")
+
         self.help_window = None 
 
         screen_w, screen_h = self.winfo_screenwidth(), self.winfo_screenheight()
@@ -188,7 +191,7 @@ class App(tk.CTk):
     def pages(self):
         self.pages = [
             [("College", "entry", 1), ("Department", "entry", 1)],
-            [("Project Title", "entry", 1), ("Name And USN", "text", 3), ("Guide Name", "entry", 1)],
+            [("Project Title", "entry", 1), ("Name And USN", "text", 3), ("Guide Name", "entry", 1), ("Designation", "entry", 1)],
             [("Name USN", "text", 3), ("Sem", "entry", 1), ("Year", "entry", 1)],
             [("Abstract", "text", 5)],
             [("Chapter 1 Title", "entry", 1), ("Chapter 1 Content", "text", 6)],
@@ -220,7 +223,7 @@ class App(tk.CTk):
         self.page_title_label = tk.CTkLabel(self, text="", font=("Arial", 18, "italic"))
         self.page_title_label.pack()
 
-        self.input_frame = tk.CTkFrame(self)
+        self.input_frame = tk.CTkFrame(self, fg_color = "#1a1a1a")
         self.input_frame.pack(pady=40)
         
         self.save_button = tk.CTkButton(self, text="💾 Save", command=self.apply_page)
@@ -228,13 +231,13 @@ class App(tk.CTk):
 
         self.entries = []
 
-        self.button_frame = tk.CTkFrame(self)
+        self.button_frame = tk.CTkFrame(self, fg_color = "#1a1a1a")
         self.button_frame.pack(side="bottom", fill="x", pady=30, padx=20)
 
-        self.prev_button = tk.CTkButton(self.button_frame, text="← Previous", command=self.go_previous)
+        self.prev_button = tk.CTkButton(self.button_frame, text="← Previous", command=self._show_prev)
         self.prev_button.pack(side="left")
 
-        self.next_button = tk.CTkButton(self.button_frame, text="Next →", command=self.go_next)
+        self.next_button = tk.CTkButton(self.button_frame, text="Next →", command=self._show_next_enter)
         self.next_button.pack(side="right")
         
         self.page_selector = tk.CTkOptionMenu(
@@ -279,7 +282,7 @@ class App(tk.CTk):
                 border = tk.CTkFrame(self.input_frame, fg_color="#565b5e", corner_radius=6)
                 border.pack(pady=(0, 10), padx=4)
 
-                widget = tk.CTkTextbox(border, width=440, height=height * 30, wrap="word", fg_color=fg_color)
+                widget = tk.CTkTextbox(border, width=440, height=height * 30, wrap="word", fg_color=fg_color, border_color = "#565b5e")
                 widget.pack(padx=1.5, pady=1.5)
                 if label_key in saved_data:
                     widget.insert("1.0", saved_data[label_key])
@@ -287,10 +290,10 @@ class App(tk.CTk):
             self.entries.append((label_key, widget, input_type))
 
             # If this is a chapter content field, allow image upload
-            if label_key.startswith("Chapter") and "Content" in label_key and 4 <= self.current_page <= 8:
-                chapter_number = self.current_page - 3  # Pages 4 to 8 → Chapters 1 to 5
+            if label_key.startswith("Chapter") and "Content" in label_key and 4 <= self.current_page <= 9:
+                chapter_number = self.current_page - 4  # Pages 4 to 8 → Chapters 1 to 5
 
-                image_upload_frame = tk.CTkFrame(self.input_frame, fg_color="#2b2b2b")
+                image_upload_frame = tk.CTkFrame(self.input_frame, fg_color="#1a1a1a")
                 image_upload_frame.pack(pady=(0, 10))
 
                 upload_label = tk.CTkLabel(image_upload_frame, text=f"Upload images for Chapter {chapter_number}:", font=("Arial", 14))
@@ -313,7 +316,8 @@ class App(tk.CTk):
                         ext = Path(path).suffix.lower()
                         dest = ASSET_DIR / f"Fig {ch_num}.{i}{ext}"
                         shutil.copy(path, dest)
-                        CTkMessagebox(title="Upload Successful", message=f"Saved as: {dest.name}", icon="check")
+                        self.flash_label(f"📸 Uploaded: {dest.name}", time=2000)
+                        #CTkMessagebox(title="Upload Successful", message=f"Saved as: {dest.name}", icon="check")
                         self.uploaded_files.append(dest)
 
                 upload_btn = tk.CTkButton(image_upload_frame, text="Upload Images", command=upload_images)
