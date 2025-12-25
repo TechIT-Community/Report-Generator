@@ -1,0 +1,279 @@
+docgen.py-
+```
+# Imports - win32com.client as win32, constants as c, path from pathlib, win32gui, win32con, time, ctypes
+# Globals
+word = win32.gencache.EnsureDispatch("Word.Application") 
+word.Visible = True # Show Word window
+DOC_PATH = Path.cwd() / "app" / "v1" / "reports" / "template.docx" # Save location
+doc = word.Documents.Add() 
+hwnd = win32gui.FindWindow("OpusApp", None) 
+win32gui.ShowWindow(hwnd, win32con.SW_RESTORE) 
+win32gui.SetForegroundWindow(hwnd) 
+cm_to_pt = lambda cm: cm * 28.3464566929133858 # For point system in word (1 cm = 28.346 pt)
+def insert_table(data: list[list[str]], bold_cells: list[tuple[int, int]] = None, align = c.wdAlignParagraphCenter, before = 0, after = 8):
+    global cursor
+    if not data or not any(data):
+        return
+    bold_cells = bold_cells or []
+    rows = max(len(col) for col in data)
+    cols = len(data)
+    transposed = []
+    for row in range(rows):
+        new_row = []
+        for col in data:
+            val = col[row] if row < len(col) else ""
+            clean_val = "" if not val or str(val).strip() == "" else str(val)
+            new_row.append(clean_val)
+        transposed.append(new_row)
+    cursor = doc.Range()
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor.Select()
+    table = doc.Tables.Add(cursor, NumRows=rows, NumColumns=cols)
+    table.Range.Style = "Table Grid"
+    table.Range.Font.Name = "Times New Roman"
+    table.Range.Font.Size = 12
+    table.Range.ParagraphFormat.Alignment = align
+    table.Range.ParagraphFormat.LineSpacingRule = c.wdLineSpaceSingle
+    table.Range.ParagraphFormat.SpaceBefore = before
+    table.Range.ParagraphFormat.SpaceAfter = after
+    for i, row in enumerate(transposed):
+        for j, cell_val in enumerate(row):
+            cell = table.Cell(i + 1, j + 1)
+            cell.Range.Text = cell_val
+            if(i, j) in bold_cells:
+                cell.Range.Font.Bold = True # Make specified cells bold
+    for border_id in [c.wdBorderTop, c.wdBorderBottom, c.wdBorderLeft, c.wdBorderRight, c.wdBorderHorizontal, c.wdBorderVertical]:
+        border = table.Borders(border_id)
+        border.LineStyle = c.wdLineStyleSingle
+        border.Color = c.wdColorWhite
+    cursor = table.Range.Duplicate
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor.InsertParagraphAfter()
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor.Select()
+doc.PageSetup.TopMargin = cm_to_pt(1.7)
+doc.PageSetup.BottomMargin = cm_to_pt(1.7)
+doc.PageSetup.LeftMargin = cm_to_pt(2.1)
+doc.PageSetup.RightMargin = cm_to_pt(1.7)
+doc.Content.Delete()
+cursor = doc.Range(0, 0)
+cursor.Collapse(c.wdCollapseEnd)
+def position_windows():
+    screen_width = ctypes.windll.user32.GetSystemMetrics(0) 
+    screen_height = ctypes.windll.user32.GetSystemMetrics(1) 
+    half_width = screen_width // 2
+    height = int(screen_height * 0.99)
+    left = int(max(0, half_width - 0.107 * screen_width))
+    width = int((half_width + 0.11 * screen_width))
+    hwnd_word = win32gui.FindWindow("OpusApp", None) 
+    if hwnd_word:
+        win32gui.ShowWindow(hwnd_word, win32con.SW_RESTORE) 
+        win32gui.SetWindowPos(hwnd_word, None, left, 0, width, height, win32con.SWP_NOZORDER) 
+    word.ActiveWindow.View.Zoom.Percentage = 110 
+    window = word.ActiveWindow # Get the active window
+    window.ScrollIntoView(doc.Range(0, doc.Content.End // 2), True) 
+def insert_new_break(break = c.wdPageBreak):
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor = doc.Range(doc.Content.End - 1, doc.Content.End - 1) 
+    cursor.InsertBreak(break)
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor.Select()
+    time.sleep(0.1) 
+def insert_static_content():
+    #Inserts static content into the Word document and adds placeholders for dynamic content, makes sure to set the font, size and alignment appropriately.
+    position_windows()  
+    global cursor
+    cursor.Select()
+#   page 1 content - title page
+    insert_new_break()
+#   page 2 content - certificate page
+    insert_new_break()
+#   page 3 content - acknowledgement page
+    insert_new_break()
+#   page 4 content - abstract page
+    insert_new_break(c.wdSectionBreakNextPage)
+#   Chapter 1–5 with Bookmarks 
+    chapter_titles = []
+    for i in range(1, 6):
+        word.Selection.Font.Name = "Times New Roman"
+        word.Selection.Font.Size = 16
+        word.Selection.Font.Bold = True
+        word.Selection.ParagraphFormat.Alignment = c.wdAlignParagraphCenter
+        word.Selection.TypeText("___")
+        word.Selection.TypeParagraph()
+        rng = word.Selection.Range.Duplicate
+        rng.MoveStart(Unit=c.wdCharacter, Count=-4)
+        bm_title = f"Chapter{i}Title"
+        doc.Bookmarks.Add(bm_title, rng)
+        chapter_titles.append(bm_title)
+        word.Selection.Font.Size = 12
+        word.Selection.Font.Bold = False
+        word.Selection.ParagraphFormat.Alignment = c.wdAlignParagraphJustify
+        word.Selection.TypeText("___")
+        word.Selection.TypeParagraph()
+        rng2 = word.Selection.Range.Duplicate
+        rng2.MoveStart(Unit=c.wdCharacter, Count=-4)
+        bm_content = f"Chapter{i}Content"
+        doc.Bookmarks.Add(bm_content, rng2)
+        if i < 5:
+		insert_new_break()
+        insert_new_break(c.wdSectionBreakNextPage)
+    sec1 = doc.Sections(1)
+    borders = sec1.Borders
+    borders.DistanceFromTop = borders.DistanceFromBottom = 24
+    borders.DistanceFromLeft = borders.DistanceFromRight = 12
+    sec1.Range.Select()
+    word.Selection.Range.GoTo()
+    for side in (c.wdBorderTop, c.wdBorderLeft, c.wdBorderBottom, c.wdBorderRight):
+        br = borders(side)
+        br.LineStyle = c.wdLineStyleThinThickThinMedGap
+        br.LineWidth = c.wdLineWidth300pt
+        br.Color = c.wdColorAutomatic
+    time.sleep(0.1)
+def insert_chapter_index():
+    """
+    Inserts an index listing chapters 1–5 with dynamic page numbers.
+    """
+    global cursor
+    cursor = doc.Range(doc.Content.Start, doc.Content.Start)
+    cursor.Select()  
+    word.Selection.TypeText("Table of Contents")
+    word.Selection.TypeParagraph()
+    word.Selection.Font.Bold = False
+    for i in range(1,6):
+        title_bm = f"Chapter{i}Title"
+        # auto-update page field
+        word.Selection.TypeText(f"{i}. ")
+        word.Selection.Fields.Add(word.Selection.Range, c.wdFieldEmpty, f"REF {title_bm} \\p", True)
+        word.Selection.TypeParagraph()
+    word.Selection.InsertBreak(c.wdPageBreak)
+    cursor = doc.Range(doc.Content.Start, doc.Content.Start)
+    cursor.Collapse(c.wdCollapseStart)
+    cursor.Select()
+def replace_bookmarks(data_dict: dict):
+    """
+    Replaces bookmarks in the Word document with values from a dictionary.
+    This function iterates through the provided dictionary and checks if each key exists as a bookmark in the document.
+    If a bookmark exists, it replaces the text of that bookmark with the corresponding value from the dictionary.
+    """
+    all_bm_names = [bm.Name for bm in doc.Bookmarks] # Get all bookmark names in the document
+    newline_bookmark_names = {"ProjectTitle", "NameAndUSN", "GuideName"}
+    for key, value in data_dict.items():
+        matching_bms = []
+        if any(bm.startswith(key) for bm in all_bm_names):
+            matching_bms = [bm for bm in all_bm_names if bm.startswith(key)] 
+        elif key in all_bm_names:
+            matching_bms = [key] 
+        if not matching_bms:
+            continue 
+        for name in matching_bms:
+            if doc.Bookmarks.Exists(name):
+                bm_range = doc.Bookmarks(name).Range # range of bookmark
+                bm_start = bm_range.Start 
+                add_newline = name in newline_bookmark_names 
+                bm_range.Text = value + ("\n" if add_newline else " ") 
+                new_range = doc.Range(bm_start, bm_start + len(value) + 1) 
+                doc.Bookmarks.Add(name, new_range) 
+    cursor = doc.Range()
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor.Select()
+def save_document():
+    doc.SaveAs(str(DOC_PATH), FileFormat=c.wdFormatDocumentDefault)
+    print("✅ Saved:", DOC_PATH.resolve())
+```
+
+gui.py-
+```
+# Imports - tkinter, customtkinter (main), imagetk, docgen
+class App(tk.CTk):
+    def __init__(self):
+        super().__init__()
+        screen_w, screen_h = self.winfo_screenwidth(), self.winfo_screenheight()
+        self.windims = (int(screen_w // 2 - 0.105 * screen_w), int(screen_h * 0.95))
+        x = -(int(0.0057 * screen_w))
+        y = int(((screen_h / 2) - (self.windims[1] / 2)) - (0.023 * screen_h))
+        self.geometry(f"{self.windims[0]}x{self.windims[1]}+{x}+{y}")
+        self.resizable(False, False)
+        self.title("Report Generator")
+        icon_path = ImageTk.PhotoImage(file="app/v1/assets/icon.png")
+        self.iconphoto(False, icon_path)
+        self.pages()
+        self.after(500, lambda: self.focus())
+        docgen.insert_static_content()
+        docgen.insert_chapter_index()
+    def pages(self):
+        self.pages = [
+            [("Project Title", "entry", 1), ("Name And USN", "text", 3), ("Guide Name", "entry", 1)],
+            [("Name USN", "text", 3), ("Sem", "entry", 1), ("Year", "entry", 1)],
+            [("Abstract", "text", 5)],
+            [("Chapter 1 Title", "entry", 1), ("Chapter 1 Content", "text", 6)],
+            [("Chapter 2 Title", "entry", 1), ("Chapter 2 Content", "text", 6)],
+            [("Chapter 3 Title", "entry", 1), ("Chapter 3 Content", "text", 6)],
+            [("Chapter 4 Title", "entry", 1), ("Chapter 4 Content", "text", 6)],
+            [("Chapter 5 Title", "entry", 1), ("Chapter 5 Content", "text", 6)],
+        ]
+        self.current_page = 0
+        self.user_inputs = [{} for _ in self.pages]
+        self.title_label = tk.CTkLabel(self, text="REPORT GENERATOR", font=("Arial", 24, "bold"))
+        self.title_label.pack(pady=30)
+        self.input_frame = tk.CTkFrame(self)
+        self.input_frame.pack(pady=40)
+        self.entries = []
+        self.button_frame = tk.CTkFrame(self)
+        self.button_frame.pack(side="bottom", fill="x", pady=30, padx=20)
+        self.prev_button = tk.CTkButton(self.button_frame, text="← Previous", command=self.go_previous)
+        self.prev_button.pack(side="left")
+        self.next_button = tk.CTkButton(self.button_frame, text="Next →", command=self.go_next)
+        self.next_button.pack(side="right")
+        self.load_page()
+    def load_page(self):
+        for widget in self.input_frame.winfo_children():
+            widget.destroy()
+        self.entries.clear()
+        current_fields = self.pages[self.current_page]
+        saved_data = self.user_inputs[self.current_page]
+        for label_text, input_type, height in current_fields:
+            label_key = label_text.replace(" ", "")
+            label = tk.CTkLabel(self.input_frame, text=label_text + ":", font=("Arial", 16))
+            label.pack(pady=(10, 2))
+            fg_color = "#2A2D2E"
+            if input_type == "entry":
+                widget = tk.CTkEntry(self.input_frame, width=450, fg_color=fg_color)
+                widget.pack(pady=(0, 10))
+                if label_key in saved_data:
+                    widget.insert(0, saved_data[label_key])
+            elif input_type == "text":
+                border = tk.CTkFrame(self.input_frame, fg_color="#565b5e", corner_radius=6)
+                border.pack(pady=(0, 10), padx=4)
+                widget = tk.CTkTextbox(border, width=440, height=height * 30, wrap="word", fg_color=fg_color)
+                widget.pack(padx=1.5, pady=1.5)
+                if label_key in saved_data:
+                    widget.insert("1.0", saved_data[label_key])
+            self.entries.append((label_key, widget, input_type))
+        self.prev_button.configure(state="normal" if self.current_page > 0 else "disabled")
+        self.next_button.configure(text="Done" if self.current_page == len(self.pages) - 1 else "Next →")
+    def save_current_inputs(self):
+        page_data = {}
+        for label, widget, typ in self.entries:
+            if typ == "entry":
+                page_data[label] = widget.get()
+            elif typ == "text":
+                page_data[label] = widget.get("1.0", tk.END).strip()
+        self.user_inputs[self.current_page] = page_data
+    def go_previous(self):
+        self.save_current_inputs()
+        if self.current_page > 0:
+            self.current_page -= 1
+            self.load_page()
+    def go_next(self):
+        self.save_current_inputs()
+        docgen.replace_bookmarks(self.user_inputs[self.current_page])
+        if self.current_page < len(self.pages) - 1:
+            self.current_page += 1
+            self.load_page()
+        else:
+            docgen.save_document()
+app = App()
+app.mainloop()
+
+```

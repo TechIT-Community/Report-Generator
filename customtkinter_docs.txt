@@ -1,0 +1,4402 @@
+
+
+===== https://customtkinter.tomschimansky.com/ =====
+
+CustomTkinter
+
+A modern and customizable python UI-library based on Tkinter
+
+CustomTkinter is a python desktop UI-library based on Tkinter, which provides modern looking and fully customizable widgets. With CustomTkinter you'll get a consistent look across all desktop platforms (Windows, macOS, Linux).
+
+Simple
+
+Object Oriented
+
+
+```
+
+import customtkinterdef button_callback():    print("button clicked")app = customtkinter.CTk()app.geometry("400x150")button = customtkinter.CTkButton(app, text="my button", command=button_callback)button.pack(padx=20, pady=20)app.mainloop()
+
+```
+
+
+```
+
+import customtkinterclass App(customtkinter.CTk):    def __init__(self):        super().__init__()        self.geometry("400x150")        self.button = customtkinter.CTkButton(self, text="my button", command=self.button_callbck)        self.button.pack(padx=20, pady=20)    def button_callbck(self):        print("button clicked")app = App()app.mainloop()
+
+```
+
+With just a few lines of code, you already get a fully working program:
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/documentation/ =====
+
+Documentation Introduction
+
+Color and Themes
+
+Appearance Mode
+
+Scaling
+
+Packaging
+
+CTk Widgets
+
+CTk Windows
+
+CTk Utility Classes
+
+Documentation Introduction
+
+Documentation Introduction
+
+This is the official CustomTkinter documentation, where you can find detailed information on all available widgets and some more information on how the themes and the appearance mode works.
+
+Feel free to ask questions in the Github Discussion tab when something is unclear, if you need help with a project or if you want to show off your project made with CustomTkinter.
+
+If you found a bug, please report it in the Github Issues tab and provide the complete error message and a minimal example code that reproduces the error.
+
+If you have ideas on improvements or requests for new widgets, you can also report these in the Github Issues tab, but please inform yourself about previous requests to prevent duplicates.
+
+Installation â
+
+
+```
+
+pip install customtkinter
+
+```
+
+Upgrade â
+
+
+```
+
+pip install customtkinter --upgrade
+
+```
+
+Installation
+
+Upgrade
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/tutorial/ =====
+
+Tutorial Introduction
+
+Beginner
+
+Advanced
+
+Tutorial Introduction
+
+Tutorial Introduction
+
+This is the official CustomTkinter tutorial section, where you can find some beginner and advanced tutorials highlighting the main features of the library. This tutorial section does not aim to provide a complete overview of the library, but more tutorials will be added in the future.
+
+Beginner Tutorials
+
+Get familiar with the grid geometry system, create frames and scrollable frames, create reusable components based on frames.
+
+Advanced Tutorials
+
+Create new reusable components based on a frame like a spinbox.
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/showcase/ =====
+
+Project Showcases
+
+Project Showcases
+
+Project Showcases
+
+These are some personal favorite projects using CustomTkinter I found on Github or elsewhere. If you want your project to be featured, create a Discussion entry in the 'Showcase' category, I will read all of these posts and occasionally add new projects. If you don't want your project to be featured here write me at contact@customtkinter.tomschimansky.com .
+
+CTk Theme Builder
+
+CTk Theme Builder, a comprehensive and easy solution, for creating CustomTkinter themes.
+
+FluidFrames.RIFE
+
+FluidFrames.RIFE is a Windows app powered by RIFE-HDv3 AI to fluidify videos and to create slowmotion videos.
+
+Buildfy
+
+An easy and fast way to create a Python GUI ð | This software allows you to create complex UI faster than everâ¡
+
+Audiotext
+
+A desktop application that transcribes audio from files, microphone input or YouTube videos with the option to translate the content and create subtitles.
+
+yami
+
+An open-source music player with simple UI
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/privacy-policy =====
+
+Privacy Policy
+
+The privacy policy for the CustomTkinter website.
+
+Information Collection â
+
+This website does not collect any information from the user besides server log data and the use of EthicalAds mentioned later. We process your data for the following purposes:
+
+To operate and maintain the website
+
+To operate and maintain the website
+
+To monitor website performance, prevent fraud, and detect errors
+
+To monitor website performance, prevent fraud, and detect errors
+
+To display advertisements
+
+To display advertisements
+
+We process this data on the basis of our legitimate interest.
+
+EthicalAds â
+
+This website uses EthicalAds to show ads targeted based on the content of the website and the users country or state. EthicalAds does not place any cookies, but may collect log data information like the users IP address. For more information please refer to EthicalAds .
+
+Log Data â
+
+Whenever you visit our Service, your browser sends information called Log Data that gets collected. This Log Data may include information such as your computer's IP address, browser version, pages of our Service that you visit, the time and date of your visit, the time spent on those pages, and other statistics. This information is used to evaluate the performance of the website.
+
+Cookies â
+
+This website does not use cookies.
+
+Affiliate Disclosure â
+
+This website contains a DigitalOcean referral link to get a benefit from DigitalOcean if someone signes up to DigitalOcean using my link and spends a certain amount.
+
+Links To Other Websitesâ â
+
+This website may contain links to other third party websites. If you click on a third party link, you will be directed to that third party's site. I have no control over and assume no responsibility for the content, privacy policies or practices of any third party sites or services.
+
+Children's Privacy â
+
+This website does not address anyone under the age of 13. We do not knowingly collect personal identifiable information from children under 13.
+
+International Data Transfers â
+
+If your data is transferred outside the European Economic Area (EEA), we ensure appropriate safeguards are in place as required by law.
+
+Changes To The Privacy Policyâ â
+
+If the privacy policy of this website will be changed, these changes will appear on this page.
+
+This policy was last updated on July 14, 2025.
+
+Contact â
+
+If you have any questions about this Privacy Policy, you can contact me by email at contact@customtkinter.tomschimansky.com .
+
+Information Collection
+
+EthicalAds
+
+Log Data
+
+Cookies
+
+Affiliate Disclosure
+
+Links To Other Websitesâ
+
+Children's Privacy
+
+International Data Transfers
+
+Changes To The Privacy Policyâ
+
+Contact
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/impressum =====
+
+Impressum â
+
+Angaben gemÃ¤Ã Â§ 5 TMG (Telemediengesetz):
+
+Tom Schimansky ConollystraÃe 3 80809 Munich Germany contact@customtkinter.tomschimansky.com
+
+Verantwortlich fÃ¼r den Inhalt nach Â§ 55 Abs. 2 RStV:
+
+Tom Schimansky ConollystraÃe 3 80809 Munich
+
+Impressum
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/tutorial/beginner =====
+
+Tutorial Introduction
+
+Beginner 1. Grid System 2. Using Frames 3. Scrollable frames
+
+1. Grid System
+
+2. Using Frames
+
+3. Scrollable frames
+
+Advanced
+
+Beginner
+
+Beginner
+
+Beginner tutorials for CustomTkinter on the grid system, how to use frames, and more.
+
+ðï¸ 1. Grid System
+
+Get familiar with the basics of CustomTkinter by creating a window and placing a few widgets with the grid geometry manager.
+
+ðï¸ 2. Using Frames
+
+Create multiple frames with checkboxes and radiobuttons, which can be dynamically configured.
+
+ðï¸ 3. Scrollable frames
+
+Learn how to use scrollable frames in CustomTkinter
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/tutorial/grid-system =====
+
+Tutorial Introduction
+
+Beginner 1. Grid System 2. Using Frames 3. Scrollable frames
+
+1. Grid System
+
+2. Using Frames
+
+3. Scrollable frames
+
+Advanced
+
+Beginner
+
+1. Grid System
+
+1. Grid System
+
+Basic App â
+
+First of all, make sure you got the latest version of CustomTkinter installed. Then you can test your installation with the most basic program, which only creates a window:
+
+
+```
+
+import customtkinterapp = customtkinter.CTk()app.mainloop()
+
+```
+
+If this is working, you can start setting properties of the window like title and geometry , and start adding a button to the window.
+The first parameter to any widget is always the master parameter, which is app in this case. It can also be given with a keyword argument ( master=app ).
+
+
+```
+
+import customtkinterdef button_callback():    print("button pressed")app = customtkinter.CTk()app.title("my app")app.geometry("400x150")button = customtkinter.CTkButton(app, text="my button", command=button_callback)button.grid(row=0, column=0, padx=20, pady=20)app.mainloop()
+
+```
+
+Grid geometry manager â
+
+In this example the grid geometry manager is used to set the position and padding of the widget. It is highly recommended to always use the grid geometry manager instead of place and pack , because it is very easy to create responsive and extendable user interfaces.
+
+The grid splits a window or frame into columns and rows, which collapse when they are empty, but adapt to the size of the widgets placed inside them. If you want to center the button in the last example, you would have to give the first column a weight other than zero, so that it does not collapse to the size of the button anymore (use grid_rowconfigure() for rows):
+
+
+```
+
+app.grid_columnconfigure(0, weight=1)
+
+```
+
+Now column 0 spans the whole window because it has a weight of 1 and therefore expands. You can also configure the button to expand with it's grid cell if you add a sticky argument to the grid call like this:
+
+
+```
+
+button.grid(row=0, column=0, padx=20, pady=20, sticky="ew")
+
+```
+
+Now the button sticks to the grid cell on the east and west side. You can notice that grid cell and therefore the button size adapts if you resize the window.
+
+Add checkboxes â
+
+To get make the layout a bit more complex, we add two checkboxes in the second row.
+
+
+```
+
+checkbox_1 = customtkinter.CTkCheckBox(app, text="checkbox 1")checkbox_1.grid(row=1, column=0, padx=20, pady=(0, 20), sticky="w")checkbox_2 = customtkinter.CTkCheckBox(app, text="checkbox 2")checkbox_2.grid(row=1, column=1, padx=20, pady=(0, 20), sticky="w")
+
+```
+
+Note that the pady argument gets a tuple, which means 0 padding on the top and 20 padding on the bottom. Also note that the checkboxes are only sticky to the west side of their grid cell.
+To let the button span the whole window again, we need to set a columnspan of 2 for it (use rowspan for rows).
+
+
+```
+
+button.grid(row=0, column=0, padx=20, pady=20, sticky="ew", columnspan=2)
+
+```
+
+And to equally space the checkboxes we also need to give both columns an equal weight.
+
+
+```
+
+app.grid_columnconfigure((0, 1), weight=1)
+
+```
+
+The the complete program looks like this now:
+
+
+```
+
+def button_callback():    print("button pressed")app = customtkinter.CTk()app.title("my app")app.geometry("400x150")app.grid_columnconfigure((0), weight=1)button = customtkinter.CTkButton(app, text="my button", command=button_callback)button.grid(row=0, column=0, padx=20, pady=20, sticky="ew", columnspan=2)checkbox_1 = customtkinter.CTkCheckBox(app, text="checkbox 1")checkbox_1.grid(row=1, column=0, padx=20, pady=(0, 20), sticky="w")checkbox_2 = customtkinter.CTkCheckBox(app, text="checkbox 2")checkbox_2.grid(row=1, column=1, padx=20, pady=(0, 20), sticky="w")app.mainloop()
+
+```
+
+Using classes â
+
+To complete this introduction, we want to structure this program into a class. It is highly recommended to use classes which inherit from CTk for the main window or CTkFrame for a frame, because it highly increases the readability of the code and the code becomes easily extendable, because classes can be easily distributed to multiple files.
+
+Except for small programs or tests, always create separate classes for CTk , CTkToplevel or CTkFrame . Writing a lot of UI code in a single file without using classes is a pain to read and very bad coding style.
+
+
+```
+
+class App(customtkinter.CTk):    def __init__(self):        super().__init__()        self.title("my app")        self.geometry("400x150")        self.grid_columnconfigure((0, 1), weight=1)        self.button = customtkinter.CTkButton(self, text="my button", command=self.button_callback)        self.button.grid(row=0, column=0, padx=20, pady=20, sticky="ew", columnspan=2)        self.checkbox_1 = customtkinter.CTkCheckBox(self, text="checkbox 1")        self.checkbox_1.grid(row=1, column=0, padx=20, pady=(0, 20), sticky="w")        self.checkbox_2 = customtkinter.CTkCheckBox(self, text="checkbox 2")        self.checkbox_2.grid(row=1, column=1, padx=20, pady=(0, 20), sticky="w")            def button_callback(self):        print("button pressed")app = App()app.mainloop()
+
+```
+
+Basic App
+
+Grid geometry manager
+
+Add checkboxes
+
+Using classes
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/tutorial/frames =====
+
+Tutorial Introduction
+
+Beginner 1. Grid System 2. Using Frames 3. Scrollable frames
+
+1. Grid System
+
+2. Using Frames
+
+3. Scrollable frames
+
+Advanced
+
+Beginner
+
+2. Using Frames
+
+2. Using Frames
+
+Creating a frame â
+
+We start with a similar example than in the intro, a window with a button and some checkboxes:
+
+
+```
+
+class App(customtkinter.CTk):    def __init__(self):        super().__init__()        self.title("my app")        self.geometry("400x180")        self.grid_columnconfigure(0, weight=1)        self.grid_rowconfigure((0, 1), weight=1)        self.checkbox_1 = customtkinter.CTkCheckBox(self, text="checkbox 1")        self.checkbox_1.grid(row=0, column=0, padx=10, pady=(10, 0), sticky="w")        self.checkbox_2 = customtkinter.CTkCheckBox(self, text="checkbox 2")        self.checkbox_2.grid(row=1, column=0, padx=10, pady=(10, 0), sticky="w")        self.button = customtkinter.CTkButton(self, text="my button", command=self.button_callback)        self.button.grid(row=3, column=0, padx=10, pady=10, sticky="ew")    def button_callback(self):        print("button pressed")app = App()app.mainloop()
+
+```
+
+If we now want to add another checkbox in row 2, we would also have to change the row number of the button. So a change like this requires changes on the layout below the checkbox. To prevent such side effects, keep changes contained and structure the layout visually, we are using frames.
+
+We place the frame in to row 0, the button in row 1, and configure row 0 and column 0 to expand. The frame gets a sticky parameter of 'nsw' so it expands with its cell to the north, south and west. The checkboxes now get the frame as the master argument instead of self .
+
+
+```
+
+class App(customtkinter.CTk):    def __init__(self):        super().__init__()        self.title("my app")        self.geometry("400x180")        self.grid_columnconfigure(0, weight=1)        self.grid_rowconfigure(0, weight=1)        self.checkbox_frame = customtkinter.CTkFrame(self)        self.checkbox_frame.grid(row=0, column=0, padx=10, pady=(10, 0), sticky="nsw")        self.checkbox_1 = customtkinter.CTkCheckBox(self.checkbox_frame, text="checkbox 1")        self.checkbox_1.grid(row=0, column=0, padx=10, pady=(10, 0), sticky="w")        self.checkbox_2 = customtkinter.CTkCheckBox(self.checkbox_frame, text="checkbox 2")        self.checkbox_2.grid(row=1, column=0, padx=10, pady=(10, 0), sticky="w")        self.button = customtkinter.CTkButton(self, text="my button", command=self.button_callback)        self.button.grid(row=3, column=0, padx=10, pady=10, sticky="ew")    def button_callback(self):        print("button pressed")
+
+```
+
+Using classes â
+
+And to reflect the layout in the code and follow the priniciple of always using classes from the intro, we will move the frame and checkbox code into a separate class. This class inherits from CTkFrame and an instance of this class gets created in the main App class.
+Only the master argument needs to get passed into the __init__ method of the new MyCheckboxFrame and so that it can then get passed to the __init__ of the super class which is the CTkFrame .
+
+
+```
+
+class MyCheckboxFrame(customtkinter.CTkFrame):    def __init__(self, master):        super().__init__(master)        self.checkbox_1 = customtkinter.CTkCheckBox(self, text="checkbox 1")        self.checkbox_1.grid(row=0, column=0, padx=10, pady=(10, 0), sticky="w")        self.checkbox_2 = customtkinter.CTkCheckBox(self, text="checkbox 2")        self.checkbox_2.grid(row=1, column=0, padx=10, pady=(10, 0), sticky="w")class App(customtkinter.CTk):    def __init__(self):        super().__init__()        self.title("my app")        self.geometry("400x180")        self.grid_columnconfigure(0, weight=1)        self.grid_rowconfigure(0, weight=1)        self.checkbox_frame = MyCheckboxFrame(self)        self.checkbox_frame.grid(row=0, column=0, padx=10, pady=(10, 0), sticky="nsw")        self.button = customtkinter.CTkButton(self, text="my button", command=self.button_callback)        self.button.grid(row=3, column=0, padx=10, pady=10, sticky="ew")    def button_callback(self):        print("button pressed")app = App()app.mainloop()
+
+```
+
+Now we can simply add another checkbox in the MyCheckboxFrame class without affecting the layout of the button:
+
+
+```
+
+class MyCheckboxFrame(customtkinter.CTkFrame):    def __init__(self, master):        super().__init__(master)        self.checkbox_1 = customtkinter.CTkCheckBox(self, text="checkbox 1")        self.checkbox_1.grid(row=0, column=0, padx=10, pady=(10, 0), sticky="w")        self.checkbox_2 = customtkinter.CTkCheckBox(self, text="checkbox 2")        self.checkbox_2.grid(row=1, column=0, padx=10, pady=(10, 0), sticky="w")        self.checkbox_3 = customtkinter.CTkCheckBox(self, text="checkbox 3")        self.checkbox_3.grid(row=2, column=0, padx=10, pady=(10, 0), sticky="w")
+
+```
+
+Extend frame class â
+
+Of course we need a way to read the values of the checkboxes from the main App class. Therefore we will implement a get method for the MyCheckboxFrame class, which will return a list of strings with the text attributes of the checked checkboxes:
+
+
+```
+
+class MyCheckboxFrame(customtkinter.CTkFrame):    def __init__(self, master):        super().__init__(master)        self.checkbox_1 = customtkinter.CTkCheckBox(self, text="checkbox 1")        self.checkbox_1.grid(row=0, column=0, padx=10, pady=(10, 0), sticky="w")        self.checkbox_2 = customtkinter.CTkCheckBox(self, text="checkbox 2")        self.checkbox_2.grid(row=1, column=0, padx=10, pady=(10, 0), sticky="w")        self.checkbox_3 = customtkinter.CTkCheckBox(self, text="checkbox 3")        self.checkbox_3.grid(row=2, column=0, padx=10, pady=(10, 0), sticky="w")            def get(self):        checked_checkboxes = []        if self.checkbox_1.get() == 1:            checked_checkboxes.append(self.checkbox_1.cget("text"))        if self.checkbox_2.get() == 1:            checked_checkboxes.append(self.checkbox_2.cget("text"))        if self.checkbox_3.get() == 1:            checked_checkboxes.append(self.checkbox_3.cget("text"))        return checked_checkboxes
+
+```
+
+We can use this method in the button_callback method of the App class:
+
+
+```
+
+    def button_callback(self):        print("checked checkboxes:", self.checkbox_frame.get())
+
+```
+
+Now if you press the button, the currently checked checkboxes will be printed:
+
+
+```
+
+checked checkboxes: ['checkbox 1', 'checkbox 3']
+
+```
+
+Dynamic frame class â
+
+But the values of the checkboxes in the MyCheckboxFrame are hardcoded in the code right now. To make the MyCheckboxFrame class more dynamically usable, we pass a list of string values to the MyCheckboxFrame , which will be the text values of the checkboxes in the frame. Now the number of checkboxes is also arbitrary.
+
+
+```
+
+class MyCheckboxFrame(customtkinter.CTkFrame):    def __init__(self, master, values):        super().__init__(master)        self.values = values        self.checkboxes = []        for i, value in enumerate(self.values):            checkbox = customtkinter.CTkCheckBox(self, text=value)            checkbox.grid(row=i, column=0, padx=10, pady=(10, 0), sticky="w")            self.checkboxes.append(checkbox)    def get(self):        checked_checkboxes = []        for checkbox in self.checkboxes:            if checkbox.get() == 1:                checked_checkboxes.append(checkbox.cget("text"))        return checked_checkboxes
+
+```
+
+The checkboxes get created in a for loop and saved in a list called checkboxes . In the get method we can loop through this list to check which checkbox is checked and return the appropriate text values. In the App class, where we create an instance of the MyCheckboxFrame , we need to pass a list of values now:
+
+
+```
+
+self.checkbox_frame = MyCheckboxFrame(self, values=["value 1", "value 2", "value 3"])self.checkbox_frame.grid(row=0, column=0, padx=10, pady=(10, 0), sticky="nsw")
+
+```
+
+Multiple instances â
+
+But now that we can dynamically control the values of checkboxes, we can very easily create two or more instances of the MyCheckboxFrame class. We have to give the button a columnspan of 2 and add a weight of 1 to column 1.
+
+
+```
+
+class App(customtkinter.CTk):    def __init__(self):        super().__init__()        self.title("my app")        self.geometry("400x180")        self.grid_columnconfigure((0, 1), weight=1)        self.grid_rowconfigure(0, weight=1)        self.checkbox_frame_1 = MyCheckboxFrame(self, values=["value 1", "value 2", "value 3"])        self.checkbox_frame_1.grid(row=0, column=0, padx=10, pady=(10, 0), sticky="nsew")        self.checkbox_frame_2 = MyCheckboxFrame(self, values=["option 1", "option 2"])        self.checkbox_frame_2.grid(row=0, column=1, padx=(0, 10), pady=(10, 0), sticky="nsew")        self.button = customtkinter.CTkButton(self, text="my button", command=self.button_callback)        self.button.grid(row=3, column=0, padx=10, pady=10, sticky="ew", columnspan=2)    def button_callback(self):        print("checkbox_frame_1:", self.checkbox_frame_1.get())        print("checkbox_frame_2:", self.checkbox_frame_2.get())
+
+```
+
+Output when the button gets pressed:
+
+
+```
+
+checkbox_frame_1: ['value 1', 'value 3']checkbox_frame_2: ['option 2']
+
+```
+
+Add title to frame â
+
+We can further enhance the MyCheckboxFrame class by adding label, which acts as a title for the frame.
+
+
+```
+
+class MyCheckboxFrame(customtkinter.CTkFrame):    def __init__(self, master, title, values):        super().__init__(master)        self.grid_columnconfigure(0, weight=1)        self.values = values        self.title = title        self.checkboxes = []        self.title = customtkinter.CTkLabel(self, text=self.title, fg_color="gray30", corner_radius=6)        self.title.grid(row=0, column=0, padx=10, pady=(10, 0), sticky="ew")        for i, value in enumerate(self.values):            checkbox = customtkinter.CTkCheckBox(self, text=value)            checkbox.grid(row=i+1, column=0, padx=10, pady=(10, 0), sticky="w")            self.checkboxes.append(checkbox)    def get(self):        checked_checkboxes = []        for checkbox in self.checkboxes:            if checkbox.get() == 1:                checked_checkboxes.append(checkbox.cget("text"))        return checked_checkboxes
+
+```
+
+Note that column 0 inside of the frame is now configure to have a weight of 1, so that the label spans the whole frame with its sticky value of 'ew'. For the CTkLabel we passed an fg_color and corner_radius argument because the label is 'transparent' by default and has a corner_radius of 0. ALso note that the grid row position is now i+1 because of the title label in the first row.
+
+Now we need to pass values for the title parameter of the MyCheckboxFrame when we create instances of it in the App class:
+
+
+```
+
+self.checkbox_frame_1 = MyCheckboxFrame(self, "Values", values=["value 1", "value 2", "value 3"])
+
+```
+
+
+```
+
+self.checkbox_frame_2 = MyCheckboxFrame(self, "Options", values=["option 1", "option 2"])
+
+```
+
+If we also increase the height of the window to 220px we get:
+
+Now we have titles for the checkbox frames. And because MyCheckboxFrame inherits from CTkFrame , it can be configured like a CTkFrame , for example with a transparent fg_color :
+
+
+```
+
+self.checkbox_frame_2.configure(fg_color="transparent")
+
+```
+
+Radiobutton frame â
+
+Similar to the MyCheckboxFrame we can create a MyRadiobuttonFrame which consists of radiobuttons instead of checkboxes.
+
+
+```
+
+class MyRadiobuttonFrame(customtkinter.CTkFrame):    def __init__(self, master, title, values):        super().__init__(master)        self.grid_columnconfigure(0, weight=1)        self.values = values        self.title = title        self.radiobuttons = []        self.variable = customtkinter.StringVar(value="")        self.title = customtkinter.CTkLabel(self, text=self.title, fg_color="gray30", corner_radius=6)        self.title.grid(row=0, column=0, padx=10, pady=(10, 0), sticky="ew")        for i, value in enumerate(self.values):            radiobutton = customtkinter.CTkRadioButton(self, text=value, value=value, variable=self.variable)            radiobutton.grid(row=i + 1, column=0, padx=10, pady=(10, 0), sticky="w")            self.radiobuttons.append(radiobutton)    def get(self):        return self.variable.get()    def set(self, value):        self.variable.set(value)
+
+```
+
+And in the App we create an instance of MyRadiobuttonFrame similar to MyCheckboxFrame :
+
+
+```
+
+class App(customtkinter.CTk):    def __init__(self):        super().__init__()        self.title("my app")        self.geometry("400x220")        self.grid_columnconfigure((0, 1), weight=1)        self.grid_rowconfigure(0, weight=1)        self.checkbox_frame = MyCheckboxFrame(self, "Values", values=["value 1", "value 2", "value 3"])        self.checkbox_frame.grid(row=0, column=0, padx=10, pady=(10, 0), sticky="nsew")        self.radiobutton_frame = MyRadiobuttonFrame(self, "Options", values=["option 1", "option 2"])        self.radiobutton_frame.grid(row=0, column=1, padx=(0, 10), pady=(10, 0), sticky="nsew")        self.button = customtkinter.CTkButton(self, text="my button", command=self.button_callback)        self.button.grid(row=3, column=0, padx=10, pady=10, sticky="ew", columnspan=2)    def button_callback(self):        print("checkbox_frame:", self.checkbox_frame.get())        print("radiobutton_frame:", self.radiobutton_frame.get())
+
+```
+
+Now we have two different dynamically created frames, that can be used to get input from the user.
+
+Creating a frame
+
+Using classes
+
+Extend frame class
+
+Dynamic frame class
+
+Multiple instances
+
+Add title to frame
+
+Radiobutton frame
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/tutorial/scrollable-frames =====
+
+Tutorial Introduction
+
+Beginner 1. Grid System 2. Using Frames 3. Scrollable frames
+
+1. Grid System
+
+2. Using Frames
+
+3. Scrollable frames
+
+Advanced
+
+Beginner
+
+3. Scrollable frames
+
+3. Scrollable frames
+
+Checkboxes on frame â
+
+In the chapter before we created the following frame, which creates checkboxes for a given list of values:
+
+
+```
+
+class MyCheckboxFrame(customtkinter.CTkFrame):    def __init__(self, master, values):        super().__init__(master)        self.values = values        self.checkboxes = []        for i, value in enumerate(self.values):            checkbox = customtkinter.CTkCheckBox(self, text=value)            checkbox.grid(row=i, column=0, padx=10, pady=(10, 0), sticky="w")            self.checkboxes.append(checkbox)    def get(self):        checked_checkboxes = []        for checkbox in self.checkboxes:            if checkbox.get() == 1:                checked_checkboxes.append(checkbox.cget("text"))        return checked_checkboxes
+
+```
+
+Scrollable frame â
+
+If you want to display more checkboxes than there is space in the layout or on the screen, then you can use a scrollable frame. The CTkScrollableFrame automatically add's a scrollbar so you can add more widgets than actually fit inside the frame. The frame will not expand with the widgets in it. The CTkScrollableFrame also comes with an option for a title, with the label_text argument you can pass text for a title label like we created manually in the above example.
+
+
+```
+
+class MyScrollableCheckboxFrame(customtkinter.CTkScrollableFrame):    def __init__(self, master, title, values):        super().__init__(master, label_text=title)        self.grid_columnconfigure(0, weight=1)        self.values = values        self.checkboxes = []        for i, value in enumerate(self.values):            checkbox = customtkinter.CTkCheckBox(self, text=value)            checkbox.grid(row=i, column=0, padx=10, pady=(10, 0), sticky="w")            self.checkboxes.append(checkbox)    def get(self):        checked_checkboxes = []        for checkbox in self.checkboxes:            if checkbox.get() == 1:                checked_checkboxes.append(checkbox.cget("text"))        return checked_checkboxes
+
+```
+
+Now we can create an instance of MyScrollableCheckboxFrame in the App class and add more values to test the scrollbar functionality:
+
+
+```
+
+class App(customtkinter.CTk):    def __init__(self):        super().__init__()        self.title("my app")        self.geometry("400x220")        self.grid_columnconfigure(0, weight=1)        self.grid_rowconfigure(0, weight=1)        values = ["value 1", "value 2", "value 3", "value 4", "value 5", "value 6"]        self.scrollable_checkbox_frame = MyScrollableCheckboxFrame(self, title="Values", values=values)        self.scrollable_checkbox_frame.grid(row=0, column=0, padx=10, pady=(10, 0), sticky="nsew")        self.button = customtkinter.CTkButton(self, text="my button", command=self.button_callback)        self.button.grid(row=3, column=0, padx=10, pady=10, sticky="ew", columnspan=2)    def button_callback(self):        print("checkbox_frame:", self.checkbox_frame.get())        print("radiobutton_frame:", self.radiobutton_frame.get())app = App()app.mainloop()
+
+```
+
+More examples for scrollable frames can be found in this example program on Github: https://github.com/TomSchimansky/CustomTkinter/blob/master/examples/scrollable_frame_example.py
+
+Checkboxes on frame
+
+Scrollable frame
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/tutorial/advanced =====
+
+Tutorial Introduction
+
+Beginner
+
+Advanced 1. Create Spinbox
+
+1. Create Spinbox
+
+Advanced
+
+Advanced
+
+Advanced tutorials for CustomTkinter on how to create new widgets and more.
+
+ðï¸ 1. Create Spinbox
+
+Create new widgets like a spinbox.
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/tutorial/spinbox =====
+
+Tutorial Introduction
+
+Beginner
+
+Advanced 1. Create Spinbox
+
+1. Create Spinbox
+
+Advanced
+
+1. Create Spinbox
+
+1. Create Spinbox
+
+Create widgets from frame â
+
+If you want to create new widgets by yourself, because you need something that's not implemented with Customtkinter, you can easily do this. In the following I created a Spinbox based on float values.
+
+First you create a new class, that inherits from customtkinter.CTkFrame :
+
+
+```
+
+import customtkinterclass WidgetName(customtkinter.CTkFrame):    def __init__(self, *args,                 width: int = 100,                 height: int = 32,                 **kwargs):        super().__init__(*args, width=width, height=height, **kwargs)
+
+```
+
+By doing this, you already have a widget that has a default size given by the default values of the attributes width and height. And it also supports all attributes of a CTkFrame like fg_color and corner_radius.
+
+Create spinbox from frame â
+
+A simple implementation af a float based Spinbox could look like the following:
+
+
+```
+
+class FloatSpinbox(customtkinter.CTkFrame):    def __init__(self, *args,                 width: int = 100,                 height: int = 32,                 step_size: Union[int, float] = 1,                 command: Callable = None,                 **kwargs):        super().__init__(*args, width=width, height=height, **kwargs)        self.step_size = step_size        self.command = command        self.configure(fg_color=("gray78", "gray28"))  # set frame color        self.grid_columnconfigure((0, 2), weight=0)  # buttons don't expand        self.grid_columnconfigure(1, weight=1)  # entry expands        self.subtract_button = customtkinter.CTkButton(self, text="-", width=height-6, height=height-6,                                                       command=self.subtract_button_callback)        self.subtract_button.grid(row=0, column=0, padx=(3, 0), pady=3)        self.entry = customtkinter.CTkEntry(self, width=width-(2*height), height=height-6, border_width=0)        self.entry.grid(row=0, column=1, columnspan=1, padx=3, pady=3, sticky="ew")        self.add_button = customtkinter.CTkButton(self, text="+", width=height-6, height=height-6,                                                  command=self.add_button_callback)        self.add_button.grid(row=0, column=2, padx=(0, 3), pady=3)        # default value        self.entry.insert(0, "0.0")    def add_button_callback(self):        if self.command is not None:            self.command()        try:            value = float(self.entry.get()) + self.step_size            self.entry.delete(0, "end")            self.entry.insert(0, value)        except ValueError:            return    def subtract_button_callback(self):        if self.command is not None:            self.command()        try:            value = float(self.entry.get()) - self.step_size            self.entry.delete(0, "end")            self.entry.insert(0, value)        except ValueError:            return    def get(self) -> Union[float, None]:        try:            return float(self.entry.get())        except ValueError:            return None    def set(self, value: float):        self.entry.delete(0, "end")        self.entry.insert(0, str(float(value)))
+
+```
+
+Of course you could add a configure method or more attributes to configure the colors in the init method.
+
+But with the above implementation you can use the spin box like the following:
+
+
+```
+
+app = customtkinter.CTk()spinbox_1 = FloatSpinbox(app, width=150, step_size=3)spinbox_1.pack(padx=20, pady=20)spinbox_1.set(35)print(spinbox_1.get())app.mainloop()
+
+```
+
+Create widgets from frame
+
+Create spinbox from frame
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/tutorial/beginner/ =====
+
+Tutorial Introduction
+
+Beginner 1. Grid System 2. Using Frames 3. Scrollable frames
+
+1. Grid System
+
+2. Using Frames
+
+3. Scrollable frames
+
+Advanced
+
+Beginner
+
+Beginner
+
+Beginner tutorials for CustomTkinter on the grid system, how to use frames, and more.
+
+ðï¸ 1. Grid System
+
+Get familiar with the basics of CustomTkinter by creating a window and placing a few widgets with the grid geometry manager.
+
+ðï¸ 2. Using Frames
+
+Create multiple frames with checkboxes and radiobuttons, which can be dynamically configured.
+
+ðï¸ 3. Scrollable frames
+
+Learn how to use scrollable frames in CustomTkinter
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/tutorial/advanced/ =====
+
+Tutorial Introduction
+
+Beginner
+
+Advanced 1. Create Spinbox
+
+1. Create Spinbox
+
+Advanced
+
+Advanced
+
+Advanced tutorials for CustomTkinter on how to create new widgets and more.
+
+ðï¸ 1. Create Spinbox
+
+Create new widgets like a spinbox.
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/documentation/color =====
+
+Documentation Introduction
+
+Color and Themes
+
+Appearance Mode
+
+Scaling
+
+Packaging
+
+CTk Widgets
+
+CTk Windows
+
+CTk Utility Classes
+
+Color and Themes
+
+Color and Themes
+
+Color â
+
+All colors of the widgets can be customised, the appropriate arguments can be found in the documentation of the specific widgets. Note that bg_color is only the color behind the widget if it has rounded corners. The main color of a widget is called fg_color:
+
+The colors can either be set to a single color name ( "red" ), a single hex color string ( "#FF0000" ) or a tuple color for a light mode color and dark mode color ( ("red", "darkred") ). The current color will then be picked by the widget automatically according to the current appearance mode . So by using the tuple color, the widgets can have different colors in light and dark appearance mode. If you use a single color then this color will be used for both light and dark appearance mode.
+
+Example:
+
+
+```
+
+button = customtkinter.CTkButton(root_tk, fg_color="red")  # single color namebutton = customtkinter.CTkButton(root_tk, fg_color="#FF0000")  # single hex stringbutton = customtkinter.CTkButton(root_tk, fg_color=("#DB3E39", "#821D1A"))  # tuple color
+
+```
+
+Themes â
+
+By default all colours are set by the color theme. Currently there a three themes available: "blue" , "dark-blue" and "green" , where "blue" is the standard theme. All themes provide tuple colors for a light and dark appearance mode .
+
+You can set the theme at the beginning of your programming like the following:
+
+
+```
+
+customtkinter.set_default_color_theme("dark-blue")  # Themes: "blue" (standard), "green", "dark-blue"
+
+```
+
+Custom Themes â
+
+A theme is described by a .json file like this: dark-blue.json .
+You can also create your own theme, so that you don't have to set the styling for every widget manually. Just copy the .json file above and change the values. Then you can load the new theme by passing the path to your .json file to the .set_default_color_theme method:
+
+
+```
+
+customtkinter.set_default_color_theme("path/to/your/custom_theme.json")
+
+```
+
+Color
+
+Themes
+
+Custom Themes
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/documentation/appearancemode =====
+
+Documentation Introduction
+
+Color and Themes
+
+Appearance Mode
+
+Scaling
+
+Packaging
+
+CTk Widgets
+
+CTk Windows
+
+CTk Utility Classes
+
+Appearance Mode
+
+Appearance Mode
+
+The appearance mode decides, which color will be picked from tuple colors, if the color is specified as a tuple color.
+You can set the appearance mode at any time with the following command:
+
+
+```
+
+customtkinter.set_appearance_mode("system")  # defaultcustomtkinter.set_appearance_mode("dark")customtkinter.set_appearance_mode("light")
+
+```
+
+If you set the appearance mode to "system" , the current mode is read from the operating system. It will also adapt if the appearance mode of the operating system changes during the runtime of the program. Note that on Linux it will be always in "light" mode if set to "system" , because the mode can't get read from the operating system at the moment, this will probably be implemented in the future.
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/documentation/scaling =====
+
+Documentation Introduction
+
+Color and Themes
+
+Appearance Mode
+
+Scaling
+
+Packaging
+
+CTk Widgets
+
+CTk Windows
+
+CTk Utility Classes
+
+Scaling
+
+Scaling
+
+HighDPI support â
+
+CustomTkinter supports HighDPI scaling on macOS and Windows by default. On macOS scaling works automatically for Tk windows. On Windows, the app is made DPI aware ( windll.shcore.SetProcessDpiAwareness(2) ) and the current scaling factor of the display is detected. Then every element and the window dimensions are scaled by this factor by CustomTkinter.
+
+You can deactivate this automatic scaling like this:
+
+
+```
+
+customtkinter.deactivate_automatic_dpi_awareness()
+
+```
+
+Then the window will be blurry on Windows with a scaling value of more than 100%.
+
+Custom scaling â
+
+In addition to the automatically detected scaling factor, you can also set your own scaling factors for the application like the following:
+
+
+```
+
+customtkinter.set_widget_scaling(float_value)  # widget dimensions and text sizecustomtkinter.set_window_scaling(float_value)  # window geometry dimensions
+
+```
+
+HighDPI support
+
+Custom scaling
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/documentation/packaging =====
+
+Documentation Introduction
+
+Color and Themes
+
+Appearance Mode
+
+Scaling
+
+Packaging
+
+CTk Widgets
+
+CTk Windows
+
+CTk Utility Classes
+
+Packaging
+
+Packaging
+
+Windows PyInstaller (Auto Py to Exe) â
+
+When you create a .exe on Windows with pyinstaller, there are two things you have to consider.
+Firstly, you cannot use the --onefile option of pyinstaller, because the customtkinter library includes not only .py files, but also data files like .json and .otf. PyInstaller is not able to pack them into a single .exe file, so you have to use the --onedir option.
+
+And secondly, you have to include the customtkinter directory manually with the --add-data option of pyinstaller. Because for some reason, pyinstaller doesn't automatically include datafiles like .json from the library.
+You can find the install location of the customtkinter library with the following command:
+
+
+```
+
+pip show customtkinter
+
+```
+
+A Location will be shown, for example: c:\users\<user_name>\appdata\local\programs\python\python310\lib\site-packages
+
+Then add the library folder like this: --add-data "C:/Users/<user_name>/AppData/Local/Programs/Python/Python310/Lib/site-packages/customtkinter;customtkinter/"
+
+With Auto Py to Exe you would do it like this:
+
+For the full command you get something like this:
+
+
+```
+
+pyinstaller --noconfirm --onedir --windowed --add-data "<CustomTkinter Location>/customtkinter;customtkinter/"  "<Path to Python Script>"
+
+```
+
+Windows PyInstaller (Auto Py to Exe)
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/documentation/widgets =====
+
+Documentation Introduction
+
+Color and Themes
+
+Appearance Mode
+
+Scaling
+
+Packaging
+
+CTk Widgets CTkButton CTkCheckBox CTkComboBox CTkEntry CTkFrame CTkLabel CTkOptionMenu CTkProgressBar CTkRadioButton CTkScrollableFrame CTkScrollbar CTkSegmentedButton CTkSlider CTkSwitch CTkTabview CTkTextbox
+
+CTkButton
+
+CTkCheckBox
+
+CTkComboBox
+
+CTkEntry
+
+CTkFrame
+
+CTkLabel
+
+CTkOptionMenu
+
+CTkProgressBar
+
+CTkRadioButton
+
+CTkScrollableFrame
+
+CTkScrollbar
+
+CTkSegmentedButton
+
+CTkSlider
+
+CTkSwitch
+
+CTkTabview
+
+CTkTextbox
+
+CTk Windows
+
+CTk Utility Classes
+
+CTk Widgets
+
+CTk Widgets
+
+Documentation of arguments and methods of all widgets.
+
+ðï¸ CTkButton
+
+Available since version 0.3.0.
+
+ðï¸ CTkCheckBox
+
+Example Code
+
+ðï¸ CTkComboBox
+
+Example Code
+
+ðï¸ CTkEntry
+
+Example Code
+
+ðï¸ CTkFrame
+
+Example Code
+
+ðï¸ CTkLabel
+
+Example Code
+
+ðï¸ CTkOptionMenu
+
+Example Code
+
+ðï¸ CTkProgressBar
+
+Example Code
+
+ðï¸ CTkRadioButton
+
+Example Code
+
+ðï¸ CTkScrollableFrame
+
+Example Code
+
+ðï¸ CTkScrollbar
+
+Example Code
+
+ðï¸ CTkSegmentedButton
+
+Example Code
+
+ðï¸ CTkSlider
+
+Example Code
+
+ðï¸ CTkSwitch
+
+Example Code
+
+ðï¸ CTkTabview
+
+The CTkTabview creates a tabview, similar to a notebook in tkinter. The tabs, which are created with .add("") are CTkFrames and can be used like CTkFrames. Any widgets can be placed on them.
+
+ðï¸ CTkTextbox
+
+The CTkTextbox class creates a textbox, which is scrollable in vertical and horizontal direction (with wrap='none'). The insert, get
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/documentation/widgets/button =====
+
+Documentation Introduction
+
+Color and Themes
+
+Appearance Mode
+
+Scaling
+
+Packaging
+
+CTk Widgets CTkButton CTkCheckBox CTkComboBox CTkEntry CTkFrame CTkLabel CTkOptionMenu CTkProgressBar CTkRadioButton CTkScrollableFrame CTkScrollbar CTkSegmentedButton CTkSlider CTkSwitch CTkTabview CTkTextbox
+
+CTkButton
+
+CTkCheckBox
+
+CTkComboBox
+
+CTkEntry
+
+CTkFrame
+
+CTkLabel
+
+CTkOptionMenu
+
+CTkProgressBar
+
+CTkRadioButton
+
+CTkScrollableFrame
+
+CTkScrollbar
+
+CTkSegmentedButton
+
+CTkSlider
+
+CTkSwitch
+
+CTkTabview
+
+CTkTextbox
+
+CTk Windows
+
+CTk Utility Classes
+
+CTk Widgets
+
+CTkButton
+
+CTkButton
+
+Available since version 0.3.0.
+
+Example Code â
+
+
+```
+
+def button_event():    print("button pressed")button = customtkinter.CTkButton(app, text="CTkButton", command=button_event)
+
+```
+
+Arguments â
+
+Methods â
+
+.configure(attribute=value, ...) â All attributes can be configured, for example: button . configure ( text = "new text" )
+
+.configure(attribute=value, ...) â
+
+All attributes can be configured, for example:
+
+
+```
+
+button.configure(text="new text")
+
+```
+
+.cget(attribute_name) â Pass attribute name as string and get current value of attribute, for example. text = button . cget ( "text" )
+
+.cget(attribute_name) â
+
+Pass attribute name as string and get current value of attribute, for example.
+
+
+```
+
+text = button.cget("text")
+
+```
+
+.invoke() â Calls command if button state is 'disabled'.
+
+.invoke() â
+
+Calls command if button state is 'disabled'.
+
+Example Code
+
+Arguments
+
+Methods
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/documentation/widgets/checkbox =====
+
+Documentation Introduction
+
+Color and Themes
+
+Appearance Mode
+
+Scaling
+
+Packaging
+
+CTk Widgets CTkButton CTkCheckBox CTkComboBox CTkEntry CTkFrame CTkLabel CTkOptionMenu CTkProgressBar CTkRadioButton CTkScrollableFrame CTkScrollbar CTkSegmentedButton CTkSlider CTkSwitch CTkTabview CTkTextbox
+
+CTkButton
+
+CTkCheckBox
+
+CTkComboBox
+
+CTkEntry
+
+CTkFrame
+
+CTkLabel
+
+CTkOptionMenu
+
+CTkProgressBar
+
+CTkRadioButton
+
+CTkScrollableFrame
+
+CTkScrollbar
+
+CTkSegmentedButton
+
+CTkSlider
+
+CTkSwitch
+
+CTkTabview
+
+CTkTextbox
+
+CTk Windows
+
+CTk Utility Classes
+
+CTk Widgets
+
+CTkCheckBox
+
+CTkCheckBox
+
+Example Code â
+
+
+```
+
+def checkbox_event():    print("checkbox toggled, current value:", check_var.get())check_var = customtkinter.StringVar(value="on")checkbox = customtkinter.CTkCheckBox(app, text="CTkCheckBox", command=checkbox_event,                                     variable=check_var, onvalue="on", offvalue="off")
+
+```
+
+Arguments â
+
+Methods â
+
+.configure(attribute=value, ...) â All attributes can be configured, for example checkbox . configure ( state = "disabled" )
+
+.configure(attribute=value, ...) â
+
+All attributes can be configured, for example
+
+
+```
+
+checkbox.configure(state="disabled")
+
+```
+
+.cget(attribute_name) â Pass attribute name as string and get current value of attribute, for example. text = checkbox . cget ( "text" )
+
+.cget(attribute_name) â
+
+Pass attribute name as string and get current value of attribute, for example.
+
+
+```
+
+text = checkbox.cget("text")
+
+```
+
+.get() â Get current value, 1 or 0 (checked or not checked).
+
+.get() â
+
+Get current value, 1 or 0 (checked or not checked).
+
+.select() â Turn on checkbox (set value to 1), command will not be triggered.
+
+.select() â
+
+Turn on checkbox (set value to 1), command will not be triggered.
+
+.deselect() â Turn off checkbox (set value to 0), command will not be triggered.
+
+.deselect() â
+
+Turn off checkbox (set value to 0), command will not be triggered.
+
+.toggle() â Flip current value, command will be triggered.
+
+.toggle() â
+
+Flip current value, command will be triggered.
+
+Example Code
+
+Arguments
+
+Methods
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/documentation/widgets/combobox =====
+
+Documentation Introduction
+
+Color and Themes
+
+Appearance Mode
+
+Scaling
+
+Packaging
+
+CTk Widgets CTkButton CTkCheckBox CTkComboBox CTkEntry CTkFrame CTkLabel CTkOptionMenu CTkProgressBar CTkRadioButton CTkScrollableFrame CTkScrollbar CTkSegmentedButton CTkSlider CTkSwitch CTkTabview CTkTextbox
+
+CTkButton
+
+CTkCheckBox
+
+CTkComboBox
+
+CTkEntry
+
+CTkFrame
+
+CTkLabel
+
+CTkOptionMenu
+
+CTkProgressBar
+
+CTkRadioButton
+
+CTkScrollableFrame
+
+CTkScrollbar
+
+CTkSegmentedButton
+
+CTkSlider
+
+CTkSwitch
+
+CTkTabview
+
+CTkTextbox
+
+CTk Windows
+
+CTk Utility Classes
+
+CTk Widgets
+
+CTkComboBox
+
+CTkComboBox
+
+Example Code â
+
+Without variable:
+
+
+```
+
+def combobox_callback(choice):    print("combobox dropdown clicked:", choice)combobox = customtkinter.CTkComboBox(app, values=["option 1", "option 2"],                                     command=combobox_callback)combobox.set("option 2")
+
+```
+
+With variable:
+
+
+```
+
+def combobox_callback(choice):    print("combobox dropdown clicked:", choice)combobox_var = customtkinter.StringVar(value="option 2")combobox = customtkinter.CTkComboBox(app, values=["option 1", "option 2"],                                     command=combobox_callback, variable=combobox_var)combobox_var.set("option 2")
+
+```
+
+Arguments â
+
+Methods â
+
+.configure(attribute=value, ...) â All attributes can be configured, for example: combobox . configure ( values = [ "new value 1" , "new value 2" ] )
+
+.configure(attribute=value, ...) â
+
+All attributes can be configured, for example:
+
+
+```
+
+combobox.configure(values=["new value 1", "new value 2"])
+
+```
+
+.cget(attribute_name) â Pass attribute name as string and get current value of attribute, for example. state = combobox . cget ( "state" )
+
+.cget(attribute_name) â
+
+Pass attribute name as string and get current value of attribute, for example.
+
+
+```
+
+state = combobox.cget("state")
+
+```
+
+.set(value) â Set combobox to specific string value. Value don't has to be part of the values list.
+
+.set(value) â
+
+Set combobox to specific string value. Value don't has to be part of the values list.
+
+.get() â Get current string value of combobox entry.
+
+.get() â
+
+Get current string value of combobox entry.
+
+Example Code
+
+Arguments
+
+Methods
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/documentation/widgets/entry =====
+
+Documentation Introduction
+
+Color and Themes
+
+Appearance Mode
+
+Scaling
+
+Packaging
+
+CTk Widgets CTkButton CTkCheckBox CTkComboBox CTkEntry CTkFrame CTkLabel CTkOptionMenu CTkProgressBar CTkRadioButton CTkScrollableFrame CTkScrollbar CTkSegmentedButton CTkSlider CTkSwitch CTkTabview CTkTextbox
+
+CTkButton
+
+CTkCheckBox
+
+CTkComboBox
+
+CTkEntry
+
+CTkFrame
+
+CTkLabel
+
+CTkOptionMenu
+
+CTkProgressBar
+
+CTkRadioButton
+
+CTkScrollableFrame
+
+CTkScrollbar
+
+CTkSegmentedButton
+
+CTkSlider
+
+CTkSwitch
+
+CTkTabview
+
+CTkTextbox
+
+CTk Windows
+
+CTk Utility Classes
+
+CTk Widgets
+
+CTkEntry
+
+CTkEntry
+
+Example Code â
+
+
+```
+
+entry = customtkinter.CTkEntry(app, placeholder_text="CTkEntry")
+
+```
+
+Arguments â
+
+and the following arguments of the tkinter.Entry class:
+
+"exportselection", "insertborderwidth", "insertofftime", "insertontime", "insertwidth", "justify", "selectborderwidth", "show", "takefocus", "validate", "validatecommand", "xscrollcommand"
+
+Methods â
+
+.configure(attribute=value, ...) â All attributes can be configured, for example: entry . configure ( state = "disabled" )
+
+.configure(attribute=value, ...) â
+
+All attributes can be configured, for example:
+
+
+```
+
+entry.configure(state="disabled")
+
+```
+
+.cget(attribute_name) â Pass attribute name as string and get current value of attribute, for example: state = entry . cget ( "state" )
+
+.cget(attribute_name) â
+
+Pass attribute name as string and get current value of attribute, for example:
+
+
+```
+
+state = entry.cget("state")
+
+```
+
+.bind(sequence=None, command=None, add=None) â Bind command function to event specified by sequence.
+
+.bind(sequence=None, command=None, add=None) â
+
+Bind command function to event specified by sequence.
+
+.delete(first_index, last_index=None) â Deletes characters from the widget, starting with the one at index first_index, up to but not including the character at position last_index. If the second argument is omitted, only the single character at position first is deleted.
+
+.delete(first_index, last_index=None) â
+
+Deletes characters from the widget, starting with the one at index first_index, up to but not including the character at position last_index. If the second argument is omitted, only the single character at position first is deleted.
+
+.insert(index, string) â Inserts string before the character at the given index .
+
+.insert(index, string) â
+
+Inserts string before the character at the given index .
+
+.get() â Returns current string in the entry.
+
+.get() â
+
+Returns current string in the entry.
+
+.focus() â
+
+.focus() â
+
+.focus_force() â
+
+.focus_force() â
+
+.index(index) â
+
+.index(index) â
+
+.icursor(index) â
+
+.icursor(index) â
+
+.select_adjust(index) â
+
+.select_adjust(index) â
+
+.select_from(index) â
+
+.select_from(index) â
+
+.select_clear() â
+
+.select_clear() â
+
+.select_present() â
+
+.select_present() â
+
+.select_range(start_index, end_index) â
+
+.select_range(start_index, end_index) â
+
+.select_to(index) â
+
+.select_to(index) â
+
+.xview(index) â
+
+.xview(index) â
+
+.xview_moveto(f) â
+
+.xview_moveto(f) â
+
+.xview_scroll(number, what) â
+
+.xview_scroll(number, what) â
+
+Example Code
+
+Arguments
+
+Methods
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/documentation/widgets/frame =====
+
+Documentation Introduction
+
+Color and Themes
+
+Appearance Mode
+
+Scaling
+
+Packaging
+
+CTk Widgets CTkButton CTkCheckBox CTkComboBox CTkEntry CTkFrame CTkLabel CTkOptionMenu CTkProgressBar CTkRadioButton CTkScrollableFrame CTkScrollbar CTkSegmentedButton CTkSlider CTkSwitch CTkTabview CTkTextbox
+
+CTkButton
+
+CTkCheckBox
+
+CTkComboBox
+
+CTkEntry
+
+CTkFrame
+
+CTkLabel
+
+CTkOptionMenu
+
+CTkProgressBar
+
+CTkRadioButton
+
+CTkScrollableFrame
+
+CTkScrollbar
+
+CTkSegmentedButton
+
+CTkSlider
+
+CTkSwitch
+
+CTkTabview
+
+CTkTextbox
+
+CTk Windows
+
+CTk Utility Classes
+
+CTk Widgets
+
+CTkFrame
+
+CTkFrame
+
+Example Code â
+
+
+```
+
+frame = customtkinter.CTkFrame(master=root_tk, width=200, height=200)
+
+```
+
+Frame structured into a class:
+
+
+```
+
+class MyFrame(customtkinter.CTkFrame):    def __init__(self, master, **kwargs):        super().__init__(master, **kwargs)        # add widgets onto the frame, for example:        self.label = customtkinter.CTkLabel(self)        self.label.grid(row=0, column=0, padx=20)class App(customtkinter.CTk):    def __init__(self):        super().__init__()        self.geometry("400x200")        self.grid_rowconfigure(0, weight=1)  # configure grid system        self.grid_columnconfigure(0, weight=1)        self.my_frame = MyFrame(master=self)        self.my_frame.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")app = App()app.mainloop()
+
+```
+
+Arguments â
+
+Methods â
+
+.configure(attribute=value, ...) â All attributes can be configured.
+
+.configure(attribute=value, ...) â
+
+All attributes can be configured.
+
+.cget(attribute_name) â Pass attribute name as string and get current value of attribute.
+
+.cget(attribute_name) â
+
+Pass attribute name as string and get current value of attribute.
+
+.bind(sequence=None, command=None, add=None) â
+
+.bind(sequence=None, command=None, add=None) â
+
+Example Code
+
+Arguments
+
+Methods
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/documentation/widgets/label =====
+
+Documentation Introduction
+
+Color and Themes
+
+Appearance Mode
+
+Scaling
+
+Packaging
+
+CTk Widgets CTkButton CTkCheckBox CTkComboBox CTkEntry CTkFrame CTkLabel CTkOptionMenu CTkProgressBar CTkRadioButton CTkScrollableFrame CTkScrollbar CTkSegmentedButton CTkSlider CTkSwitch CTkTabview CTkTextbox
+
+CTkButton
+
+CTkCheckBox
+
+CTkComboBox
+
+CTkEntry
+
+CTkFrame
+
+CTkLabel
+
+CTkOptionMenu
+
+CTkProgressBar
+
+CTkRadioButton
+
+CTkScrollableFrame
+
+CTkScrollbar
+
+CTkSegmentedButton
+
+CTkSlider
+
+CTkSwitch
+
+CTkTabview
+
+CTkTextbox
+
+CTk Windows
+
+CTk Utility Classes
+
+CTk Widgets
+
+CTkLabel
+
+CTkLabel
+
+Example Code â
+
+
+```
+
+label = customtkinter.CTkLabel(app, text="CTkLabel", fg_color="transparent")
+
+```
+
+Arguments â
+
+and other arguments of tkinter.Label
+
+Methods â
+
+.configure(attribute=value, ...) â All attributes can be configured, for example: label . configure ( text = "new text" )
+
+.configure(attribute=value, ...) â
+
+All attributes can be configured, for example:
+
+
+```
+
+label.configure(text="new text")
+
+```
+
+.cget(attribute_name) â Pass attribute name as string and get current value of attribute, for example: text = label . cget ( "text" )
+
+.cget(attribute_name) â
+
+Pass attribute name as string and get current value of attribute, for example:
+
+
+```
+
+text = label.cget("text")
+
+```
+
+.bind(sequence=None, command=None, add=None) â Bind events to the label.
+
+.bind(sequence=None, command=None, add=None) â
+
+Bind events to the label.
+
+Example Code
+
+Arguments
+
+Methods
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/documentation/widgets/optionmenu =====
+
+Documentation Introduction
+
+Color and Themes
+
+Appearance Mode
+
+Scaling
+
+Packaging
+
+CTk Widgets CTkButton CTkCheckBox CTkComboBox CTkEntry CTkFrame CTkLabel CTkOptionMenu CTkProgressBar CTkRadioButton CTkScrollableFrame CTkScrollbar CTkSegmentedButton CTkSlider CTkSwitch CTkTabview CTkTextbox
+
+CTkButton
+
+CTkCheckBox
+
+CTkComboBox
+
+CTkEntry
+
+CTkFrame
+
+CTkLabel
+
+CTkOptionMenu
+
+CTkProgressBar
+
+CTkRadioButton
+
+CTkScrollableFrame
+
+CTkScrollbar
+
+CTkSegmentedButton
+
+CTkSlider
+
+CTkSwitch
+
+CTkTabview
+
+CTkTextbox
+
+CTk Windows
+
+CTk Utility Classes
+
+CTk Widgets
+
+CTkOptionMenu
+
+CTkOptionMenu
+
+Example Code â
+
+Without variable:
+
+
+```
+
+def optionmenu_callback(choice):    print("optionmenu dropdown clicked:", choice)optionmenu = customtkinter.CTkOptionMenu(app, values=["option 1", "option 2"],                                         command=optionmenu_callback)optionmenu.set("option 2")
+
+```
+
+With variable:
+
+
+```
+
+def optionmenu_callback(choice):    print("optionmenu dropdown clicked:", choice)optionmenu_var = customtkinter.StringVar(value="option 2")optionmenu = customtkinter.CTkOptionMenu(app,values=["option 1", "option 2"],                                         command=optionmenu_callback,                                         variable=optionmenu_var)
+
+```
+
+Arguments â
+
+Methods â
+
+.configure(attribute=value, ...) â All attributes can be configured and updated. optionmenu . configure ( values = [ "new value 1" , "new value 2" ] )
+
+.configure(attribute=value, ...) â
+
+All attributes can be configured and updated.
+
+
+```
+
+optionmenu.configure(values=["new value 1", "new value 2"])
+
+```
+
+.cget(attribute_name) â Pass attribute name as string and get current value of attribute, for example. state = optionmenu . cget ( "state" )
+
+.cget(attribute_name) â
+
+Pass attribute name as string and get current value of attribute, for example.
+
+
+```
+
+state = optionmenu.cget("state")
+
+```
+
+.set(value) â Set optionmenu to specific string value. Value don't has to be part of the values list.
+
+.set(value) â
+
+Set optionmenu to specific string value. Value don't has to be part of the values list.
+
+.get() â Get current string value of optionmenu.
+
+.get() â
+
+Get current string value of optionmenu.
+
+Example Code
+
+Arguments
+
+Methods
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/documentation/widgets/progressbar =====
+
+Documentation Introduction
+
+Color and Themes
+
+Appearance Mode
+
+Scaling
+
+Packaging
+
+CTk Widgets CTkButton CTkCheckBox CTkComboBox CTkEntry CTkFrame CTkLabel CTkOptionMenu CTkProgressBar CTkRadioButton CTkScrollableFrame CTkScrollbar CTkSegmentedButton CTkSlider CTkSwitch CTkTabview CTkTextbox
+
+CTkButton
+
+CTkCheckBox
+
+CTkComboBox
+
+CTkEntry
+
+CTkFrame
+
+CTkLabel
+
+CTkOptionMenu
+
+CTkProgressBar
+
+CTkRadioButton
+
+CTkScrollableFrame
+
+CTkScrollbar
+
+CTkSegmentedButton
+
+CTkSlider
+
+CTkSwitch
+
+CTkTabview
+
+CTkTextbox
+
+CTk Windows
+
+CTk Utility Classes
+
+CTk Widgets
+
+CTkProgressBar
+
+CTkProgressBar
+
+Example Code â
+
+
+```
+
+progressbar = customtkinter.CTkProgressBar(app, orientation="horizontal")
+
+```
+
+Arguments â
+
+Methods â
+
+.configure(attribute=value, ...) â All attributes can be configured and updated, for example: progressbar . configure ( mode = "indeterminate" )
+
+.configure(attribute=value, ...) â
+
+All attributes can be configured and updated, for example:
+
+
+```
+
+progressbar.configure(mode="indeterminate")
+
+```
+
+.cget(attribute_name) â Pass attribute name as string and get current value of attribute, for example. mode = progressbar . cget ( "mode" )
+
+.cget(attribute_name) â
+
+Pass attribute name as string and get current value of attribute, for example.
+
+
+```
+
+mode = progressbar.cget("mode")
+
+```
+
+.set(value) â Set progress bar to specific value (range 0 to 1).
+
+.set(value) â
+
+Set progress bar to specific value (range 0 to 1).
+
+.get() â Get current value of progress bar. value = ctk_progressbar . get ( )
+
+.get() â
+
+Get current value of progress bar.
+
+
+```
+
+value = ctk_progressbar.get()
+
+```
+
+.start() â Start automatic progress. Speed is set by indeterminate_speed and determinate_speed attributes, default is 1. If mode is set to "indeterminate", the progress bar will oscillate, otherwise it will fill up and then repeat.
+
+.start() â
+
+Start automatic progress. Speed is set by indeterminate_speed and determinate_speed attributes, default is 1. If mode is set to "indeterminate", the progress bar will oscillate, otherwise it will fill up and then repeat.
+
+.stop() â Stop automatic progress.
+
+.stop() â
+
+Stop automatic progress.
+
+.step() â Do single step manually otherwise done by .start() and .stop() automatic loop. Step size is set by determinate_speed and indeterminate_speed attributes.
+
+.step() â
+
+Do single step manually otherwise done by .start() and .stop() automatic loop. Step size is set by determinate_speed and indeterminate_speed attributes.
+
+Example Code
+
+Arguments
+
+Methods
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/documentation/widgets/radiobutton =====
+
+Documentation Introduction
+
+Color and Themes
+
+Appearance Mode
+
+Scaling
+
+Packaging
+
+CTk Widgets CTkButton CTkCheckBox CTkComboBox CTkEntry CTkFrame CTkLabel CTkOptionMenu CTkProgressBar CTkRadioButton CTkScrollableFrame CTkScrollbar CTkSegmentedButton CTkSlider CTkSwitch CTkTabview CTkTextbox
+
+CTkButton
+
+CTkCheckBox
+
+CTkComboBox
+
+CTkEntry
+
+CTkFrame
+
+CTkLabel
+
+CTkOptionMenu
+
+CTkProgressBar
+
+CTkRadioButton
+
+CTkScrollableFrame
+
+CTkScrollbar
+
+CTkSegmentedButton
+
+CTkSlider
+
+CTkSwitch
+
+CTkTabview
+
+CTkTextbox
+
+CTk Windows
+
+CTk Utility Classes
+
+CTk Widgets
+
+CTkRadioButton
+
+CTkRadioButton
+
+Example Code â
+
+
+```
+
+def radiobutton_event():    print("radiobutton toggled, current value:", radio_var.get())radio_var = tkinter.IntVar(value=0)radiobutton_1 = customtkinter.CTkRadioButton(app, text="CTkRadioButton 1",                                             command=radiobutton_event, variable= radio_var, value=1)radiobutton_2 = customtkinter.CTkRadioButton(app, text="CTkRadioButton 2",                                             command=radiobutton_event, variable= radio_var, value=2)
+
+```
+
+Arguments â
+
+Methods â
+
+.configure(attribute=value, ...) â All attributes can be configured and updated. radiobutton . configure ( state = "disabled" )
+
+.configure(attribute=value, ...) â
+
+All attributes can be configured and updated.
+
+
+```
+
+radiobutton.configure(state="disabled")
+
+```
+
+.cget(attribute_name) â Pass attribute name as string and get current value of attribute, for example. state = radiobutton . cget ( "state" )
+
+.cget(attribute_name) â
+
+Pass attribute name as string and get current value of attribute, for example.
+
+
+```
+
+state = radiobutton.cget("state")
+
+```
+
+.select() â Select radio button (set value to 1), command will not be triggered.
+
+.select() â
+
+Select radio button (set value to 1), command will not be triggered.
+
+.deselect() â Deselect radio button (set value to 0), command will not be triggered.
+
+.deselect() â
+
+Deselect radio button (set value to 0), command will not be triggered.
+
+.invoke() â Same action as if user would click the radio button, command will be triggered.
+
+.invoke() â
+
+Same action as if user would click the radio button, command will be triggered.
+
+Example Code
+
+Arguments
+
+Methods
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/documentation/widgets/scrollableframe =====
+
+Documentation Introduction
+
+Color and Themes
+
+Appearance Mode
+
+Scaling
+
+Packaging
+
+CTk Widgets CTkButton CTkCheckBox CTkComboBox CTkEntry CTkFrame CTkLabel CTkOptionMenu CTkProgressBar CTkRadioButton CTkScrollableFrame CTkScrollbar CTkSegmentedButton CTkSlider CTkSwitch CTkTabview CTkTextbox
+
+CTkButton
+
+CTkCheckBox
+
+CTkComboBox
+
+CTkEntry
+
+CTkFrame
+
+CTkLabel
+
+CTkOptionMenu
+
+CTkProgressBar
+
+CTkRadioButton
+
+CTkScrollableFrame
+
+CTkScrollbar
+
+CTkSegmentedButton
+
+CTkSlider
+
+CTkSwitch
+
+CTkTabview
+
+CTkTextbox
+
+CTk Windows
+
+CTk Utility Classes
+
+CTk Widgets
+
+CTkScrollableFrame
+
+CTkScrollableFrame
+
+Example Code â
+
+
+```
+
+scrollable_frame = customtkinter.CTkScrollableFrame(app, width=200, height=200)
+
+```
+
+Structured into a class:
+
+
+```
+
+class MyFrame(customtkinter.CTkScrollableFrame):    def __init__(self, master, **kwargs):        super().__init__(master, **kwargs)        # add widgets onto the frame...        self.label = customtkinter.CTkLabel(self)        self.label.grid(row=0, column=0, padx=20)class App(customtkinter.CTk):    def __init__(self):        super().__init__()        self.my_frame = MyFrame(master=self, width=300, height=200)        self.my_frame.grid(row=0, column=0, padx=20, pady=20)app = App()app.mainloop()
+
+```
+
+The above example can be slightly modified, so that the scrollable frame completely fills the app window:
+
+
+```
+
+class MyFrame(customtkinter.CTkScrollableFrame):    def __init__(self, master, **kwargs):        super().__init__(master, **kwargs)        # add widgets onto the frame...        self.label = customtkinter.CTkLabel(self)        self.label.grid(row=0, column=0, padx=20)class App(customtkinter.CTk):    def __init__(self):        super().__init__()        self.grid_rowconfigure(0, weight=1)        self.grid_columnconfigure(0, weight=1)        self.my_frame = MyFrame(master=self, width=300, height=200, corner_radius=0, fg_color="transparent")        self.my_frame.grid(row=0, column=0, sticky="nsew")app = App()app.mainloop()
+
+```
+
+More examples can be found here: https://github.com/TomSchimansky/CustomTkinter/blob/master/examples/scrollable_frame_example.py
+
+Arguments â
+
+Methods â
+
+.configure(attribute=value, ...) â All attributes can be configured.
+
+.configure(attribute=value, ...) â
+
+All attributes can be configured.
+
+.cget(attribute_name) â Pass attribute name as string and get current value of attribute.
+
+.cget(attribute_name) â
+
+Pass attribute name as string and get current value of attribute.
+
+Example Code
+
+Arguments
+
+Methods
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/documentation/widgets/scrollbar =====
+
+Documentation Introduction
+
+Color and Themes
+
+Appearance Mode
+
+Scaling
+
+Packaging
+
+CTk Widgets CTkButton CTkCheckBox CTkComboBox CTkEntry CTkFrame CTkLabel CTkOptionMenu CTkProgressBar CTkRadioButton CTkScrollableFrame CTkScrollbar CTkSegmentedButton CTkSlider CTkSwitch CTkTabview CTkTextbox
+
+CTkButton
+
+CTkCheckBox
+
+CTkComboBox
+
+CTkEntry
+
+CTkFrame
+
+CTkLabel
+
+CTkOptionMenu
+
+CTkProgressBar
+
+CTkRadioButton
+
+CTkScrollableFrame
+
+CTkScrollbar
+
+CTkSegmentedButton
+
+CTkSlider
+
+CTkSwitch
+
+CTkTabview
+
+CTkTextbox
+
+CTk Windows
+
+CTk Utility Classes
+
+CTk Widgets
+
+CTkScrollbar
+
+CTkScrollbar
+
+Example Code â
+
+Create a CTkTextbox with external scrollbar:
+
+
+```
+
+app = customtkinter.CTk()app.grid_rowconfigure(0, weight=1)app.grid_columnconfigure(0, weight=1)# create scrollable textboxtk_textbox = customtkinter.CTkTextbox(app, activate_scrollbars=False)tk_textbox.grid(row=0, column=0, sticky="nsew")# create CTk scrollbarctk_textbox_scrollbar = customtkinter.CTkScrollbar(app, command=tk_textbox.yview)ctk_textbox_scrollbar.grid(row=0, column=1, sticky="ns")# connect textbox scroll event to CTk scrollbartk_textbox.configure(yscrollcommand=ctk_textbox_scrollbar.set)app.mainloop()
+
+```
+
+Arguments â
+
+Methods â
+
+.configure(attribute=value, ...) â All attributes can be configured.
+
+.configure(attribute=value, ...) â
+
+All attributes can be configured.
+
+.cget(attribute_name) â Pass attribute name as string and get current value of attribute.
+
+.cget(attribute_name) â
+
+Pass attribute name as string and get current value of attribute.
+
+.get() â Get current start and end value.
+
+.get() â
+
+Get current start and end value.
+
+.set(start_value, end_value) â Set start and end value.
+
+.set(start_value, end_value) â
+
+Set start and end value.
+
+Example Code
+
+Arguments
+
+Methods
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/documentation/widgets/segmentedbutton =====
+
+Documentation Introduction
+
+Color and Themes
+
+Appearance Mode
+
+Scaling
+
+Packaging
+
+CTk Widgets CTkButton CTkCheckBox CTkComboBox CTkEntry CTkFrame CTkLabel CTkOptionMenu CTkProgressBar CTkRadioButton CTkScrollableFrame CTkScrollbar CTkSegmentedButton CTkSlider CTkSwitch CTkTabview CTkTextbox
+
+CTkButton
+
+CTkCheckBox
+
+CTkComboBox
+
+CTkEntry
+
+CTkFrame
+
+CTkLabel
+
+CTkOptionMenu
+
+CTkProgressBar
+
+CTkRadioButton
+
+CTkScrollableFrame
+
+CTkScrollbar
+
+CTkSegmentedButton
+
+CTkSlider
+
+CTkSwitch
+
+CTkTabview
+
+CTkTextbox
+
+CTk Windows
+
+CTk Utility Classes
+
+CTk Widgets
+
+CTkSegmentedButton
+
+CTkSegmentedButton
+
+Example Code â
+
+Without variable:
+
+
+```
+
+def segmented_button_callback(value):    print("segmented button clicked:", value)segemented_button = customtkinter.CTkSegmentedButton(app, values=["Value 1", "Value 2", "Value 3"],                                                     command=segmented_button_callback)segemented_button.set("Value 1")
+
+```
+
+With variable:
+
+
+```
+
+def segmented_button_callback(value):    print("segmented button clicked:", value)segemented_button_var = customtkinter.StringVar(value="Value 1")segemented_button = customtkinter.CTkSegmentedButton(app, values=["Value 1", "Value 2", "Value 3"],                                                     command=segmented_button_callback,                                                     variable=segemented_button_var)
+
+```
+
+Arguments â
+
+Methods â
+
+.configure(attribute=value, ...) â All attributes can be configured and updated, for example: segemented_button . configure ( state = "disabled" )
+
+.configure(attribute=value, ...) â
+
+All attributes can be configured and updated, for example:
+
+
+```
+
+segemented_button.configure(state="disabled")
+
+```
+
+.cget(attribute_name) â Pass attribute name as string and get current value of attribute.
+
+.cget(attribute_name) â
+
+Pass attribute name as string and get current value of attribute.
+
+.set(value) â Set to specific value. If value is not in values list, no button will be selected.
+
+.set(value) â
+
+Set to specific value. If value is not in values list, no button will be selected.
+
+.get() â Get current string value.
+
+.get() â
+
+Get current string value.
+
+.insert(index, value) â Insert new value at given index into segmented button. Value will be also inserted into the values list.
+
+.insert(index, value) â
+
+Insert new value at given index into segmented button. Value will be also inserted into the values list.
+
+.move(new_index, value) â Move existing value to new index position.
+
+.move(new_index, value) â
+
+Move existing value to new index position.
+
+.delete(value) â Remove value from segmented button and values list. If value is currently selected, no button will be selected afterwards.
+
+.delete(value) â
+
+Remove value from segmented button and values list. If value is currently selected, no button will be selected afterwards.
+
+Example Code
+
+Arguments
+
+Methods
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/documentation/widgets/slider =====
+
+Documentation Introduction
+
+Color and Themes
+
+Appearance Mode
+
+Scaling
+
+Packaging
+
+CTk Widgets CTkButton CTkCheckBox CTkComboBox CTkEntry CTkFrame CTkLabel CTkOptionMenu CTkProgressBar CTkRadioButton CTkScrollableFrame CTkScrollbar CTkSegmentedButton CTkSlider CTkSwitch CTkTabview CTkTextbox
+
+CTkButton
+
+CTkCheckBox
+
+CTkComboBox
+
+CTkEntry
+
+CTkFrame
+
+CTkLabel
+
+CTkOptionMenu
+
+CTkProgressBar
+
+CTkRadioButton
+
+CTkScrollableFrame
+
+CTkScrollbar
+
+CTkSegmentedButton
+
+CTkSlider
+
+CTkSwitch
+
+CTkTabview
+
+CTkTextbox
+
+CTk Windows
+
+CTk Utility Classes
+
+CTk Widgets
+
+CTkSlider
+
+CTkSlider
+
+Example Code â
+
+
+```
+
+def slider_event(value):    print(value)slider = customtkinter.CTkSlider(app, from_=0, to=100, command=slider_event)
+
+```
+
+Arguments â
+
+Methods â
+
+.configure(attribute=value, ...) â All attributes can be configured and updated, for example: slider . configure ( number_of_steps = 25 )
+
+.configure(attribute=value, ...) â
+
+All attributes can be configured and updated, for example:
+
+
+```
+
+slider.configure(number_of_steps=25)
+
+```
+
+.cget(attribute_name) â Pass attribute name as string and get current value of attribute.
+
+.cget(attribute_name) â
+
+Pass attribute name as string and get current value of attribute.
+
+.set(value) â Set slider to specific value.
+
+.set(value) â
+
+Set slider to specific value.
+
+.get() â Get current value of slider. value = slider . get ( )
+
+.get() â
+
+Get current value of slider.
+
+
+```
+
+value = slider.get()
+
+```
+
+Example Code
+
+Arguments
+
+Methods
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/documentation/widgets/switch =====
+
+Documentation Introduction
+
+Color and Themes
+
+Appearance Mode
+
+Scaling
+
+Packaging
+
+CTk Widgets CTkButton CTkCheckBox CTkComboBox CTkEntry CTkFrame CTkLabel CTkOptionMenu CTkProgressBar CTkRadioButton CTkScrollableFrame CTkScrollbar CTkSegmentedButton CTkSlider CTkSwitch CTkTabview CTkTextbox
+
+CTkButton
+
+CTkCheckBox
+
+CTkComboBox
+
+CTkEntry
+
+CTkFrame
+
+CTkLabel
+
+CTkOptionMenu
+
+CTkProgressBar
+
+CTkRadioButton
+
+CTkScrollableFrame
+
+CTkScrollbar
+
+CTkSegmentedButton
+
+CTkSlider
+
+CTkSwitch
+
+CTkTabview
+
+CTkTextbox
+
+CTk Windows
+
+CTk Utility Classes
+
+CTk Widgets
+
+CTkSwitch
+
+CTkSwitch
+
+Example Code â
+
+
+```
+
+def switch_event():    print("switch toggled, current value:", switch_var.get())switch_var = customtkinter.StringVar(value="on")switch = customtkinter.CTkSwitch(app, text="CTkSwitch", command=switch_event,                                 variable=switch_var, onvalue="on", offvalue="off")
+
+```
+
+Arguments â
+
+Methods â
+
+.configure(attribute=value, ...) â All attributes can be configured and updated, for example: switch . configure ( state = "disabled" )
+
+.configure(attribute=value, ...) â
+
+All attributes can be configured and updated, for example:
+
+
+```
+
+switch.configure(state="disabled")
+
+```
+
+.cget(attribute_name) â Pass attribute name as string and get current value of attribute.
+
+.cget(attribute_name) â
+
+Pass attribute name as string and get current value of attribute.
+
+.get() â Get current value of switch, 1 or 0 (checked or not checked).
+
+.get() â
+
+Get current value of switch, 1 or 0 (checked or not checked).
+
+.select() â Turn on switch (set value to 1), command will not be triggered.
+
+.select() â
+
+Turn on switch (set value to 1), command will not be triggered.
+
+.deselect() â Turn off switch (set value to 0), command will not be triggered.
+
+.deselect() â
+
+Turn off switch (set value to 0), command will not be triggered.
+
+.toggle() â Flip current value of switch, command will be triggered.
+
+.toggle() â
+
+Flip current value of switch, command will be triggered.
+
+Example Code
+
+Arguments
+
+Methods
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/documentation/widgets/tabview =====
+
+Documentation Introduction
+
+Color and Themes
+
+Appearance Mode
+
+Scaling
+
+Packaging
+
+CTk Widgets CTkButton CTkCheckBox CTkComboBox CTkEntry CTkFrame CTkLabel CTkOptionMenu CTkProgressBar CTkRadioButton CTkScrollableFrame CTkScrollbar CTkSegmentedButton CTkSlider CTkSwitch CTkTabview CTkTextbox
+
+CTkButton
+
+CTkCheckBox
+
+CTkComboBox
+
+CTkEntry
+
+CTkFrame
+
+CTkLabel
+
+CTkOptionMenu
+
+CTkProgressBar
+
+CTkRadioButton
+
+CTkScrollableFrame
+
+CTkScrollbar
+
+CTkSegmentedButton
+
+CTkSlider
+
+CTkSwitch
+
+CTkTabview
+
+CTkTextbox
+
+CTk Windows
+
+CTk Utility Classes
+
+CTk Widgets
+
+CTkTabview
+
+CTkTabview
+
+The CTkTabview creates a tabview, similar to a notebook in tkinter. The tabs, which are created with .add("<tab-name>") are CTkFrames and can be used like CTkFrames. Any widgets can be placed on them.
+
+Example Code â
+
+Example without using classes:
+
+
+```
+
+tabview = customtkinter.CTkTabview(master=app)tabview.pack(padx=20, pady=20)tabview.add("tab 1")  # add tab at the endtabview.add("tab 2")  # add tab at the endtabview.set("tab 2")  # set currently visible tabbutton = customtkinter.CTkButton(master=tabview.tab("tab 1"))button.pack(padx=20, pady=20)
+
+```
+
+It's also possible to save tabs in extra variables:
+
+
+```
+
+tab_1 = tabview.add("tab 1")tab_2 = tabview.add("tab 2")button = customtkinter.CTkButton(tab_1)
+
+```
+
+Example with classes:
+
+
+```
+
+class MyTabView(customtkinter.CTkTabview):    def __init__(self, master, **kwargs):        super().__init__(master, **kwargs)        # create tabs        self.add("tab 1")        self.add("tab 2")        # add widgets on tabs        self.label = customtkinter.CTkLabel(master=self.tab("tab 1"))        self.label.grid(row=0, column=0, padx=20, pady=10)class App(customtkinter.CTk):    def __init__(self):        super().__init__()        self.tab_view = MyTabView(master=self)        self.tab_view.grid(row=0, column=0, padx=20, pady=20)app = App()app.mainloop()
+
+```
+
+Arguments â
+
+Methods â
+
+.configure(attribute=value, ...) â All attributes can be configured and updated.
+
+.configure(attribute=value, ...) â
+
+All attributes can be configured and updated.
+
+.cget(attribute_name) â Get values of all attributes specified as string.
+
+.cget(attribute_name) â
+
+Get values of all attributes specified as string.
+
+.tab(name) â Returns reference to tab with given name. Can be used like a frame like this: button = customtkinter . CTkButton ( master = tabview . tab ( "tab name" ) )
+
+.tab(name) â
+
+Returns reference to tab with given name. Can be used like a frame like this:
+
+
+```
+
+button = customtkinter.CTkButton(master=tabview.tab("tab name"))
+
+```
+
+.insert(index, name) â Insert tab with name at position of index, name must be unique.
+
+.insert(index, name) â
+
+Insert tab with name at position of index, name must be unique.
+
+.add(name) â Add tab with name at the end, name must be unique.
+
+.add(name) â
+
+Add tab with name at the end, name must be unique.
+
+.index(name) â Get index of tab with given name.
+
+.index(name) â
+
+Get index of tab with given name.
+
+.move(new_index, name) â Move tab with name to given index.
+
+.move(new_index, name) â
+
+Move tab with name to given index.
+
+.rename(old_name, new_name) â Rename tab.
+
+.rename(old_name, new_name) â
+
+Rename tab.
+
+.delete(name) â Delete tab with name.
+
+.delete(name) â
+
+Delete tab with name.
+
+.set(name) â Set tab with name to be visible.
+
+.set(name) â
+
+Set tab with name to be visible.
+
+.get() â Get name of tab that's currently visible.
+
+.get() â
+
+Get name of tab that's currently visible.
+
+Example Code
+
+Arguments
+
+Methods
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/documentation/widgets/textbox =====
+
+Documentation Introduction
+
+Color and Themes
+
+Appearance Mode
+
+Scaling
+
+Packaging
+
+CTk Widgets CTkButton CTkCheckBox CTkComboBox CTkEntry CTkFrame CTkLabel CTkOptionMenu CTkProgressBar CTkRadioButton CTkScrollableFrame CTkScrollbar CTkSegmentedButton CTkSlider CTkSwitch CTkTabview CTkTextbox
+
+CTkButton
+
+CTkCheckBox
+
+CTkComboBox
+
+CTkEntry
+
+CTkFrame
+
+CTkLabel
+
+CTkOptionMenu
+
+CTkProgressBar
+
+CTkRadioButton
+
+CTkScrollableFrame
+
+CTkScrollbar
+
+CTkSegmentedButton
+
+CTkSlider
+
+CTkSwitch
+
+CTkTabview
+
+CTkTextbox
+
+CTk Windows
+
+CTk Utility Classes
+
+CTk Widgets
+
+CTkTextbox
+
+CTkTextbox
+
+The CTkTextbox class creates a textbox, which is scrollable in vertical and horizontal direction (with wrap='none' ). The insert , get and delete methods are based on tkinter indices, which are explained here: https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/text-index.html
+
+Example Code â
+
+Example without using classes:
+
+
+```
+
+textbox = customtkinter.CTkTextbox(app)textbox.insert("0.0", "new text to insert")  # insert at line 0 character 0text = textbox.get("0.0", "end")  # get text from line 0 character 0 till the endtextbox.delete("0.0", "end")  # delete all texttextbox.configure(state="disabled")  # configure textbox to be read-only
+
+```
+
+Example with classes, where the textbox completely fills the window:
+
+
+```
+
+class App(customtkinter.CTk):    def __init__(self):        super().__init__()        self.grid_rowconfigure(0, weight=1)  # configure grid system        self.grid_columnconfigure(0, weight=1)        self.textbox = customtkinter.CTkTextbox(master=self, width=400, corner_radius=0)        self.textbox.grid(row=0, column=0, sticky="nsew")        self.textbox.insert("0.0", "Some example text!\n" * 50)app = App()app.mainloop()
+
+```
+
+Arguments â
+
+and the following arguments of the tkinter.Text class:
+
+"autoseparators", "cursor", "exportselection", "insertborderwidth", "insertofftime", "insertontime", "insertwidth", "maxundo", "padx", "pady", "selectborderwidth", "spacing1", "spacing2", "spacing3", "state", "tabs", "takefocus", "undo", "xscrollcommand", "yscrollcommand"
+
+Methods â
+
+.configure(attribute=value, ...) â All attributes can be configured and updated. textbox . configure ( state = . . . , text_color = . . . , . . . )
+
+.configure(attribute=value, ...) â
+
+All attributes can be configured and updated.
+
+
+```
+
+textbox.configure(state=..., text_color=..., ...)
+
+```
+
+.cget(attribute_name) â Get values of all attributes specified as string.
+
+.cget(attribute_name) â
+
+Get values of all attributes specified as string.
+
+.bind(sequence=None, command=None, add=None) â Bind commands to events specified by sequence string.
+
+.bind(sequence=None, command=None, add=None) â
+
+Bind commands to events specified by sequence string.
+
+.unbind(sequence, funcid=None) â Unbind command from sequence specified by funcid, which is returned by .bind().
+
+.unbind(sequence, funcid=None) â
+
+Unbind command from sequence specified by funcid, which is returned by .bind().
+
+.insert(index, text, tags=None) â Insert text at given index. Index for the tkinter.Text class is specified by 'line.character', 'end', 'insert' or other keywords described here: https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/text-index.html
+
+.insert(index, text, tags=None) â
+
+Insert text at given index. Index for the tkinter.Text class is specified by 'line.character', 'end', 'insert' or other keywords described here: https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/text-index.html
+
+.delete(self, index1, index2=None) â Delete the characters between index1 and index2 (not included).
+
+.delete(self, index1, index2=None) â
+
+Delete the characters between index1 and index2 (not included).
+
+.get(index1, index2=None) â Return the text from INDEX1 to INDEX2 (not included).
+
+.get(index1, index2=None) â
+
+Return the text from INDEX1 to INDEX2 (not included).
+
+.focus_set() â Set focus to the text widget.
+
+.focus_set() â
+
+Set focus to the text widget.
+
+and nearly all other methods of tkinter.Text described here: https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/text-methods.html
+
+Example Code
+
+Arguments
+
+Methods
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/documentation/windows =====
+
+Documentation Introduction
+
+Color and Themes
+
+Appearance Mode
+
+Scaling
+
+Packaging
+
+CTk Widgets
+
+CTk Windows CTk CTkInputDialog CTkToplevel
+
+CTk
+
+CTkInputDialog
+
+CTkToplevel
+
+CTk Utility Classes
+
+CTk Windows
+
+CTk Windows
+
+Documentation of arguments and methods of all windows.
+
+ðï¸ CTk
+
+The CTk class forms the basis of any CustomTkinter program, it creates the main app window. During the runtime of a program there should only be one instance of this class with a single call of the .mainloop() method, which starts the app. Additional windows are created using the CTkToplevel class.
+
+ðï¸ CTkInputDialog
+
+This is a simple dialog to input a string or number.
+
+ðï¸ CTkToplevel
+
+The CTkToplevel class is used to create additional windows. For a CTkToplevel window, there is no  call of .mainloop() needed, it opens right when it's created.
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/documentation/windows/window =====
+
+Documentation Introduction
+
+Color and Themes
+
+Appearance Mode
+
+Scaling
+
+Packaging
+
+CTk Widgets
+
+CTk Windows CTk CTkInputDialog CTkToplevel
+
+CTk
+
+CTkInputDialog
+
+CTkToplevel
+
+CTk Utility Classes
+
+CTk Windows
+
+CTk
+
+CTk
+
+The CTk class forms the basis of any CustomTkinter program, it creates the main app window. During the runtime of a program there should only be one instance of this class with a single call of the .mainloop() method, which starts the app. Additional windows are created using the CTkToplevel class.
+
+Example Code â
+
+Example without using classes:
+
+
+```
+
+app = customtkinter.CTk()app.geometry("600x500")app.title("CTk example")app.mainloop()
+
+```
+
+Example with classes:
+
+
+```
+
+class App(customtkinter.CTk):    def __init__(self):        super().__init__()        self.geometry("600x500")        self.title("CTk example")        # add widgets to app        self.button = customtkinter.CTkButton(self, command=self.button_click)        self.button.grid(row=0, column=0, padx=20, pady=10)    # add methods to app    def button_click(self):        print("button click")app = App()app.mainloop()
+
+```
+
+Arguments â
+
+Methods â
+
+.configure(attribute=value, ...) â All attributes can be configured and updated, for example: app . configure ( fg_color = new_fg_color )
+
+.configure(attribute=value, ...) â
+
+All attributes can be configured and updated, for example:
+
+
+```
+
+app.configure(fg_color=new_fg_color)
+
+```
+
+.cget(attribute_name) â Pass attribute name as string and get current value of attribute, for example: fg_color = app . cget ( "fg_color" )
+
+.cget(attribute_name) â
+
+Pass attribute name as string and get current value of attribute, for example:
+
+
+```
+
+fg_color = app.cget("fg_color")
+
+```
+
+.title(string) â Set title of window.
+
+.title(string) â
+
+Set title of window.
+
+.geometry(geometry_string) â Set geometry and positions of the window like this: "<width>x<height>" or "<width>x<height>+<x_pos>+<y_pos>"
+
+.geometry(geometry_string) â
+
+Set geometry and positions of the window like this: "<width>x<height>" or "<width>x<height>+<x_pos>+<y_pos>"
+
+.minsize(width, height) â Set minimal window size.
+
+.minsize(width, height) â
+
+Set minimal window size.
+
+.maxsize(width, height) â Set max window size.
+
+.maxsize(width, height) â
+
+Set max window size.
+
+.resizable(width, height) â Define, if width and/or height should be resizablee with bool values.
+
+.resizable(width, height) â
+
+Define, if width and/or height should be resizablee with bool values.
+
+.after(milliseconds, command) â Execute command after milliseconds without blocking the main loop.
+
+.after(milliseconds, command) â
+
+Execute command after milliseconds without blocking the main loop.
+
+.withdraw() â Hide window and icon. Restore it with .deiconify().
+
+.withdraw() â
+
+Hide window and icon. Restore it with .deiconify().
+
+.iconify() â Iconifies the window. Restore it with .deiconify().
+
+.iconify() â
+
+Iconifies the window. Restore it with .deiconify().
+
+.deiconify() â Deiconify the window.
+
+.deiconify() â
+
+Deiconify the window.
+
+.state(new_state) â Set the window state ('normal', 'iconic', 'withdrawn', 'zoomed'), returns current state if no argument is passed.
+
+.state(new_state) â
+
+Set the window state ('normal', 'iconic', 'withdrawn', 'zoomed'), returns current state if no argument is passed.
+
+Example Code
+
+Arguments
+
+Methods
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/documentation/windows/inputdialog =====
+
+Documentation Introduction
+
+Color and Themes
+
+Appearance Mode
+
+Scaling
+
+Packaging
+
+CTk Widgets
+
+CTk Windows CTk CTkInputDialog CTkToplevel
+
+CTk
+
+CTkInputDialog
+
+CTkToplevel
+
+CTk Utility Classes
+
+CTk Windows
+
+CTkInputDialog
+
+CTkInputDialog
+
+This is a simple dialog to input a string or number.
+
+Example Code â
+
+
+```
+
+dialog = customtkinter.CTkInputDialog(text="Type in a number:", title="Test")text = dialog.get_input()  # waits for input
+
+```
+
+Example inside a program:
+
+
+```
+
+app = customtkinter.CTk()app.geometry("400x300")def button_click_event():    dialog = customtkinter.CTkInputDialog(text="Type in a number:", title="Test")    print("Number:", dialog.get_input())button = customtkinter.CTkButton(app, text="Open Dialog", command=button_click_event)button.pack(padx=20, pady=20)app.mainloop()
+
+```
+
+This example results in the following window and dialog:
+
+Arguments â
+
+Methods â
+
+.get_input() â Retuns input, waits for 'Ok' or 'Cancel' button to be pressed.
+
+.get_input() â
+
+Example Code
+
+Arguments
+
+Methods
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/documentation/windows/toplevel =====
+
+Documentation Introduction
+
+Color and Themes
+
+Appearance Mode
+
+Scaling
+
+Packaging
+
+CTk Widgets
+
+CTk Windows CTk CTkInputDialog CTkToplevel
+
+CTk
+
+CTkInputDialog
+
+CTkToplevel
+
+CTk Utility Classes
+
+CTk Windows
+
+CTkToplevel
+
+CTkToplevel
+
+The CTkToplevel class is used to create additional windows. For a CTkToplevel window, there is no  call of .mainloop() needed, it opens right when it's created.
+
+Example Code â
+
+
+```
+
+toplevel = CTkToplevel(app)  # master argument is optional  
+
+```
+
+The following example shows how to create a toplevel window, which can be opened from the main app widnow. Before the toplevel window gets created, it is checked if the window already exists, to prevent opening the same window multiple times.
+
+
+```
+
+class ToplevelWindow(customtkinter.CTkToplevel):    def __init__(self, *args, **kwargs):        super().__init__(*args, **kwargs)        self.geometry("400x300")        self.label = customtkinter.CTkLabel(self, text="ToplevelWindow")        self.label.pack(padx=20, pady=20)class App(customtkinter.CTk):    def __init__(self, *args, **kwargs):        super().__init__(*args, **kwargs)        self.geometry("500x400")        self.button_1 = customtkinter.CTkButton(self, text="open toplevel", command=self.open_toplevel)        self.button_1.pack(side="top", padx=20, pady=20)        self.toplevel_window = None    def open_toplevel(self):        if self.toplevel_window is None or not self.toplevel_window.winfo_exists():            self.toplevel_window = ToplevelWindow(self)  # create window if its None or destroyed        else:            self.toplevel_window.focus()  # if window exists focus itapp = App()app.mainloop()
+
+```
+
+The example code results in the following windows:
+
+Arguments: â
+
+Methods: â
+
+.configure(attribute=value, ...) â All attributes can be configured and updated, for example: toplevel . configure ( fg_color = "red" )
+
+.configure(attribute=value, ...) â
+
+All attributes can be configured and updated, for example:
+
+
+```
+
+toplevel.configure(fg_color="red")
+
+```
+
+.cget(attribute_name) â Pass attribute name as string and get current value of attribute, for example: fg_color = toplevel . cget ( "fg_color" )
+
+.cget(attribute_name) â
+
+Pass attribute name as string and get current value of attribute, for example:
+
+
+```
+
+fg_color = toplevel.cget("fg_color")
+
+```
+
+.title(string) â Set title of window.
+
+.title(string) â
+
+Set title of window.
+
+.geometry(geometry_string) â Set geometry and positions of the window like this: "<width>x<height>" or "<width>x<height>+<x_pos>+<y_pos>"
+
+.geometry(geometry_string) â
+
+Set geometry and positions of the window like this: "<width>x<height>" or "<width>x<height>+<x_pos>+<y_pos>"
+
+.minsize(width, height) â Set minimal window size.
+
+.minsize(width, height) â
+
+Set minimal window size.
+
+.maxsize(width, height) â Set max window size.
+
+.maxsize(width, height) â
+
+Set max window size.
+
+.resizable(width, height) â Define, if width and/or height should be resizablee with bool values.
+
+.resizable(width, height) â
+
+Define, if width and/or height should be resizablee with bool values.
+
+.after(milliseconds, command) â Execute command after milliseconds without blocking the main loop.
+
+.after(milliseconds, command) â
+
+Execute command after milliseconds without blocking the main loop.
+
+.withdraw() â Hide window and icon. Restore it with .deiconify().
+
+.withdraw() â
+
+Hide window and icon. Restore it with .deiconify().
+
+.iconify() â Iconifies the window. Restore it with .deiconify().
+
+.iconify() â
+
+Iconifies the window. Restore it with .deiconify().
+
+.deiconify() â Deiconify the window.
+
+.deiconify() â
+
+Deiconify the window.
+
+.state(new_state) â Set the window state ('normal', 'iconic', 'withdrawn', 'zoomed'), returns current state if no argument is passed.
+
+.state(new_state) â
+
+Set the window state ('normal', 'iconic', 'withdrawn', 'zoomed'), returns current state if no argument is passed.
+
+Example Code
+
+Arguments:
+
+Methods:
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/documentation/utility-classes =====
+
+Documentation Introduction
+
+Color and Themes
+
+Appearance Mode
+
+Scaling
+
+Packaging
+
+CTk Widgets
+
+CTk Windows
+
+CTk Utility Classes CTkFont CTkImage
+
+CTkFont
+
+CTkImage
+
+CTk Utility Classes
+
+CTk Utility Classes
+
+Documentation of CustomTkinter utility classes like CTkFont and CTkImage.
+
+ðï¸ CTkFont
+
+There are two methods in CustomTkinter to set a font. The first one is by creating a tuple of the form:
+
+ðï¸ CTkImage
+
+The CTkImage is not a widget itself, but a container for up to two PIL Image objects for light and dark mode. There's also a size tuple which describes the width and height of the image independent of scaling. Therefore it's important that the PIL Image's are in a higher resolution than the given size tuple, so that the image is not blurry if rendered on a 4K monitor with 2x scaling. So that the image is displayed in sharp resolution on a 2x scaled monitor, the given OIL Image's must have at least double the resolution than the requested size.
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/documentation/utility-classes/font =====
+
+Documentation Introduction
+
+Color and Themes
+
+Appearance Mode
+
+Scaling
+
+Packaging
+
+CTk Widgets
+
+CTk Windows
+
+CTk Utility Classes CTkFont CTkImage
+
+CTkFont
+
+CTkImage
+
+CTk Utility Classes
+
+CTkFont
+
+CTkFont
+
+There are two methods in CustomTkinter to set a font. The first one is by creating a tuple of the form:
+
+
+```
+
+button = customtkinter.CTkButton(app, font=("<family name>", <size in px>, "<optional keywords>"))
+
+```
+
+This font can not be configured afterwards. The optional keywords can be normal/bold, roman/italic, underline and overstrike.
+
+The better way is to create a CTkFont object, which can be modified afterwards and can be used for multiple widgets:
+
+
+```
+
+button = customtkinter.CTkButton(app, font=customtkinter.CTkFont(family="<family name>", size=<size in px>, <optional keyword arguments>))button.cget("font").configure(size=new_size)  # configure font afterwards
+
+```
+
+All widgets get a CTkFont object by default, so configuring the font of a widget is possible by default.
+
+A font object can also be applied to multiple widgets, and if it gets configured, the changes get passed to all widgets using this font:
+
+
+```
+
+my_font = customtkinter.CTkFont(family="<family name>", size=<size in px>, <optional keyword arguments>)button_1 = customtkinter.CTkButton(app, font=my_font)button_2 = customtkinter.CTkButton(app, font=my_font)my_font.configure(family="new name")  # changes apply to button_1 and button_2
+
+```
+
+Arguments â
+
+Methods â
+
+.configure(attribute=value, ...) â All attributes can be configured and get updated.
+
+.configure(attribute=value, ...) â
+
+All attributes can be configured and get updated.
+
+.cget(attribute_name) â Pass attribute name as string and get current value of attribute.
+
+.cget(attribute_name) â
+
+Pass attribute name as string and get current value of attribute.
+
+.measure(text) â Pass this method a string, and it will return the number of pixels of width that string will take in the font.
+
+.measure(text) â
+
+Pass this method a string, and it will return the number of pixels of width that string will take in the font.
+
+.metrics(option) â If you call this method with no arguments, it returns a dictionary of all the font metrics. You can retrieve the value of just one metric by passing its name as an argument. Metrics include: ascent: Number of pixels of height between the baseline and the top of the highest ascender. descent: Number of pixels of height between the baseline and the bottom of the lowest ascender. fixed: This value isÂ 0Â for a variable-width font andÂ 1Â for a monospaced font. linespace: Number of pixels of height total. This is the leading of type set solid in the given font.
+
+.metrics(option) â
+
+If you call this method with no arguments, it returns a dictionary of all the font metrics. You can retrieve the value of just one metric by passing its name as an argument. Metrics include:
+
+ascent: Number of pixels of height between the baseline and the top of the highest ascender.
+
+descent: Number of pixels of height between the baseline and the bottom of the lowest ascender.
+
+fixed: This value isÂ 0Â for a variable-width font andÂ 1Â for a monospaced font.
+
+linespace: Number of pixels of height total. This is the leading of type set solid in the given font.
+
+Arguments
+
+Methods
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io
+
+===== https://customtkinter.tomschimansky.com/documentation/utility-classes/image =====
+
+Documentation Introduction
+
+Color and Themes
+
+Appearance Mode
+
+Scaling
+
+Packaging
+
+CTk Widgets
+
+CTk Windows
+
+CTk Utility Classes CTkFont CTkImage
+
+CTkFont
+
+CTkImage
+
+CTk Utility Classes
+
+CTkImage
+
+CTkImage
+
+The CTkImage is not a widget itself, but a container for up to two PIL Image objects for light and dark mode. There's also a size tuple which describes the width and height of the image independent of scaling. Therefore it's important that the PIL Image's are in a higher resolution than the given size tuple, so that the image is not blurry if rendered on a 4K monitor with 2x scaling. So that the image is displayed in sharp resolution on a 2x scaled monitor, the given OIL Image's must have at least double the resolution than the requested size.
+
+Create a CTkImage object:
+
+
+```
+
+from PIL import Imagemy_image = customtkinter.CTkImage(light_image=Image.open("<path to light mode image>"),                                  dark_image=Image.open("<path to dark mode image>"),                                  size=(30, 30))image_label = customtkinter.CTkLabel(app, image=my_image, text="")  # display image with a CTkLabel
+
+```
+
+Arguments â
+
+If only light_image or only dark_image is given, the existing one will be used for both light and dark mode.
+
+Methods â
+
+.configure(attribute=value, ...) â All attributes can be configured and updated.
+
+.configure(attribute=value, ...) â
+
+All attributes can be configured and updated.
+
+.cget(attribute_name) â Pass attribute name as string and get current value of attribute.
+
+.cget(attribute_name) â
+
+Pass attribute name as string and get current value of attribute.
+
+Arguments
+
+Methods
+
+Github Issues
+
+Github Discussions
+
+Stack Overflow CustomTkinter
+
+Github Tom Schimansky
+
+LinkedIn Tom Schimansky
+
+Privacy Policy
+
+Impressum
+
+Made with docusaurus.io

@@ -3,7 +3,7 @@ import customtkinter as tk  # Modern UI
 from CTkMessagebox import CTkMessagebox
 from pathlib import Path  # Path handling
 from PIL import Image  # 🧩 Fix: Needed for CTkImage
-
+ 
 # Do not import gui here to avoid Word opening prematurely
 
 # =================================================================================
@@ -35,6 +35,9 @@ class StartScreen(tk.CTk):
         self.logo = tk.CTkImage(light_image=logo_image, dark_image=logo_image, size=(120, 120))
         self.logo_label = tk.CTkLabel(self, image=self.logo, text="")
         self.logo_label.pack(pady=(30, 10))
+        
+        icon_path = str(ASSET_DIR / "icon.ico")
+        self.iconbitmap(icon_path)
 
         self.title_label = tk.CTkLabel(self, text="REPORT GENERATOR", font=("Arial", 24, "bold"))
         self.title_label.pack(pady=(0, 20))
