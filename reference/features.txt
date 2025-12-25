@@ -1,0 +1,51 @@
+TO DO - 
+    
+    General
+        1. scrolling
+
+        2. seperate files for seperate sections 
+
+        3. AI
+
+        4. Fix Images - currently get added in the wrong order
+
+    GUI
+    
+        1. allow free dynamic adding of text boxes and images (client side)
+    
+        2. separate pages into sections and chapters into tabs (tabs also dynamic if possible)
+
+        3. Terminal with logs
+
+        4. access and preview to already uploaded assets OR upload new one instead of the latter each time 
+
+        5. Page 0 department as dropdown
+    
+    DOCGEN
+        1. text box dropdown for - title, heading, subheading, content, subscript, superscript, etc, etc choosing other font things
+    
+        2. name, usn separate (addable) along with table alignment
+
+        3. image insertion order and placement
+
+        4. bookmark existence after manual editing
+
+        5. undo button
+
+
+
+DONE - 
+
+    1. header and footer - BNMIT and project name and date and stuff and a double line or whatever
+    
+    2. variable page slider /option to go to any page/sections
+
+    3. Save button
+
+    4. Title/chapter/word of the page should reflect in UI
+
+    5. bind keyboard keys to buttons
+
+    6. floating labels
+
+    7. FIX -  Acknowledgement dept HOD guide, Dept in certificate

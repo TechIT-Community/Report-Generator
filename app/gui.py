@@ -14,7 +14,6 @@ import customtkinter as tk  # Modern UI
 from CTkMessagebox import CTkMessagebox
 from pathlib import Path  # Path handling
 from tkinter import filedialog
-from functools import partial
 import shutil
 
 import Document_Generator as docgen  # backend module
@@ -29,8 +28,6 @@ ASSET_DIR = BASE_DIR / "assets"  # Directory for assets
 class App(tk.CTk):
     def __init__(self, user_inputs):
         super().__init__()
-        tk.set_appearance_mode("dark")
-        tk.set_default_color_theme("dark-blue")
 
         self.help_window = None 
 
@@ -383,6 +380,8 @@ def launch_gui(college, department):
                    {"College": college, "Department": department}]
     user_inputs.extend({} for _ in range(9))  # Total 10 pages (1-indexed)
 
+    tk.set_appearance_mode("dark")
+    tk.set_default_color_theme("dark-blue")
     app = App(user_inputs=user_inputs)
     app.protocol("WM_DELETE_WINDOW", app.on_close)
     app.mainloop()
