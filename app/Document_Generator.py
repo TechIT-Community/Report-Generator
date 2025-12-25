@@ -21,6 +21,7 @@ import time # for pauses
 import ctypes # For getting screen dimensions
 from CTkMessagebox import CTkMessagebox
 import re
+from PIL import Image
 
 # ================================================================================= 
 # =================================================================================
@@ -1280,11 +1281,57 @@ def replace_bookmarks(data_dict: dict):
 
                         # Step 1: Remember where image is being inserted
                         image_start = insert_range.Start
-
+                        
+                        # --- Smart Placement Logic ---
+                        # 1. Calc target dimensions
+                        # Word restricts images to page margins. Assume max width 450pt (approx 16cm).
+                        max_width_pt = 450 
+                        with Image.open(str(img.resolve())) as pil_img:
+                             w_px, h_px = pil_img.size
+                             aspect = h_px / w_px
+                             
+                             # Convert px to pt (Approximate: 1 px = 0.75 pt at 96 DPI)
+                             # This estimates the "Natural" size Word will use.
+                             natural_width_pt = w_px * 0.75
+                             
+                             # If natural width > max page width, it shrinks. Else it stays natural.
+                             effective_width_pt = min(natural_width_pt, max_width_pt)
+                             
+                             target_height_pt = effective_width_pt * aspect 
+                        
+                        # 2. Check available space
+                        # Get current vertical position
+                        try:
+                            wdVerticalPositionRelativeToPage = 6 # Constant
+                            current_vertical_pos = insert_range.Information(wdVerticalPositionRelativeToPage)
+                            
+                            # Get Page Height and Margin
+                            page_height = doc.PageSetup.PageHeight
+                            bottom_margin = doc.PageSetup.BottomMargin
+                            limit = page_height - bottom_margin
+                            
+                            available_space = limit - current_vertical_pos
+                            caption_buffer = 60 # Points for caption + spacing
+                            
+                            # 3. Decide on Page Break
+                            # If the image WOULD fit if shrunk, but we aren't forcing shrink, 
+                            # checking against 'max possible height' is safer to prevent overflow.
+                            if (current_vertical_pos + target_height_pt + caption_buffer) > limit:
+                                # Not enough space, force page break
+                                insert_range.InsertBreak(c.wdPageBreak)
+                                # Update range after break
+                                insert_range.Collapse(c.wdCollapseEnd)
+                                
+                        except Exception as e:
+                            print(f"⚠️ Calculation error: {e}. Letting Word decide placement.")
+                        
                         # Step 2: Insert image
                         # Use a dedicated range for image insertion to avoid style bleed
                         img_range = insert_range.Duplicate
                         img_shape = img_range.InlineShapes.AddPicture(str(img.resolve()), LinkToFile=False, SaveWithDocument=True)
+                        
+                        # Remove explicit resizing to respect user request
+                        # img_shape.Width = target_width_pt 
                         
                         # Center the image
                         img_shape.Range.ParagraphFormat.Alignment = c.wdAlignParagraphCenter
