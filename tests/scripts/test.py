@@ -14,9 +14,11 @@ sys.path.append(str(PROJECT_ROOT))
 sys.path.append(str(PROJECT_ROOT / "app"))
 
 # Mock assets
-TEST_IMAGE_PATH = PROJECT_ROOT / "screenshots" / "test1.png"
-if not TEST_IMAGE_PATH.exists():
-    print(f"⚠️ Warning: Test image not found at {TEST_IMAGE_PATH}")
+PATHS = [PROJECT_ROOT / "screenshots" / "test1.png",
+ PROJECT_ROOT / "screenshots" / "test2.png",
+ PROJECT_ROOT / "screenshots" / "test3.png"]
+
+TEST_IMAGE_PATH = random.choice(PATHS)
 
 # =================================================================================
 # Monkey Patching
@@ -26,11 +28,8 @@ if not TEST_IMAGE_PATH.exists():
 original_askopenfilenames = tkinter.filedialog.askopenfilenames
 
 def mock_askopenfilenames(*args, **kwargs):
-    print("🤖 [Mock] File dialog opened. Auto-selecting test image.")
-    if TEST_IMAGE_PATH.exists():
-        # Return list of strings as expected by the GUI
-        return [str(TEST_IMAGE_PATH), str(TEST_IMAGE_PATH)] 
-    return []
+    print("🤖 [Mock] File dialog opened. Auto-selecting 5 test images.")
+    return [str(random.choice(PATHS)) for _ in range(5)]
 
 tkinter.filedialog.askopenfilenames = mock_askopenfilenames
 
@@ -97,23 +96,34 @@ def run_test_sequence(self):
                 else:
                     # Variable length: Make Chapter 2 (Page 5, index 4 in 0-based list but here check page num)
                     # Page 1-3 info, Page 4=Ch1, Page 5=Ch2
-                    if self.current_page == 5:
-                        content = f"Auto-Content for {label} (Long Version). " * 250
+                    if self.current_page == 4:
+                         # Abstract: Normal/Short
+                         content = f"Auto-Content for Abstract. " * 8
+                    elif self.current_page == 5:
+                        # Chapter 1: Long
+                         content = f"Auto-Content for {label} (Long Version). " * 200
+                    elif self.current_page == 6:
+                        # Chapter 2: Short (2 lines)
+                        content = "Line 1 of Chapter 2.\nLine 2 of Chapter 2."
+                    elif self.current_page == 7:
+                        # Chapter 3: Medium (8 lines)
+                        content = "Line 1 of Chapter 3.\nLine 2.\nLine 3.\nLine 4.\nLine 5.\nLine 6.\nLine 7.\nLine 8 of Chapter 3."
                     else:
+                        # Chapter 4, 5: Normal
                         content = f"Auto-Content for {label}. " * 50
                 
                 widget.insert("1.0", content)
     
-    # Upload images logic (Random chapter)
-    # We only want to upload images for ONE random chapter to verify it works.
-    # Page 1-3 are info, 4-8 are chapters 1-5, 9 is references (index 0-9)
+    # Upload images logic
+    # Page 1-3 are info, 4-8 are chapters 1-5
     # So valid image pages are page indices 4,5,6,7,8 (1-indexed)
     
     is_chapter_page = 4 <= self.current_page <= 8
     
-    if is_chapter_page and not self.has_uploaded_images:
-        # 50% chance to upload here, or forced if it's the last possible chapter (Page 8)
-        if random.random() > 0.5 or self.current_page == 8:
+    if is_chapter_page:
+        # ALWAYS upload for testing smart placement
+        self.has_uploaded_images = False # Reset flag for each page
+        if True: # Always runs
             print("🤖 [Mock] Triggering Image Upload for this chapter...")
             
             # Find the upload button. It's buried in the widget hierarchy.
