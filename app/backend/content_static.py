@@ -1,0 +1,709 @@
+"""
+Static content generation for the report (Title Page, Certificates, Acknowledgement, etc.).
+"""
+import ctypes
+import win32gui
+import win32con
+from win32com.client import constants as c
+from pathlib import Path
+
+from .utils import cm_to_pt
+from .formatting import set_format, add_bookmark
+
+def position_windows(word, doc):
+    """
+    Positions the Word window and the GUI application side by side.
+    """
+    screen_width = ctypes.windll.user32.GetSystemMetrics(0) #1920
+    screen_height = ctypes.windll.user32.GetSystemMetrics(1) #1080
+
+    half_width = screen_width // 2
+    height = int(screen_height * 0.99)
+
+    left = int(max(0, half_width - 0.107 * screen_width))
+    width = int((half_width + 0.11 * screen_width))
+
+    hwnd_word = win32gui.FindWindow("OpusApp", None) # Find the Word window
+    if hwnd_word:
+        win32gui.ShowWindow(hwnd_word, win32con.SW_RESTORE) # Restore the window if minimized
+        try:
+            win32gui.SetForegroundWindow(hwnd_word) # Bring Word to the foreground
+        except Exception:
+            pass
+            
+        # Set position and size
+        win32gui.SetWindowPos( 
+            hwnd_word, None,
+            left, 0,
+            width, height,
+            win32con.SWP_NOZORDER
+        ) 
+
+    import time
+    time.sleep(0.5)
+
+    try:
+        if doc:
+            doc.ActiveWindow.View.Zoom.Percentage = 110
+        else:
+            word.ActiveWindow.View.Zoom.Percentage = 110 # Change zoom level
+    except Exception as e:
+        print(f"Warning: Could not set zoom: {e}")
+
+    window = word.ActiveWindow # Get the active window
+    if doc:
+        window.ScrollIntoView(doc.Range(0, doc.Content.End // 2), True) # Scroll to middle
+
+def make_borders(doc, word):
+    sec1 = doc.Sections(1) # Get the first section
+    borders = sec1.Borders
+    borders.DistanceFromTop = borders.DistanceFromBottom = 24
+    borders.DistanceFromLeft = borders.DistanceFromRight = 12
+
+    sec1.Range.Select() 
+    word.Selection.Range.GoTo()
+
+    for side in (c.wdBorderTop, c.wdBorderLeft, c.wdBorderBottom, c.wdBorderRight): # Set borders
+        br = borders(side)
+        br.LineStyle = c.wdLineStyleThinThickThinMedGap # Thin-Thick-Thin Medium Gap
+        br.LineWidth = c.wdLineWidth300pt # 3 pt width
+        br.Color = c.wdColorAutomatic # Automatic color (Black)
+
+def page_numbers(doc):
+    for idx, sec in enumerate(doc.Sections, start=1):
+        sec.Range.InsertAfter("\r")
+        if idx > 1:
+            for hf_type in [c.wdHeaderFooterPrimary, c.wdHeaderFooterFirstPage]:
+                sec.Footers(hf_type).LinkToPrevious = False
+                sec.Headers(hf_type).LinkToPrevious = False
+
+        if idx == 1 or idx == 2:
+            for hf_type in [c.wdHeaderFooterPrimary, c.wdHeaderFooterFirstPage]:
+                sec.Footers(hf_type).Range.Text = ""
+                sec.Headers(hf_type).Range.Text = ""
+            continue
+
+        if idx == 3:
+            sec.PageSetup.DifferentFirstPageHeaderFooter = False
+            footer = sec.Footers(c.wdHeaderFooterPrimary)
+            pnums = footer.PageNumbers
+            pnums.RestartNumberingAtSection = True
+            pnums.StartingNumber = 1
+            pnums.Add(c.wdAlignParagraphCenter, False)
+
+        if idx >= 4 and idx < 8:
+            sec.PageSetup.DifferentFirstPageHeaderFooter = True
+            pfooter = sec.Footers(c.wdHeaderFooterPrimary)
+            ppnums = pfooter.PageNumbers
+            ppnums.RestartNumberingAtSection = False
+            ppnums.Add(c.wdAlignParagraphCenter, False)
+
+            sec.Footers(c.wdHeaderFooterFirstPage).Range.Text = ""
+
+def generate_static_pages(doc, word, base_dir: Path):
+    """
+    Inserts static content into the Word document.
+    """
+    position_windows(word, doc)
+    
+    # Global cursor logic was used in original, here we use Selection mostly
+    word.Selection.Range.Select()
+    
+    # Title formatting
+    set_format(word.Selection, size=15, bold=True, align=c.wdAlignParagraphCenter, underline=c.wdUnderlineNone)
+
+    word.Selection.TypeText(
+        "VISVESVARAYA TECHNOLOGICAL UNIVERSITY\n"
+        "“Jnana Sangama”, Belagavi – 590 018"
+    )
+    word.Selection.TypeParagraph()
+
+    cursor = word.Selection.Range 
+    cursor.Collapse(c.wdCollapseEnd) 
+    word.Selection.TypeParagraph() 
+    cursor.Collapse(c.wdCollapseStart) 
+    
+    image_path = str(base_dir / "assets" / "VTU_Logo.png")
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor.Select()
+    word.Selection.ParagraphFormat.Alignment = c.wdAlignParagraphCenter
+
+    inline_shape = doc.InlineShapes.AddPicture(image_path, False, True, cursor) 
+    inline_shape.LockAspectRatio = True 
+    inline_shape.Width = cm_to_pt(4) 
+
+    cursor = inline_shape.Range.Duplicate 
+    cursor = doc.Range(doc.Content.End - 1, doc.Content.End - 1)
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor.Select()
+
+    word.Selection.Font.Size = 11
+    word.Selection.TypeText("A MINI PROJECT\vOn")
+    word.Selection.TypeParagraph()
+    
+    set_format(word.Selection, size=15, bold=True, align=c.wdAlignParagraphCenter)
+    add_bookmark(doc, word.Selection, "ProjectTitle", "___\n")
+
+    set_format(word.Selection, size=11, bold=False, align=c.wdAlignParagraphCenter)
+    word.Selection.Font.Italic = True
+    word.Selection.TypeText("Submitted in partial fulfilment of the requirements for the award of degree")
+    word.Selection.TypeParagraph()
+
+    set_format(word.Selection, size=11, bold=False, align=c.wdAlignParagraphCenter)
+    word.Selection.Font.Italic = False
+    word.Selection.TypeText("Bachelor of Engineering\vIn\v")
+
+    word.Selection.Font.Bold = True
+    add_bookmark(doc, word.Selection, "Department", "___")
+    word.Selection.TypeParagraph()    
+
+    word.Selection.Font.Bold = False
+    word.Selection.TypeText("Submitted by")
+    word.Selection.TypeParagraph()    
+
+    word.Selection.Font.Bold = True
+    add_bookmark(doc, word.Selection, "NameAndUSN", "___\n")
+
+    word.Selection.Font.Bold = False
+    word.Selection.TypeText("Under the guidance of\v")
+    
+    word.Selection.Font.Bold = True
+    add_bookmark(doc, word.Selection, "GuideName", "___")
+    word.Selection.TypeText("\v")
+ 
+    word.Selection.Font.Bold = False
+    add_bookmark(doc, word.Selection, "Designation", "___")
+    word.Selection.TypeText("\v")
+
+    cursor = word.Selection.Range 
+    cursor.Collapse(c.wdCollapseEnd) 
+    word.Selection.TypeParagraph() 
+    cursor.Collapse(c.wdCollapseStart)
+    
+    image_path = str(base_dir / "assets" / "BNMIT_Logo.png")
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor.Select()
+    word.Selection.ParagraphFormat.Alignment = c.wdAlignParagraphCenter
+
+    inline_shape = doc.InlineShapes.AddPicture(image_path, False, True, cursor) 
+    inline_shape.LockAspectRatio = True 
+    inline_shape.Width = cm_to_pt(5) 
+
+    cursor = inline_shape.Range.Duplicate 
+    cursor = doc.Range(doc.Content.End - 1, doc.Content.End - 1)
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor.Select()
+
+    word.Selection.Font.Bold = True
+    add_bookmark(doc, word.Selection, "Department_2", "___\n")
+    # doc.Bookmarks("Department_2").Range.Case = c.wdUpperCase # Applied later if needed but original had it line 340
+    # Re-adding immediate property set manually via Range if needed, or trust bookmark replacement later?
+    # Original code: doc.Bookmarks("Department_2").Range.Case = c.wdUpperCase 
+    # But this is just initializing the placeholder.
+    if doc.Bookmarks.Exists("Department_2"):
+         doc.Bookmarks("Department_2").Range.Case = c.wdUpperCase
+
+    cursor = word.Selection.Range 
+    cursor.Collapse(c.wdCollapseEnd) 
+    
+    image_path = str(base_dir / "assets" / "BNMIT_Text.png")
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor.Select()
+    word.Selection.ParagraphFormat.Alignment = c.wdAlignParagraphCenter
+
+    inline_shape = doc.InlineShapes.AddPicture(image_path, False, True, cursor) 
+    inline_shape.LockAspectRatio = True 
+    inline_shape.Width = cm_to_pt(15) 
+
+    cursor = inline_shape.Range.Duplicate 
+    cursor = doc.Range(doc.Content.End - 1, doc.Content.End - 1)
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor.Select()
+
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor = doc.Range(doc.Content.End - 1, doc.Content.End - 1) 
+    
+    cursor.InsertBreak(c.wdPageBreak)
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor.Select()
+    
+    # --- Page 2 (Certificate) ---
+
+    cursor = word.Selection.Range 
+    cursor.Collapse(c.wdCollapseEnd)
+    
+    image_path = str(base_dir / "assets" / "BNMIT_Text.png")
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor.Select()
+    word.Selection.ParagraphFormat.Alignment = c.wdAlignParagraphCenter
+
+    inline_shape = doc.InlineShapes.AddPicture(image_path, False, True, cursor) 
+    inline_shape.LockAspectRatio = True 
+    inline_shape.Width = cm_to_pt(15) 
+
+    cursor = inline_shape.Range.Duplicate 
+    cursor = doc.Range(doc.Content.End - 1, doc.Content.End - 1)
+    cursor.InsertParagraphAfter()
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor.Select()
+
+    placeholder = "___\n"
+    word.Selection.TypeText(placeholder)
+    bm_range = word.Selection.Range.Duplicate
+    bm_start = bm_range.Start - len(placeholder)
+    bm_range = doc.Range(bm_start, bm_start + len(placeholder))
+    doc.Bookmarks.Add("Department_3", bm_range)
+    bm_range.Case = c.wdUpperCase 
+
+    cursor = word.Selection.Range 
+    cursor.Collapse(c.wdCollapseEnd) 
+    word.Selection.TypeParagraph()
+    cursor.Collapse(c.wdCollapseStart)
+    
+    image_path = str(base_dir / "assets" / "BNMIT_Logo.png")
+    cursor.InsertParagraphAfter() 
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor.Select()
+    word.Selection.ParagraphFormat.Alignment = c.wdAlignParagraphCenter
+
+    inline_shape = doc.InlineShapes.AddPicture(image_path, False, True, cursor) 
+    inline_shape.LockAspectRatio = True 
+    inline_shape.Width = cm_to_pt(5) 
+
+    cursor = inline_shape.Range.Duplicate 
+    cursor.Collapse(c.wdCollapseEnd) 
+    cursor = doc.Range(doc.Content.End - 1, doc.Content.End - 1)
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor.Select()
+
+    word.Selection.Font.Name = "Calibri"                           
+    word.Selection.Font.Size = 15                                          
+    word.Selection.Font.Bold = True                                                
+    word.Selection.Font.Italic = False                                       
+    word.Selection.ParagraphFormat.Alignment = c.wdAlignParagraphCenter     
+    word.Selection.ParagraphFormat.LineSpacingRule = c.wdLineSpace1pt5    
+    word.Selection.Font.Underline = c.wdUnderlineSingle
+
+    word.Selection.TypeText("CERTIFICATE")
+    word.Selection.TypeParagraph()
+
+    word.Selection.Font.Name = "Times New Roman"                            
+    word.Selection.Font.Size = 12                                          
+    word.Selection.Font.Bold = False                                                
+    word.Selection.Font.Italic = False                                       
+    word.Selection.ParagraphFormat.Alignment = c.wdAlignParagraphJustify     
+    word.Selection.ParagraphFormat.LineSpacingRule = c.wdLineSpace1pt5    
+    word.Selection.Font.Underline = c.wdUnderlineNone
+
+    word.Selection.TypeText("This is to certify that the Mini project work entitled ")
+    set_format(word.Selection, underline=c.wdUnderlineNone)
+    
+    set_format(word.Selection, bold=True)
+    add_bookmark(doc, word.Selection, "ProjectTitle_2", "___")
+    
+    set_format(word.Selection, bold=False)
+    word.Selection.TypeText(" is a bonafide work carried out by ")
+
+    set_format(word.Selection, bold=True)
+    add_bookmark(doc, word.Selection, "NameAndUSN_2", "___\n")
+    
+    set_format(word.Selection, bold=False)
+    word.Selection.TypeText(" in partial fulfilment for the award of degree of ")
+
+    set_format(word.Selection, bold=True)
+    word.Selection.TypeText("Bachelor of Engineering")
+    set_format(word.Selection, bold=False)
+    word.Selection.TypeText(" in ")
+    set_format(word.Selection, bold=True)
+    add_bookmark(doc, word.Selection, "Department_4", "___") 
+    
+    set_format(word.Selection, bold=False)
+    word.Selection.TypeText(" of the ")
+    set_format(word.Selection, bold=True)
+    word.Selection.TypeText("Visvesvaraya Technological University, Belagavi")
+    set_format(word.Selection, bold=False)
+    word.Selection.TypeText(" during the year ")
+    set_format(word.Selection, bold=True)
+    add_bookmark(doc, word.Selection, "Year", "___")
+    
+    set_format(word.Selection, bold=False)
+    word.Selection.TypeText(". It is certified that all corrections/suggestions indicated for Internal Assessment have been incorporated in the report deposited in the departmental library. The project report has been approved as it satisfies the academic requirements in respect of Project work prescribed for the said Degree.")
+
+    # Tables for signatures
+    data = [
+        ["___",     "___", "Dr. S Y Kulkarni"],
+        ["___,",       "Professor and HOD,", "Additional Director"],
+        ["___,",     "___,",      "and Principal,"],
+        ["BNMIT, Bengaluru", "BNMIT, Bengaluru",   "BNMIT, Bengaluru"]
+    ]
+    bold_cells = [(0, 0), (0, 1), (0, 2)]
+    
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor = doc.Range(doc.Content.End - 1, doc.Content.End - 1) 
+    cursor.Select()
+
+    table = doc.Tables.Add(cursor, NumRows=len(data), NumColumns=max(len(r) for r in data))
+    table.Range.Style = "Table Grid"
+    table.Range.Font.Name = "Times New Roman"
+    table.Range.Font.Size = 12
+    table.Range.ParagraphFormat.Alignment = c.wdAlignParagraphCenter
+    table.Range.ParagraphFormat.LineSpacingRule = c.wdLineSpaceSingle
+    table.Range.ParagraphFormat.SpaceBefore = 0
+    table.Range.ParagraphFormat.SpaceAfter = 0
+    
+    for i, row in enumerate(data):
+        for j, cell_val in enumerate(row):
+            cell = table.Cell(i + 1, j + 1)
+            cell.Range.Text = cell_val
+            if (i, j) in bold_cells:
+                cell.Range.Font.Bold = True
+            if (i, j) == (0, 0):
+                placeholder = "___"
+                cell.Range.Text = placeholder
+                bm_start = cell.Range.Start
+                bm_range = doc.Range(bm_start, bm_start + len(placeholder))
+                doc.Bookmarks.Add("GuideName_2", bm_range)
+            if (i, j) == (1, 0):
+                placeholder = "___"
+                cell.Range.Text = placeholder
+                bm_start = cell.Range.Start
+                bm_range = doc.Range(bm_start, bm_start + len(placeholder))
+                doc.Bookmarks.Add("Designation_2", bm_range)
+            if (i, j) == (0, 1):
+                placeholder = "___"
+                cell.Range.Text = placeholder
+                bm_start = cell.Range.Start
+                bm_range = doc.Range(bm_start, bm_start + len(placeholder))
+                doc.Bookmarks.Add("Department_5", bm_range)
+            if (i, j) == (2, 0):
+                placeholder = "___"
+                cell.Range.Text = placeholder + ","
+                bm_start = cell.Range.Start
+                bm_range = doc.Range(bm_start, bm_start + len(placeholder))
+                doc.Bookmarks.Add("Department_6", bm_range)
+            if (i, j) == (2, 1):
+                placeholder = "___"
+                cell.Range.Text = placeholder + ","
+                bm_start = cell.Range.Start
+                bm_range = doc.Range(bm_start, bm_start + len(placeholder))
+                doc.Bookmarks.Add("Department_7", bm_range)
+
+    for border_id in [c.wdBorderTop, c.wdBorderBottom, c.wdBorderLeft, c.wdBorderRight, c.wdBorderHorizontal, c.wdBorderVertical]:
+        border = table.Borders(border_id)
+        border.LineStyle = c.wdLineStyleSingle
+        border.Color = c.wdColorWhite
+
+    cursor = table.Range.Duplicate
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor.InsertParagraphAfter()
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor.Select()
+
+    # Examiners Table
+    data = [["", "Name", "Signature with Date"]]
+    bold_cells = [(0, 1), (0, 2)]
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor = doc.Range(doc.Content.End - 1, doc.Content.End - 1) 
+    cursor.Select()
+    
+    table = doc.Tables.Add(cursor, NumRows=len(data), NumColumns=max(len(r) for r in data))
+    table.Range.Style = "Table Grid"
+    table.Range.Font.Name = "Times New Roman"
+    table.Range.Font.Size = 12
+    table.Range.ParagraphFormat.Alignment = c.wdAlignParagraphCenter
+    table.Range.ParagraphFormat.LineSpacingRule = c.wdLineSpaceSingle
+    table.Range.ParagraphFormat.SpaceBefore = 0
+    table.Range.ParagraphFormat.SpaceAfter = 0
+    
+    for i, row in enumerate(data):
+        for j, cell_val in enumerate(row):
+            cell = table.Cell(i + 1, j + 1)
+            cell.Range.Text = cell_val
+            if (i, j) in bold_cells:
+                cell.Range.Font.Bold = True
+
+    for border_id in [c.wdBorderTop, c.wdBorderBottom, c.wdBorderLeft, c.wdBorderRight, c.wdBorderHorizontal, c.wdBorderVertical]:
+        border = table.Borders(border_id)
+        border.LineStyle = c.wdLineStyleSingle
+        border.Color = c.wdColorWhite
+
+    cursor = table.Range.Duplicate
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor.InsertParagraphAfter()
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor.Select()
+
+    # Examiners 2
+    data = [["Examiner 1:", "", ""], ["Examiner 2:", "", ""]]
+    bold_cells = [(0, 0), (1, 0)]
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor = doc.Range(doc.Content.End - 1, doc.Content.End - 1) 
+    cursor.Select()
+    
+    table = doc.Tables.Add(cursor, NumRows=len(data), NumColumns=max(len(r) for r in data))
+    table.Range.Style = "Table Grid"
+    table.Range.Font.Name = "Times New Roman"
+    table.Range.Font.Size = 12
+    table.Range.ParagraphFormat.Alignment = c.wdAlignParagraphLeft
+    table.Range.ParagraphFormat.LineSpacingRule = c.wdLineSpaceSingle
+    table.Range.ParagraphFormat.SpaceBefore = 0
+    table.Range.ParagraphFormat.SpaceAfter = 0
+     
+    for i, row in enumerate(data):
+        for j, cell_val in enumerate(row):
+            cell = table.Cell(i + 1, j + 1)
+            cell.Range.Text = cell_val
+            if (i, j) in bold_cells:
+                cell.Range.Font.Bold = True
+    
+    for border_id in [c.wdBorderTop, c.wdBorderBottom, c.wdBorderLeft, c.wdBorderRight, c.wdBorderHorizontal, c.wdBorderVertical]:
+        border = table.Borders(border_id)
+        border.LineStyle = c.wdLineStyleSingle
+        border.Color = c.wdColorWhite
+
+    cursor = table.Range.Duplicate
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor.InsertParagraphAfter()
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor.Select()
+
+
+    # --- Acknowledgement ---
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor = doc.Range(doc.Content.End - 1, doc.Content.End - 1) 
+    cursor.InsertBreak(c.wdPageBreak) 
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor.Select()
+
+    word.Selection.ParagraphFormat.LineSpacingRule = c.wdLineSpace1pt5
+    set_format(word.Selection, size=14, bold=True, align=c.wdAlignParagraphCenter, underline=c.wdUnderlineNone)
+    word.Selection.TypeText("ACKNOWLEDGEMENT")
+    word.Selection.TypeParagraph()
+
+    set_format(word.Selection, size=12, bold=False, align=c.wdAlignParagraphJustify)
+    word.Selection.TypeText("I take this opportunity to express my heartfelt gratitude to all those who supported and guided me throughout the development of this project, ")
+    set_format(word.Selection, bold=True)
+    add_bookmark(doc, word.Selection, "ProjectTitle_Ack", "___") 
+    set_format(word.Selection, bold=False)
+    word.Selection.TypeText(". Their contributions and encouragement were invaluable to the successful completion of this endeavour.")
+    word.Selection.TypeParagraph()
+    word.Selection.TypeParagraph()
+
+    word.Selection.TypeText("First and foremost, I would like to extend my sincere thanks to the Dean of our institution, Prof. Eishwar N Maanay, for providing the resources and a conducive environment to undertake this project. Their constant support and emphasis on innovation inspired me to push my boundaries.")
+    word.Selection.TypeParagraph()
+    word.Selection.TypeParagraph()
+
+    word.Selection.TypeText("I am immensely grateful to our Head of the Department, ")
+    set_format(word.Selection, bold=True)
+    add_bookmark(doc, word.Selection, "HODName_Ack", "___")
+    set_format(word.Selection, bold=False)
+    word.Selection.TypeText(", ")
+    add_bookmark(doc, word.Selection, "Department_9", "___")
+    word.Selection.TypeText(" for their unwavering support and guidance. Their insights and suggestions played a crucial role in shaping the direction of this project. Their encouragement throughout the process has been a source of great motivation.")
+    word.Selection.TypeParagraph()
+    word.Selection.TypeParagraph()
+
+    word.Selection.TypeText("A special note of appreciation goes to my Guide, ")
+    set_format(word.Selection, bold=True)
+    add_bookmark(doc, word.Selection, "GuideName_Ack", "___")
+    set_format(word.Selection, bold=False)
+    word.Selection.TypeText(", ")
+    add_bookmark(doc, word.Selection, "Designation_Ack", "___")
+    word.Selection.TypeText(" for their technical expertise, and constructive feedback. Their patient guidance, timely advice, and constant encouragement helped me overcome challenges and refine the project to its current form.")
+    word.Selection.TypeParagraph()
+    word.Selection.TypeParagraph()
+
+    word.Selection.TypeText("I also wish to express my deepest gratitude to my parents for their unconditional love, support, and encouragement throughout this journey. Their belief in my abilities has been my greatest strength, and their words of motivation have always driven me to excel.")
+    word.Selection.TypeParagraph()
+    word.Selection.TypeParagraph()
+
+    word.Selection.TypeText("Lastly, I would like to thank my peers, friends, and everyone who contributed directly or indirectly to the successful completion of this project. Their encouragement and suggestions have been instrumental in making this project a success.")
+    word.Selection.TypeParagraph()
+    word.Selection.TypeParagraph()
+
+    word.Selection.TypeText("This project would not have been possible without the collective support of everyone mentioned above. I am truly grateful for their contributions and look forward to utilizing the knowledge and skills gained from this experience in future endeavours.")
+   
+    word.Selection.InsertBreak(c.wdPageBreak)
+    word.Selection.MoveLeft(Unit=1, Count=1)
+    word.Selection.Delete(Unit=1, Count=1)
+    word.Selection.MoveRight(Unit=1, Count=1)
+
+    # --- Abstract ---
+    set_format(word.Selection, size=14, bold=True, align=c.wdAlignParagraphCenter, underline=c.wdUnderlineNone)
+    word.Selection.TypeText("ABSTRACT")
+    word.Selection.TypeParagraph()
+
+    word.Selection.ParagraphFormat.LineSpacingRule = c.wdLineSpace1pt5    
+    set_format(word.Selection, size=12, bold=False, align=c.wdAlignParagraphJustify)
+    add_bookmark(doc, word.Selection, "Abstract", "___")
+
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor = doc.Range(doc.Content.End - 1, doc.Content.End - 1) 
+    cursor.InsertBreak(c.wdSectionBreakNextPage) 
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor.Select()
+
+    # --- TOC ---
+    sec = doc.Sections(2)  
+    cursor = sec.Range.Duplicate
+    cursor.Collapse(c.wdCollapseStart)
+    cursor.Select()
+    word.Selection.TypeParagraph()
+    word.Selection.ParagraphFormat.Alignment = c.wdAlignParagraphCenter
+    cursor.Select()
+    
+    word.Selection.Font.Name = "Times New Roman"
+    word.Selection.Font.Size = 14
+    word.Selection.Font.Bold = True
+    word.Selection.ParagraphFormat.Alignment = c.wdAlignParagraphCenter
+    word.Selection.TypeText("Table of Contents")
+    word.Selection.TypeParagraph()
+
+    data = [
+        ["S.No", "Title", "Page No"],
+        ["1", "___", "___"],
+        ["2", "___", "___"],
+        ["3", "___", "___"],
+        ["4", "___", "___"],
+        ["5", "___", "___"],
+        ["6", "References", "___"],
+    ]
+    bold_cells = [(0, 0), (0, 1), (0, 2)]
+    
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor = doc.Range(doc.Content.End - 1, doc.Content.End - 1) 
+    cursor.Select()
+
+    table = doc.Tables.Add(cursor, NumRows=len(data), NumColumns=max(len(r) for r in data))
+    table.Range.Style = "Table Grid"
+    table.Range.Font.Name = "Times New Roman"
+    table.Range.Font.Size = 12
+    table.Range.ParagraphFormat.Alignment = c.wdAlignParagraphCenter
+    table.Range.ParagraphFormat.LineSpacingRule = c.wdLineSpaceSingle
+    table.Range.ParagraphFormat.SpaceBefore = 4
+    table.Range.ParagraphFormat.SpaceAfter = 4
+    
+    table.Columns(1).SetWidth(cm_to_pt(1.25), c.wdAdjustNone)   
+    table.Columns(2).SetWidth(cm_to_pt(13.75), c.wdAdjustNone)  
+    table.Columns(3).SetWidth(cm_to_pt(2), c.wdAdjustNone) 
+    
+    for i, row in enumerate(data):
+        for j, cell_val in enumerate(row):
+            cell = table.Cell(i + 1, j + 1)
+            cell.Range.Text = cell_val
+            if (i, j) in bold_cells:
+                cell.Range.Font.Bold = True
+            if j == 1 and i > 0 and i < 6:
+                placeholder = "___"
+                cell.Range.Text = placeholder
+                bm_start = cell.Range.Start
+                bm_range = doc.Range(bm_start, bm_start + len(placeholder))
+                doc.Bookmarks.Add(f"Chapter{i}Title", bm_range)
+            if j == 2 and i > 0 and i < 6:
+                placeholder = "___"
+                cell.Range.Text = placeholder
+                bm_start = cell.Range.Start
+                bm_range = doc.Range(bm_start, bm_start + len(placeholder))
+                doc.Bookmarks.Add(f"Chapter{i}Page", bm_range)
+            if j == 2 and i == 6:
+                placeholder = "___"
+                cell.Range.Text = placeholder
+                bm_start = cell.Range.Start
+                bm_range = doc.Range(bm_start, bm_start + len(placeholder))
+                doc.Bookmarks.Add("RefPage", bm_range)
+                
+    for border_id in [c.wdBorderTop, c.wdBorderBottom, c.wdBorderLeft, c.wdBorderRight, c.wdBorderHorizontal, c.wdBorderVertical]:
+        border = table.Borders(border_id)
+        border.LineStyle = c.wdLineStyleSingle
+        border.Color = c.wdColorBlack
+
+    cursor = table.Range.Duplicate
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor.InsertParagraphAfter()
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor.Select()
+
+    # --- Chapters ---
+    for i in range(1, 6):
+        cursor.Collapse(c.wdCollapseEnd)
+        cursor = doc.Range(doc.Content.End - 1, doc.Content.End - 1)
+        cursor.InsertBreak(c.wdSectionBreakNextPage)
+        cursor.Collapse(c.wdCollapseEnd)
+        cursor.Select()
+
+        word.Selection.Font.Name = "Times New Roman"
+        set_format(word.Selection, size=16, bold=True, align=c.wdAlignParagraphCenter)
+
+        for _ in range(9):
+            word.Selection.TypeParagraph()
+    
+        word.Selection.TypeText(f"Chapter {i}")
+        word.Selection.TypeParagraph()
+        placeholder = "___"
+        word.Selection.TypeText(placeholder)
+        bm_range = word.Selection.Range.Duplicate
+        bm_start = bm_range.Start - len(placeholder)
+        bm_range = doc.Range(bm_start, bm_start + len(placeholder))
+        doc.Bookmarks.Add(f"Chapter{i}Title_2", bm_range)
+        word.Selection.TypeParagraph()
+
+        cursor.Collapse(c.wdCollapseEnd)
+        cursor = doc.Range(doc.Content.End - 1, doc.Content.End - 1)
+        cursor.InsertBreak(c.wdPageBreak)
+        cursor.Collapse(c.wdCollapseEnd)
+        cursor.Select()
+
+        placeholder = "___"
+        word.Selection.TypeText(placeholder)
+        bm_range = word.Selection.Range.Duplicate
+        bm_start = bm_range.Start - len(placeholder)
+        bm_range = doc.Range(bm_start, bm_start + len(placeholder))
+        doc.Bookmarks.Add(f"Chapter{i}Title_3", bm_range)
+        word.Selection.TypeParagraph()
+
+        word.Selection.ParagraphFormat.LineSpacingRule = c.wdLineSpace1pt5    
+        word.Selection.Font.Size = 12
+        word.Selection.Font.Bold = False
+        word.Selection.ParagraphFormat.Alignment = c.wdAlignParagraphJustify
+
+        placeholder = "___"
+        word.Selection.TypeText(placeholder)
+        content_range = word.Selection.Range.Duplicate  
+        bm_start = content_range.Start - len(placeholder)
+        content_bm_range = doc.Range(bm_start, bm_start + len(placeholder))
+        doc.Bookmarks.Add(f"Chapter{i}Content", content_bm_range)
+        word.Selection.TypeParagraph()
+
+    # --- References ---
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor = doc.Range(doc.Content.End - 1, doc.Content.End - 1)
+    cursor.InsertBreak(c.wdSectionBreakNextPage)
+    cursor.Collapse(c.wdCollapseEnd)
+    cursor.Select()
+    
+    word.Selection.Font.Name = "Times New Roman"                           
+    word.Selection.Font.Size = 16                                          
+    word.Selection.Font.Bold = True                                                
+    word.Selection.Font.Italic = False                                       
+    word.Selection.ParagraphFormat.Alignment = c.wdAlignParagraphCenter     
+    word.Selection.ParagraphFormat.LineSpacingRule = c.wdLineSpace1pt5    
+    word.Selection.Font.Underline = c.wdUnderlineNone
+
+    word.Selection.TypeText("REFERENCES")
+    word.Selection.TypeParagraph()
+
+    word.Selection.Font.Size = 12                                          
+    word.Selection.Font.Bold = False                                                
+    word.Selection.ParagraphFormat.Alignment = c.wdAlignParagraphJustify     
+    word.Selection.Font.Underline = c.wdUnderlineNone
+
+    placeholder = "___"
+    word.Selection.TypeText(placeholder)
+    bm_range = word.Selection.Range.Duplicate
+    bm_start = bm_range.Start - len(placeholder)
+    bm_range = doc.Range(bm_start, bm_start + len(placeholder))
+    doc.Bookmarks.Add("References", bm_range)
+
+    # --- Final touches ---
+    make_borders(doc, word)
+    page_numbers(doc)

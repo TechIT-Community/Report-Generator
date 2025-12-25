@@ -7,30 +7,27 @@ TO DO -
 
         3. AI
 
-        4. Fix Images - currently get added in the wrong order
 
     GUI
     
         1. allow free dynamic adding of text boxes and images (client side)
     
-        2. separate pages into sections and chapters into tabs (tabs also dynamic if possible)
+        2. separate pages into sections and chapters into tabs (tabs also dynamic)
 
         3. Terminal with logs
 
-        4. access and preview to already uploaded assets OR upload new one instead of the latter each time 
+        4. access and preview to already uploaded assets OR upload new one instead of the latter each time
 
-        5. Page 0 department as dropdown
+        5. text box dropdown for - title, heading, subheading, content, subscript, superscript, etc, etc choosing other font things
+
     
     DOCGEN
-        1. text box dropdown for - title, heading, subheading, content, subscript, superscript, etc, etc choosing other font things
     
-        2. name, usn separate (addable) along with table alignment
+        1. name, usn separate (addable) along with table alignment
 
-        3. image insertion order and placement
+        2. bookmark existence after manual editing
 
-        4. bookmark existence after manual editing
-
-        5. undo button
+        3. undo button
 
 
 
@@ -49,3 +46,7 @@ DONE -
     6. floating labels
 
     7. FIX -  Acknowledgement dept HOD guide, Dept in certificate
+
+    8. Fix Images - currently get added in the wrong order
+
+    9. Page 0 - department as dropdown

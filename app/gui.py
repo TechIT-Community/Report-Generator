@@ -16,7 +16,7 @@ from pathlib import Path  # Path handling
 from tkinter import filedialog
 import shutil
 
-import Document_Generator as docgen  # backend module
+import backend.generator as docgen  # backend module
 
 # =================================================================================
 
@@ -52,7 +52,11 @@ class App(tk.CTk):
         self.pages()
         self.user_inputs = user_inputs
         self.after(500, lambda: self.focus())
-        docgen.insert_static_content()
+        docgen.initialize() # Initialize Word (Lazy Load)
+        
+        # Shortcut Label
+        self.shortcut_label = tk.CTkLabel(self, text="F1: Keyboard shortcuts", font=("Arial", 12), text_color="gray")
+        self.shortcut_label.place(relx=0.97, rely=0.03, anchor="ne")
         
         # ========== KEY BINDINGS ==========
         self.bind_all("<Control-Return>", lambda e: self._show_next_enter())  # Ctrl + Enter = Next
@@ -82,12 +86,12 @@ class App(tk.CTk):
         
     def _show_next_right(self):
         if self.current_page < len(self.pages):
-            self.flash_label(f"🔄 Next → Page {self.current_page + 1}: {self.page_titles[self.current_page]}")
+            self.flash_label(f"➡️ Next → Page {self.current_page + 1}: {self.page_titles[self.current_page]}")
             self.go_next()
 
     def _show_next_enter(self):
         if self.current_page < len(self.pages):
-            self.flash_label(f"🔄 Next → Page {self.current_page + 1}: {self.page_titles[self.current_page]}")
+            self.flash_label(f"➡️ Next → Page {self.current_page + 1}: {self.page_titles[self.current_page]}")
             self.go_next()
         else:
             self.flash_label("✅ Done! Report saved successfully.", color="skyblue", time = 5000)

@@ -52,7 +52,7 @@ class StartScreen(tk.CTk):
         self.dept_menu = tk.CTkOptionMenu(
             self, values=[
                 "COMPUTER SCIENCE AND ENGINEERING",
-                "ELECTRICAL AND COMMUNICATION ENGINEERING",
+                "ELECTRONICS AND COMMUNICATION ENGINEERING",
                 "INFORMATION SCIENCE AND ENGINEERING",
                 "MECHANICAL ENGINEERING",
                 "CIVIL ENGINEERING",
@@ -71,8 +71,8 @@ class StartScreen(tk.CTk):
         college = self.college_var.get()
         dept = self.dept_var.get()
 
-        if college == "more coming soon" or dept == "more coming soon":
-            CTkMessagebox(title="Not Available", message="Selected option is not yet supported.", icon="warning")
+        if college == "Select College" or dept == "Select Department" or college == "more coming soon" or dept == "more coming soon":
+            CTkMessagebox(title="Invalid Selection", message="Please select a valid College and Department.", icon="cancel")
             return
 
         self.after(100, lambda: self._launch_and_close(college, dept))
