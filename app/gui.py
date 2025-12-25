@@ -257,7 +257,7 @@ class App(tk.CTk):
             widget.destroy()
         self.entries.clear()
 
-        self.page_title_label.configure(text=f"Page {self.current_page}: {self.page_titles[self.current_page - 1]}")
+        self.page_title_label.configure(text=f"{self.current_page}: {self.page_titles[self.current_page - 1]}")
         self.page_selector.set(f"{self.current_page}. {self.page_titles[self.current_page - 1]}")
 
         current_fields = self.pages[self.current_page - 1]
@@ -296,28 +296,8 @@ class App(tk.CTk):
                 upload_label = tk.CTkLabel(image_upload_frame, text=f"Upload images for Chapter {chapter_number}:", font=("Arial", 14))
                 upload_label.pack()
 
-                def upload_images(ch_num=chapter_number):
-                    files = filedialog.askopenfilenames(
-                        title="Select image(s)",
-                        filetypes=[("Image Files", "*.png *.jpg *.jpeg *.bmp *.gif")],
-                    )
-                    if not files:
-                        return
-
-                    existing = list(ASSET_DIR.glob(f"Fig {ch_num}.*"))
-                    next_idx = 1 + max([
-                        int(p.stem.split('.')[1]) for p in existing if p.stem.startswith(f"Fig {ch_num}.") and '.' in p.stem
-                    ] + [0])
-
-                    for i, path in enumerate(files, start=next_idx):
-                        ext = Path(path).suffix.lower()
-                        dest = ASSET_DIR / f"Fig {ch_num}.{i}{ext}"
-                        shutil.copy(path, dest)
-                        self.flash_label(f"📸 Uploaded: {dest.name}", time=2000)
-                        #CTkMessagebox(title="Upload Successful", message=f"Saved as: {dest.name}", icon="check")
-                        self.uploaded_files.append(dest)
-
-                upload_btn = tk.CTkButton(image_upload_frame, text="Upload Images", command=upload_images)
+                upload_btn = tk.CTkButton(image_upload_frame, text="Upload Images", 
+                                          command=lambda ch=chapter_number: self.browse_and_upload_images(ch))
                 upload_btn.pack(pady=(5, 0))
 
         self.prev_button.configure(state="normal" if self.current_page > 1 else "disabled")
@@ -371,6 +351,26 @@ class App(tk.CTk):
             self.load_page()
         except Exception as e:
             print(f"Page jump failed: {e}")
+
+    def browse_and_upload_images(self, ch_num):
+        files = filedialog.askopenfilenames(
+            title="Select image(s)",
+            filetypes=[("Image Files", "*.png *.jpg *.jpeg *.bmp *.gif")],
+        )
+        if not files:
+            return
+
+        existing = list(ASSET_DIR.glob(f"Fig {ch_num}.*"))
+        next_idx = 1 + max([
+            int(p.stem.split('.')[1]) for p in existing if p.stem.startswith(f"Fig {ch_num}.") and '.' in p.stem
+        ] + [0])
+
+        for i, path in enumerate(files, start=next_idx):
+            ext = Path(path).suffix.lower()
+            dest = ASSET_DIR / f"Fig {ch_num}.{i}{ext}"
+            shutil.copy(path, dest)
+            self.flash_label(f"📸 Uploaded: {dest.name}", time=2000)
+            self.uploaded_files.append(dest)
 
 # =================================================================================
 

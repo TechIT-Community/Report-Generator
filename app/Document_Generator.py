@@ -45,6 +45,29 @@ win32gui.SetForegroundWindow(hwnd) # Bring Word to the foreground
 # Helper Functions
 cm_to_pt = lambda cm: cm * 28.3464566929133858 # For point system in word (1 cm = 28.346 pt)
 
+def set_format(font_name=None, size=None, bold=None, italic=None, align=None, underline=None):
+    """
+    Sets the formatting for the current selection in Word. Only applies provided values.
+    """
+    if font_name is not None: word.Selection.Font.Name = font_name
+    if size is not None: word.Selection.Font.Size = size
+    if bold is not None: word.Selection.Font.Bold = bold
+    if italic is not None: word.Selection.Font.Italic = italic
+    if align is not None: word.Selection.ParagraphFormat.Alignment = align
+    if underline is not None: word.Selection.Font.Underline = underline
+
+def add_bookmark(name, placeholder="___", add_newline=False):
+    """
+    Types a placeholder, wraps it in a bookmark, and optionally adds a newline or space.
+    """
+    word.Selection.TypeText(placeholder)
+    bm_range = word.Selection.Range.Duplicate
+    bm_start = bm_range.Start - len(placeholder)
+    bm_range = doc.Range(bm_start, bm_start + len(placeholder))
+    doc.Bookmarks.Add(name, bm_range)
+    if add_newline:
+        word.Selection.TypeParagraph()
+
 # Simulates n Backspace key presses
 def backspace(n=1):
     sel = word.Selection
@@ -143,6 +166,15 @@ doc.Content.Delete()
 cursor = doc.Range(0, 0)
 cursor.Collapse(c.wdCollapseEnd)
 
+# Enforce global font setting for Normal style and defaults
+try:
+    doc.Styles(c.wdStyleNormal).Font.Name = "Times New Roman"
+    doc.Content.Font.Name = "Times New Roman"
+    # Also ensure Default Paragraph Font is checked if possible, but doc.Content usually covers it.
+except:
+    pass
+
+
 # ================================================================================= 
 # =================================================================================
 
@@ -192,13 +224,7 @@ def insert_static_content():
     cursor.Select()
 # _________________________________________________________________________________
     
-    word.Selection.Font.Name = "Times New Roman"                            # Font Name
-    word.Selection.Font.Size = 15                                           # Font Size
-    word.Selection.Font.Bold = True                                         # Bold        
-    word.Selection.Font.Italic = False                                      # Italic  
-    word.Selection.ParagraphFormat.Alignment = c.wdAlignParagraphCenter     # Alignment
-    word.Selection.ParagraphFormat.LineSpacingRule = c.wdLineSpaceSingle    # Line Spacing
-    word.Selection.Font.Underline = c.wdUnderlineNone                       # No Underline
+    set_format(size=15, bold=True, align=c.wdAlignParagraphCenter, underline=c.wdUnderlineNone)
 
 
     word.Selection.TypeText(
@@ -238,37 +264,23 @@ def insert_static_content():
     # time.sleep(0.1)
 # _________________________________________________________________________________
     
-    word.Selection.Font.Size = 15
-    placeholder = "___\n"
-    word.Selection.TypeText(placeholder)
-    bm_range = word.Selection.Range.Duplicate
-    bm_start = bm_range.Start - len(placeholder)
-    bm_range = doc.Range(bm_start, bm_start + len(placeholder))
-    doc.Bookmarks.Add("ProjectTitle", bm_range)
+    set_format(size=15, bold=True, align=c.wdAlignParagraphCenter)
+    add_bookmark("ProjectTitle", "___\n")
     # time.sleep(0.1)
 # _________________________________________________________________________________
 
-    word.Selection.Font.Size = 11
-    word.Selection.Font.Bold = False
-    word.Selection.Font.Italic = True
+    set_format(size=11, bold=False, italic=True, align=c.wdAlignParagraphCenter)
     word.Selection.TypeText("Submitted in partial fulfilment of the requirements for the award of degree")
     word.Selection.TypeParagraph()
     # time.sleep(0.1)
 # _________________________________________________________________________________
 
-    word.Selection.Font.Name = "Times New Roman"
-    word.Selection.Font.Bold = False
-    word.Selection.Font.Italic = False
+    set_format(size=11, bold=False, italic=False, align=c.wdAlignParagraphCenter)
     word.Selection.TypeText("Bachelor of Engineering\vIn\v")
     # time.sleep(0.1)
 
     word.Selection.Font.Bold = True
-    placeholder = "___"
-    word.Selection.TypeText(placeholder)
-    bm_range = word.Selection.Range.Duplicate
-    bm_start = bm_range.Start - len(placeholder)
-    bm_range = doc.Range(bm_start, bm_start + len(placeholder))
-    doc.Bookmarks.Add("Department", bm_range)
+    add_bookmark("Department", "___")
     word.Selection.TypeParagraph()    
 
     word.Selection.Font.Bold = False
@@ -278,12 +290,7 @@ def insert_static_content():
 # _________________________________________________________________________________
 
     word.Selection.Font.Bold = True
-    placeholder = "___\n"
-    word.Selection.TypeText(placeholder)
-    bm_range = word.Selection.Range.Duplicate
-    bm_start = bm_range.Start - len(placeholder)
-    bm_range = doc.Range(bm_start, bm_start + len(placeholder))
-    doc.Bookmarks.Add("NameAndUSN", bm_range)
+    add_bookmark("NameAndUSN", "___\n")
     # time.sleep(0.1)
 # _________________________________________________________________________________
 
@@ -293,24 +300,14 @@ def insert_static_content():
 # _________________________________________________________________________________
     
     word.Selection.Font.Bold = True
-    placeholder = "___\n"
-    word.Selection.TypeText(placeholder)
-    bm_range = word.Selection.Range.Duplicate
-    bm_start = bm_range.Start - len(placeholder)
-    bm_range = doc.Range(bm_start, bm_start + len(placeholder))
-    doc.Bookmarks.Add("GuideName", bm_range)
-    word.Selection.TypeParagraph()
+    add_bookmark("GuideName", "___\n")
+    # word.Selection.TypeParagraph() # Removed to prevent double newline
  
     # time.sleep(0.1)
 # _________________________________________________________________________________
 
     word.Selection.Font.Bold = False
-    placeholder = "___\n"
-    word.Selection.TypeText(placeholder)
-    bm_range = word.Selection.Range.Duplicate
-    bm_start = bm_range.Start - len(placeholder)
-    bm_range = doc.Range(bm_start, bm_start + len(placeholder))
-    doc.Bookmarks.Add("Designation", bm_range)
+    add_bookmark("Designation", "___\n")
     # time.sleep(0.1)
 # _________________________________________________________________________________
 
@@ -338,13 +335,8 @@ def insert_static_content():
 # _________________________________________________________________________________
 
     word.Selection.Font.Bold = True
-    placeholder = "___\n"
-    word.Selection.TypeText(placeholder)
-    bm_range = word.Selection.Range.Duplicate
-    bm_start = bm_range.Start - len(placeholder)
-    bm_range = doc.Range(bm_start, bm_start + len(placeholder))
-    doc.Bookmarks.Add("Department_2", bm_range)
-    bm_range.Case = c.wdUpperCase 
+    add_bookmark("Department_2", "___\n")
+    doc.Bookmarks("Department_2").Range.Case = c.wdUpperCase 
     # time.sleep(0.1)
 # _________________________________________________________________________________
 
@@ -456,76 +448,40 @@ def insert_static_content():
     word.Selection.Font.Underline = c.wdUnderlineNone
 
     word.Selection.TypeText("This is to certify that the Mini project work entitled ")
-    # time.sleep(0.1)
-
-# _________________________________________________________________________________
-    
-    placeholder = "___ "
-    word.Selection.TypeText(placeholder)
-    bm_range = word.Selection.Range.Duplicate
-    bm_start = bm_range.Start - len(placeholder)
-    bm_range = doc.Range(bm_start, bm_start + len(placeholder))
-    doc.Bookmarks.Add("ProjectTitle_2", bm_range)
-    # time.sleep(0.1)
-# _________________________________________________________________________________
-
-    word.Selection.TypeText("has been successfully completed and is a bonafide work carried out by ")
-    # time.sleep(0.1)
-# _________________________________________________________________________________
-
-    placeholder = "___ "
-    word.Selection.TypeText(placeholder)
-    bm_range = word.Selection.Range.Duplicate
-    bm_start = bm_range.Start - len(placeholder)
-    bm_range = doc.Range(bm_start, bm_start + len(placeholder))
-    doc.Bookmarks.Add("NameUSN", bm_range)
-    # time.sleep(0.1)
-# _________________________________________________________________________________
-
-    word.Selection.TypeText("bonafide students of ")
-    # time.sleep(0.1)
-# _________________________________________________________________________________
-
-    placeholder = "___ "
-    word.Selection.TypeText(placeholder)
-    bm_range = word.Selection.Range.Duplicate
-    bm_start = bm_range.Start - len(placeholder)
-    bm_range = doc.Range(bm_start, bm_start + len(placeholder))
-    doc.Bookmarks.Add("Sem", bm_range)
-    # time.sleep(0.1)
-# _________________________________________________________________________________
-
-    word.Selection.TypeText("Semester B.E., B.N.M. Institute of Technology, an Autonomous Institution "
-                            "under Visvesvaraya Technological University, Belagavi submitted in partial "
-                            "fulfilment for the award of Bachelor of Engineering in "
-    )
-    word.Selection.Font.Bold = True
-    placeholder = "___ "
-    word.Selection.TypeText(placeholder)
-    bm_range = word.Selection.Range.Duplicate
-    bm_start = bm_range.Start - len(placeholder)
-    bm_range = doc.Range(bm_start, bm_start + len(placeholder))
-    doc.Bookmarks.Add("Department_4", bm_range)
-    bm_range.Case = c.wdUpperCase 
-    # time.sleep(0.1)
-    word.Selection.Font.Bold = False
-    
-    word.Selection.TypeText("during the year ")
+    set_format(underline=c.wdUnderlineNone)
     # time.sleep(0.1)
 # _________________________________________________________________________________
     
-    placeholder = "___ "
-    word.Selection.TypeText(placeholder)
-    bm_range = word.Selection.Range.Duplicate
-    bm_start = bm_range.Start - len(placeholder)
-    bm_range = doc.Range(bm_start, bm_start + len(placeholder))
-    doc.Bookmarks.Add("Year", bm_range)
-    # time.sleep(0.1)
-# _________________________________________________________________________________
+    set_format(bold=True)
+    add_bookmark("ProjectTitle_2", "___")
+    
+    set_format(bold=False)
+    word.Selection.TypeText(" is a bonafide work carried out by ")
 
-    word.Selection.TypeText("It is certified that all corrections / suggestions indicated for Internal Assessment "
-                            "have been incorporated in the Report. The report has been approved as it satisfied "
-                            "the academic requirements in respect project work prescribed by the said degree. ")
+    set_format(bold=True)
+    add_bookmark("NameAndUSN_2", "___\n")
+    
+    set_format(bold=False)
+    word.Selection.TypeText(" in partial fulfilment for the award of degree of ")
+
+    set_format(bold=True)
+    word.Selection.TypeText("Bachelor of Engineering")
+    set_format(bold=False)
+    word.Selection.TypeText(" in ")
+    set_format(bold=True)
+    add_bookmark("Department_4", "___") # Changed from Department_3 to match original logic if distinct
+    
+    set_format(bold=False)
+    word.Selection.TypeText(" of the ")
+    set_format(bold=True)
+    word.Selection.TypeText("Visvesvaraya Technological University, Belagavi")
+    set_format(bold=False)
+    word.Selection.TypeText(" during the year ")
+    set_format(bold=True)
+    add_bookmark("Year", "___")
+    
+    set_format(bold=False)
+    word.Selection.TypeText(". It is certified that all corrections/suggestions indicated for Internal Assessment have been incorporated in the report deposited in the departmental library. The project report has been approved as it satisfies the academic requirements in respect of Project work prescribed for the said Degree.")
     # time.sleep(0.1)
 # _________________________________________________________________________________
 
@@ -719,121 +675,73 @@ def insert_static_content():
 # _________________________________________________________________________________
 # _________________________________________________________________________________
 
-    word.Selection.Font.Size = 16
-    word.Selection.Font.Bold = True
-    word.Selection.ParagraphFormat.Alignment = c.wdAlignParagraphCenter
+    word.Selection.ParagraphFormat.LineSpacingRule = c.wdLineSpace1pt5
+    set_format(size=14, bold=True, align=c.wdAlignParagraphCenter, underline=c.wdUnderlineNone)
     word.Selection.TypeText("ACKNOWLEDGEMENT")
     word.Selection.TypeParagraph()
-    # time.sleep(0.1)
-# _________________________________________________________________________________
 
-    word.Selection.Font.Size = 12
-    word.Selection.Font.Bold = False
-    word.Selection.ParagraphFormat.Alignment = c.wdAlignParagraphJustify
-    word.Selection.TypeText(
-        "I take this opportunity to express my heartfelt gratitude to all those who supported and guided me "
-        "throughout the development of this project, the Automatic License Plate Recognition System. Their "
-        "contributions and encouragement were invaluable to the successful completion of this endeavour.\n\n"
-        
-        "First and foremost, I would like to extend my sincere thanks to the Dean of our institution, Prof. "
-        "Eishwar N Maanay, for providing the resources and a conducive environment to undertake this project. "
-        "Their constant support and emphasis on innovation inspired me to push my boundaries.\n\n"
+    set_format(size=12, bold=False, align=c.wdAlignParagraphJustify)
+    word.Selection.TypeText("I take this opportunity to express my heartfelt gratitude to all those who supported and guided me throughout the development of this project, ")
+    set_format(bold=True)
+    add_bookmark("ProjectTitle_Ack", "___") 
+    set_format(bold=False)
+    word.Selection.TypeText(". Their contributions and encouragement were invaluable to the successful completion of this endeavour.")
+    word.Selection.TypeParagraph()
+    word.Selection.TypeParagraph()
 
-        "I am immensely grateful to our Head of the Department, ")
+    word.Selection.TypeText("First and foremost, I would like to extend my sincere thanks to the Dean of our institution, Prof. Eishwar N Maanay, for providing the resources and a conducive environment to undertake this project. Their constant support and emphasis on innovation inspired me to push my boundaries.")
+    word.Selection.TypeParagraph()
+    word.Selection.TypeParagraph()
 
-    placeholder = "___ "
-    word.Selection.TypeText(placeholder)
-    bm_range = word.Selection.Range.Duplicate
-    bm_start = bm_range.Start - len(placeholder)
-    bm_range = doc.Range(bm_start, bm_start + len(placeholder))
-    doc.Bookmarks.Add("Department_8", bm_range)
-
+    word.Selection.TypeText("I am immensely grateful to our Head of the Department, ")
+    set_format(bold=True)
+    add_bookmark("HODName_Ack", "___")
+    set_format(bold=False)
     word.Selection.TypeText(", ")
+    add_bookmark("Department_9", "___")
+    word.Selection.TypeText(" for their unwavering support and guidance. Their insights and suggestions played a crucial role in shaping the direction of this project. Their encouragement throughout the process has been a source of great motivation.")
+    word.Selection.TypeParagraph()
+    word.Selection.TypeParagraph()
 
-    # Department_9
-    placeholder = "___ "
-    word.Selection.TypeText(placeholder)
-    bm_range = word.Selection.Range.Duplicate
-    bm_start = bm_range.Start - len(placeholder)
-    bm_range = doc.Range(bm_start, bm_start + len(placeholder))
-    doc.Bookmarks.Add("Department_9", bm_range)
-
-    word.Selection.TypeText(
-        " for their unwavering support and guidance. Their insights and suggestions played a crucial role in shaping "
-        "the direction of this project. Their encouragement throughout the process has been a source of great motivation.\n\n"
-
-        "A special note of appreciation goes to my Guide, "
-    )
-    
-    placeholder = "___ "
-    word.Selection.TypeText(placeholder)
-    bm_range = word.Selection.Range.Duplicate
-    bm_start = bm_range.Start - len(placeholder)
-    bm_range = doc.Range(bm_start, bm_start + len(placeholder))
-    doc.Bookmarks.Add("GuideName_3", bm_range)
-
+    word.Selection.TypeText("A special note of appreciation goes to my Guide, ")
+    set_format(bold=True)
+    add_bookmark("GuideName_Ack", "___")
+    set_format(bold=False)
     word.Selection.TypeText(", ")
+    add_bookmark("Designation_Ack", "___")
+    word.Selection.TypeText(" for their technical expertise, and constructive feedback. Their patient guidance, timely advice, and constant encouragement helped me overcome challenges and refine the project to its current form.")
+    word.Selection.TypeParagraph()
+    word.Selection.TypeParagraph()
 
-    # Designation_3
-    placeholder = "___ "
-    word.Selection.TypeText(placeholder)
-    bm_range = word.Selection.Range.Duplicate
-    bm_start = bm_range.Start - len(placeholder)
-    bm_range = doc.Range(bm_start, bm_start + len(placeholder))
-    doc.Bookmarks.Add("Designation_3", bm_range)
+    word.Selection.TypeText("I also wish to express my deepest gratitude to my parents for their unconditional love, support, and encouragement throughout this journey. Their belief in my abilities has been my greatest strength, and their words of motivation have always driven me to excel.")
+    word.Selection.TypeParagraph()
+    word.Selection.TypeParagraph()
 
-    word.Selection.TypeText(
-        " technical expertise, and constructive feedback. Their patient guidance, timely advice, and constant "
-        "encouragement helped me overcome challenges and refine the project to its current form.\n\n"
+    word.Selection.TypeText("Lastly, I would like to thank my peers, friends, and everyone who contributed directly or indirectly to the successful completion of this project. Their encouragement and suggestions have been instrumental in making this project a success.")
+    word.Selection.TypeParagraph()
+    word.Selection.TypeParagraph()
 
-        "I also wish to express my deepest gratitude to my parents for their unconditional love, support, and "
-        "encouragement throughout this journey. Their belief in my abilities has been my greatest strength, "
-        "and their words of motivation have always driven me to excel.\n\n"
-
-        "Lastly, I would like to thank my peers, friends, and everyone who contributed directly or indirectly to the successful "
-        "completion of this project. Your encouragement and suggestions have   been instrumental in making this project a success.\n\n"
-
-        "This project would not have been possible without the collective support of everyone mentioned above. I am truly grateful "
-        "for their contributions and look forward to utilizing the knowledge and skills gained from this experience in future endeavours.\n"
-    )
-    # time.sleep(0.1)
-# _________________________________________________________________________________
-# _________________________________________________________________________________
-
-    cursor.Collapse(c.wdCollapseEnd)
-    cursor = doc.Range(doc.Content.End - 1, doc.Content.End - 1) 
+    word.Selection.TypeText("This project would not have been possible without the collective support of everyone mentioned above. I am truly grateful for their contributions and look forward to utilizing the knowledge and skills gained from this experience in future endeavours.")
+    # word.Selection.TypeParagraph() # Removed to prevent empty page
     
-    cursor.InsertBreak(c.wdPageBreak) 
-    cursor.Collapse(c.wdCollapseEnd)
-    cursor.Select()
+    # word.Selection.InsertParagraphAfter() # Avoid this if not needed
+    word.Selection.InsertBreak(c.wdPageBreak)
+    word.Selection.MoveLeft(Unit=1, Count=1)
+    word.Selection.Delete(Unit=1, Count=1)
+    word.Selection.MoveRight(Unit=1, Count=1)
+    # cursor.Collapse(c.wdCollapseEnd)
+    # cursor.Select()
     # time.sleep(0.1)
 # _________________________________________________________________________________
 # _________________________________________________________________________________
 
-    word.Selection.Font.Name = "Times New Roman"                           
-    word.Selection.Font.Size = 16                                          
-    word.Selection.Font.Bold = True                                                
-    word.Selection.Font.Italic = False                                       
-    word.Selection.ParagraphFormat.Alignment = c.wdAlignParagraphCenter     
-    word.Selection.ParagraphFormat.LineSpacingRule = c.wdLineSpace1pt5    
-    word.Selection.Font.Underline = c.wdUnderlineNone
-
+    set_format(size=14, bold=True, align=c.wdAlignParagraphCenter, underline=c.wdUnderlineNone)
     word.Selection.TypeText("ABSTRACT")
     word.Selection.TypeParagraph()
-    # time.sleep(0.1)
-# _________________________________________________________________________________
 
-    word.Selection.Font.Size = 12                                          
-    word.Selection.Font.Bold = False                                                
-    word.Selection.ParagraphFormat.Alignment = c.wdAlignParagraphJustify     
     word.Selection.ParagraphFormat.LineSpacingRule = c.wdLineSpace1pt5    
-
-    placeholder = "___"
-    word.Selection.TypeText(placeholder)
-    bm_range = word.Selection.Range.Duplicate
-    bm_start = bm_range.Start - len(placeholder)
-    bm_range = doc.Range(bm_start, bm_start + len(placeholder))
-    doc.Bookmarks.Add("Abstract", bm_range)
+    set_format(size=12, bold=False, align=c.wdAlignParagraphJustify)
+    add_bookmark("Abstract", "___")
     # time.sleep(0.1)
 # _________________________________________________________________________________
 # _________________________________________________________________________________
@@ -949,9 +857,7 @@ def insert_static_content():
         cursor.Select()
 
         word.Selection.Font.Name = "Times New Roman"
-        word.Selection.Font.Size = 16
-        word.Selection.Font.Bold = True
-        word.Selection.ParagraphFormat.Alignment = c.wdAlignParagraphCenter
+        set_format(size=16, bold=True, align=c.wdAlignParagraphCenter)
 
         center_pad_lines = 10
         for _ in range(center_pad_lines):
@@ -988,6 +894,7 @@ def insert_static_content():
         word.Selection.TypeParagraph()
 
         # Content
+        word.Selection.ParagraphFormat.LineSpacingRule = c.wdLineSpace1pt5    
         word.Selection.Font.Size = 12
         word.Selection.Font.Bold = False
         word.Selection.ParagraphFormat.Alignment = c.wdAlignParagraphJustify
@@ -1024,7 +931,7 @@ def insert_static_content():
     word.Selection.Font.Italic = False                                       
     word.Selection.ParagraphFormat.Alignment = c.wdAlignParagraphCenter     
     word.Selection.ParagraphFormat.LineSpacingRule = c.wdLineSpace1pt5    
-    word.Selection.Font.Underline = c.wdUnderlineSingle
+    word.Selection.Font.Underline = c.wdUnderlineNone
 
     word.Selection.TypeText("REFERENCES")
     word.Selection.TypeParagraph()
@@ -1223,13 +1130,13 @@ def replace_bookmarks(data_dict: dict):
     
     hod_titles = {
         "COMPUTER SCIENCE AND ENGINEERING": "Dr. Chayadevi M.L",
-        "ELECTRICAL AND COMMUNICATION ENGINEERING": "xyz",
-        "INFORMATION SCIENCE AND ENGINEERING": "xyz",
-        "MECHANICAL ENGINEERING": "xyz",
-        "CIVIL ENGINEERING": "xyz",
-        "ELECTRONICS AND INSTRUMENTATION ENGINEERING": "xyz",
-        "ARTIFICIAL INTELLIGENCE AND MACHINE LEARNING": "xyz",
-        "ELECTRICAL AND ELECTRONICS ENGINEERING": "xyz"
+        "ELECTRICAL AND COMMUNICATION ENGINEERING": "Dr. P. A. Vijaya", 
+        "INFORMATION SCIENCE AND ENGINEERING": "Dr. S. Srividhya",
+        "MECHANICAL ENGINEERING": "Dr. B.S. Anil Kumar",
+        "CIVIL ENGINEERING": "Dr. S.B. Anadinni",
+        "ELECTRONICS AND INSTRUMENTATION ENGINEERING": "Dr. K.S. Jyothi",
+        "ARTIFICIAL INTELLIGENCE AND MACHINE LEARNING": "Dr. Saritha Chakrasali",
+        "ELECTRICAL AND ELECTRONICS ENGINEERING": "Dr. R.V. Parimala"
     }
 
     department_value = data_dict.get("Department", "").strip()
@@ -1239,17 +1146,47 @@ def replace_bookmarks(data_dict: dict):
         # HOD full name → for Department_5
         hod_value = hod_titles.get(department_value, department_value)
         transformed_data["Department_5"] = hod_value
-        transformed_data["Department_8"] = hod_value
+        # Department_8 is used in "Department of [Department_8]". Should be full name or just branch.
+        # User requested: "department of computer science and engineering not department hod name"
+        transformed_data["Department_8"] = department_value 
 
         # Short form dept → for Department_6 and Department_7
         short_form = dept_short_forms.get(department_value, department_value)
         transformed_data["Department_6"] = short_form
         transformed_data["Department_7"] = short_form
-        transformed_data["Department_9"] = short_form
+        transformed_data["Department_9"] = department_value # Changed to Full Name for Acknowledgement
+        
+        # User: "We also express our sincere thanks to all the staff members of the Department of ___"
+        # Should be full name or short form? "Department of Dept. of CSE" is weird.
+        # "Department of Computer Science and Engineering" is better.
+        transformed_data["Department_10"] = department_value
+        
+        # Explicit mappings for Title Page and Certificate where raw 'Department' was missing
+        transformed_data["Department"] = department_value    # Title Page: "In [Department]"
+        transformed_data["Department_4"] = department_value  # Certificate: "Bachelor of Engineering in [Department_4]"
+        
+        # For Acknowledgement HOD Name
+        transformed_data["HODName_Ack"] = hod_value
+        
+        # New Acknowledgement Mappings
+        transformed_data["ProjectTitle_Ack"] = data_dict.get("ProjectTitle", "")
+        transformed_data["GuideName_Ack"] = data_dict.get("GuideName", "")
+        transformed_data["Designation_Ack"] = data_dict.get("Designation", "")
+        
+        # New Acknowledgement Mappings
+        transformed_data["ProjectTitle_Ack"] = data_dict.get("ProjectTitle", "")
+        transformed_data["GuideName_Ack"] = data_dict.get("GuideName", "")
+        transformed_data["Designation_Ack"] = data_dict.get("Designation", "")
 
     # Also carry over other keys from data_dict directly
     for key, value in data_dict.items():
         if key != "Department":  # Already handled separately
+            if key == "NameAndUSN":
+                # Special handling for Certificate Page usage
+                # If NameAndUSN has newlines (from multiline input), replace them with commas for the inline certificate version
+                inline_names = value.replace("\n", ", ")
+                transformed_data["NameAndUSN_2"] = inline_names
+            
             transformed_data[key] = value
             
     all_bm_names = [bm.Name for bm in doc.Bookmarks]  # Get all bookmark names in the document
@@ -1264,46 +1201,37 @@ def replace_bookmarks(data_dict: dict):
 
     rebookmarks = []  # To store bookmarks that need to be re-added after replacement
 
+    # MAIN REPLACEMENT LOOP - Uses transformed_data to ensure derived keys are covered
     for key, value in transformed_data.items():
-        match = re.match(r"Department_(\d+)", key)
-        if match:
-            if doc.Bookmarks.Exists(key):
-                bm_range = doc.Bookmarks(key).Range
-                bm_start = bm_range.Start
-                insert_text = value
-                bm_range.Text = insert_text
-                new_range = doc.Range(bm_start, bm_start + len(insert_text))
-                rebookmarks.append((key, new_range))
-                new_range.Select()
-                word.ActiveWindow.ScrollIntoView(word.Selection.Range, True)
-
-
-    for key, value in data_dict.items():
         matching_bms = [bm for bm in all_bm_names if bm.startswith(key)]
         if not matching_bms:
             continue
 
         for name in matching_bms:
+            # Skip if this specific bookmark name doesn't exist 
             if not doc.Bookmarks.Exists(name):
                 continue
 
+            # CRITICAL: Prevent "NameAndUSN" key from overwriting "NameAndUSN_2" bookmark
+            # if "NameAndUSN_2" has its own entry in transformed_data.
+            if name != key and name in transformed_data:
+                continue 
+            
             bm_range = doc.Bookmarks(name).Range
             bm_start = bm_range.Start
+            
             add_newline = name in newline_bookmark_names
-            insert_text = value + ("\n" if add_newline else " ")
-
-            # Replace bookmark text
+            insert_text = value + ("\n" if add_newline else "") # Removed space for inline bookmarks
+            
             bm_range.Text = insert_text
-
-            # Create new range for re-bookmarking
+            
             new_range = doc.Range(bm_start, bm_start + len(insert_text))
             rebookmarks.append((name, new_range))
-
-            # Scroll to new location
+            
             new_range.Select()
             word.ActiveWindow.ScrollIntoView(word.Selection.Range, True)
-
-            # --- 🔽 Insert images if it's a Chapter{i}Content bookmark ---
+            
+            # --- Handle images (ChapterContent logic) ---
             chapter_match = re.match(r"Chapter(\d)Content", name)
             if chapter_match:
                 chapter_num = int(chapter_match.group(1))
@@ -1424,19 +1352,23 @@ def replace_bookmarks(data_dict: dict):
 # ---------------------------------------------------------------------------------
 
 def update_index_page_numbers():
+    # Attempt to use wdActiveEndAdjustedPageNumber (4) for restart-aware numbering
+    # If not in constants, define it manually
+    wdActiveEndAdjustedPageNumber = getattr(c, 'wdActiveEndAdjustedPageNumber', 4)
+
     for i in range(1, 6):
         title_bm = f"Chapter{i}Title_2"
         page_bm = f"Chapter{i}Page"  # This is in the index table
-        offset = 5
         
         if doc.Bookmarks.Exists(title_bm) and doc.Bookmarks.Exists(page_bm):
             title_range = doc.Bookmarks(title_bm).Range
-            page_number = title_range.Information(c.wdActiveEndPageNumber)
+            # Use AdjustedPageNumber to respect the footer restart
+            page_number = title_range.Information(wdActiveEndAdjustedPageNumber)
 
             # Replace the index placeholder bookmark with the actual page number
             bm_range = doc.Bookmarks(page_bm).Range
             bm_start = bm_range.Start
-            bm_range.Text = str(page_number - offset)
+            bm_range.Text = str(page_number) # No static offset needed now
 
             # Re-bookmark the range so that the bookmark persists
             new_range = doc.Range(bm_start, bm_start + len(str(page_number)))
@@ -1447,11 +1379,11 @@ def update_index_page_numbers():
                 
         if doc.Bookmarks.Exists("References") and doc.Bookmarks.Exists("RefPage"):
             ref_range = doc.Bookmarks("References").Range
-            ref_page = ref_range.Information(c.wdActiveEndPageNumber) 
+            ref_page = ref_range.Information(wdActiveEndAdjustedPageNumber) 
 
             bm_range = doc.Bookmarks("RefPage").Range
             bm_start = bm_range.Start
-            bm_range.Text = str(ref_page - offset)
+            bm_range.Text = str(ref_page)
 
             # Re-bookmark the range so that the bookmark persists
             new_range = doc.Range(bm_start, bm_start + len(str(ref_page)))
