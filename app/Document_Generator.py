@@ -859,7 +859,7 @@ def insert_static_content():
         word.Selection.Font.Name = "Times New Roman"
         set_format(size=16, bold=True, align=c.wdAlignParagraphCenter)
 
-        center_pad_lines = 10
+        center_pad_lines = 9
         for _ in range(center_pad_lines):
             word.Selection.TypeParagraph()
     
@@ -1282,20 +1282,34 @@ def replace_bookmarks(data_dict: dict):
                         image_start = insert_range.Start
 
                         # Step 2: Insert image
-                        insert_range.InlineShapes.AddPicture(str(img.resolve()), LinkToFile=False, SaveWithDocument=True)
-
-                        # Step 3: Move to just after image and insert a newline to force it down
-                        image_end = doc.Range(image_start, image_start).End
-                        para_after_img = doc.Range(image_end, image_end)
-                        para_after_img.InsertAfter("\r")
-
-                        # Step 4: Insert caption in new paragraph
-                        caption_range = doc.Range(para_after_img.End + 2, para_after_img.End + 2)
-                        caption_range.InsertAfter(fig_label)
+                        # Use a dedicated range for image insertion to avoid style bleed
+                        img_range = insert_range.Duplicate
+                        img_shape = img_range.InlineShapes.AddPicture(str(img.resolve()), LinkToFile=False, SaveWithDocument=True)
+                        
+                        # Center the image
+                        img_shape.Range.ParagraphFormat.Alignment = c.wdAlignParagraphCenter
+                        img_shape.Range.ParagraphFormat.KeepWithNext = True # Keep image with its caption
+                        
+                        # Step 3: Insert Caption
+                        # Move to end of image shape itself to guarantee order
+                        caption_range = img_shape.Range.Duplicate
+                        caption_range.Collapse(c.wdCollapseEnd)
                         caption_range.InsertParagraphAfter()
-
-                        # Step 5: Move insert_range forward for next image
-                        insert_range = doc.Range(caption_range.End + 2, caption_range.End + 2)
+                        caption_range.Collapse(c.wdCollapseEnd)
+                        
+                        caption_range.Text = fig_label
+                        # Explicitly reset formatting for caption to avoid inheriting Title styles
+                        caption_range.Font.Name = "Times New Roman"
+                        caption_range.Font.Size = 12
+                        caption_range.Font.Bold = False
+                        caption_range.ParagraphFormat.Alignment = c.wdAlignParagraphCenter
+                        caption_range.ParagraphFormat.SpaceAfter = 12 # Give some breathing room
+                        
+                        caption_range.InsertParagraphAfter()
+                        
+                        # Step 4: Advance safely
+                        insert_range = caption_range.Duplicate
+                        insert_range.Collapse(c.wdCollapseEnd)
 
     # --- Re-add bookmarks ---
     for name, rng in rebookmarks:
