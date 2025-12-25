@@ -1,16 +1,39 @@
 """
 Dynamic content replacement (bookmarks) and updates for the report.
+Handles user data injection, image insertion, and final page number updates.
 """
+
 import re
 from win32com.client import constants as c
 from pathlib import Path
 from .images import insert_images_in_chapter
 
+
+# =================================================================================================
+#                                  BOOKMARK REPLACEMENT LOGIC
+# =================================================================================================
+
 def replace_bookmarks(doc, word, data_dict: dict, asset_dir: Path):
     """
     Replaces bookmarks in the Word document with values from a dictionary.
     Also inserts images after Chapter{i}Content bookmarks if matching files are found.
+    
+    1.  Transforms input data:
+        -   Maps Departments to Short Forms (Dept. of CSE)
+        -   Maps Departments to HOD Names
+        -   Formats multiline names for certificates
+    2.  Iterates through all document bookmarks.
+    3.  Replaces matched bookmarks with text.
+    4.  Triggers Image Insertion logic for Chapter Content.
+    5.  Updates Headers and Footers with Project Title and Year.
+    
+    :param doc: The Word Document object.
+    :param word: The Word Application object.
+    :param data_dict: Dictionary of user inputs.
+    :param asset_dir: Directory containing assets (images).
     """
+    
+    # -------------------------- Data Transformation --------------------------
     transformed_data = {}
     
     dept_short_forms = {
@@ -39,9 +62,10 @@ def replace_bookmarks(doc, word, data_dict: dict, asset_dir: Path):
 
     # Apply transformed values based on that single input
     if department_value:
-        # HOD full name → for Department_5
+        # HOD full name → for Department_5 (Certificate)
         hod_value = hod_titles.get(department_value, department_value)
         transformed_data["Department_5"] = hod_value
+        
         # Department_8 is used in "Department of [Department_8]". Should be full name or just branch.
         transformed_data["Department_8"] = department_value 
 
@@ -70,7 +94,7 @@ def replace_bookmarks(doc, word, data_dict: dict, asset_dir: Path):
         if key != "Department":  # Already handled separately
             if key == "NameAndUSN":
                 # Special handling for Certificate Page usage
-                # If NameAndUSN has newlines (from multiline input), replace them with commas for the inline certificate version
+                # If NameAndUSN has multiline input, replace newlines with commas for inline certificate
                 inline_names = value.replace("\n", ", ")
                 transformed_data["NameAndUSN_2"] = inline_names
             
@@ -79,6 +103,7 @@ def replace_bookmarks(doc, word, data_dict: dict, asset_dir: Path):
     all_bm_names = [bm.Name for bm in doc.Bookmarks]  # Get all bookmark names in the document
 
     # These bookmarks should have a newline after the inserted value
+    # NOTE: GuideName and Designation removed from here to prevent layout breaks (handled in static)
     newline_bookmark_names = {
         "ProjectTitle", "NameAndUSN", 
         "Department_2", "Department_3",
@@ -88,7 +113,9 @@ def replace_bookmarks(doc, word, data_dict: dict, asset_dir: Path):
 
     rebookmarks = []  # To store bookmarks that need to be re-added after replacement
 
-    # MAIN REPLACEMENT LOOP - Uses transformed_data to ensure derived keys are covered
+    # -------------------------- Replacement Loop --------------------------
+    # Uses transformed_data to ensure derived keys are covered
+    
     for key, value in transformed_data.items():
         matching_bms = [bm for bm in all_bm_names if bm.startswith(key)]
         if not matching_bms:
@@ -108,7 +135,7 @@ def replace_bookmarks(doc, word, data_dict: dict, asset_dir: Path):
             bm_start = bm_range.Start
             
             add_newline = name in newline_bookmark_names
-            insert_text = value + ("\n" if add_newline else "") # Check requirement for space? Legacy had space conditional
+            insert_text = value + ("\n" if add_newline else "") 
             
             bm_range.Text = insert_text
             
@@ -131,7 +158,7 @@ def replace_bookmarks(doc, word, data_dict: dict, asset_dir: Path):
         except:
             print(f"⚠️ Could not re-add bookmark: {name}")
 
-    # --- Header/Footer logic ---
+    # -------------------------- Header / Footer Updates --------------------------
     title = data_dict.get("ProjectTitle")
     year = data_dict.get("Year")
 
@@ -174,10 +201,22 @@ def replace_bookmarks(doc, word, data_dict: dict, asset_dir: Path):
                 right_range.Fields.Add(right_range, c.wdFieldPage)
                 right_range.ParagraphFormat.Alignment = c.wdAlignParagraphRight
 
+
+# =================================================================================================
+#                                   PAGE NUMBER UPDATES (TOC/Index)
+# =================================================================================================
+
 def update_index_page_numbers(doc):
+    """
+    Updates the Table of Contents (TOC) page numbers by looking up the actual
+    page numbers of the Chapter Titles and References.
+    
+    Uses `wdActiveEndAdjustedPageNumber` to handle section restarts correctly.
+    """
     # Attempt to use wdActiveEndAdjustedPageNumber (4) for restart-aware numbering
     wdActiveEndAdjustedPageNumber = getattr(c, 'wdActiveEndAdjustedPageNumber', 4)
 
+    # 1. Update Chapter 1-5 Page Numbers
     for i in range(1, 6):
         title_bm = f"Chapter{i}Title_2"
         page_bm = f"Chapter{i}Page"  # This is in the index table
@@ -199,17 +238,18 @@ def update_index_page_numbers(doc):
             except:
                 print(f"⚠️ Could not re-add bookmark: {page_bm}")
                 
-        if doc.Bookmarks.Exists("References") and doc.Bookmarks.Exists("RefPage"):
-            ref_range = doc.Bookmarks("References").Range
-            ref_page = ref_range.Information(wdActiveEndAdjustedPageNumber) 
+    # 2. Update Reference Page Number
+    if doc.Bookmarks.Exists("References") and doc.Bookmarks.Exists("RefPage"):
+        ref_range = doc.Bookmarks("References").Range
+        ref_page = ref_range.Information(wdActiveEndAdjustedPageNumber) 
 
-            bm_range = doc.Bookmarks("RefPage").Range
-            bm_start = bm_range.Start
-            bm_range.Text = str(ref_page)
+        bm_range = doc.Bookmarks("RefPage").Range
+        bm_start = bm_range.Start
+        bm_range.Text = str(ref_page)
 
-            # Re-bookmark the range
-            new_range = doc.Range(bm_start, bm_start + len(str(ref_page)))
-            try:
-                doc.Bookmarks.Add("RefPage", new_range)
-            except:
-                print(f"⚠️ Could not re-add bookmark: RefPage")
+        # Re-bookmark the range
+        new_range = doc.Range(bm_start, bm_start + len(str(ref_page)))
+        try:
+            doc.Bookmarks.Add("RefPage", new_range)
+        except:
+            print(f"⚠️ Could not re-add bookmark: RefPage")

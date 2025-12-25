@@ -1,12 +1,14 @@
 """
 Basic Graphical User Interface (GUI) for a Report Generator using CustomTKinter.
-1. Input Fields based on sections/pages
-2. Press next to save input and update the document
-3. Press previous to go back and edit inputs
-4. Press Done to save the document
 
-Uses CustomTkinter for modern UI elements and PIL for image handling.
-Uses a backend module `Document_Generator` for document handling. 
+Key Features:
+- Page-by-page input wizard (10 pages).
+- Dynamic navigation (Next, Prev, Jump).
+- Image uploads per chapter.
+- Keyboard shortcuts for efficiency.
+- Communication with the Word Automation Backend.
+
+Dependencies: CustomTkinter, CTkMessagebox, PIL, backend.generator.
 """
 
 from tkinter import *  # Standard Tkinter for basic GUI
@@ -16,21 +18,39 @@ from pathlib import Path  # Path handling
 from tkinter import filedialog
 import shutil
 
-import backend.generator as docgen  # backend module
+# Importing backend assumes running as module from package root
+import app.backend.generator as docgen  
 
-# =================================================================================
+# =================================================================================================
+#                                       CONFIGURATION
+# =================================================================================================
 
-BASE_DIR = Path(__file__).resolve().parent  # Base directory of the application
+# Adjusted to go up two levels: app/frontend/gui.py -> app/frontend -> app -> assets
+BASE_DIR = Path(__file__).resolve().parent.parent 
 ASSET_DIR = BASE_DIR / "assets"  # Directory for assets 
 
-# =================================================================================
+
+# =================================================================================================
+#                                     MAIN APPLICATION CLASS
+# =================================================================================================
 
 class App(tk.CTk):
+    """
+    Main Application Window.
+    Inherits from customtkinter.CTk to provide a modern, dark-themed UI.
+    """
+    
     def __init__(self, user_inputs):
+        """
+        Initializes the main window, layout, and event bindings.
+        
+        :param user_inputs: List of dictionaries containing pre-filled data (e.g., from Start Screen).
+        """
         super().__init__()
 
         self.help_window = None 
 
+        # --- Window Setup ---
         screen_w, screen_h = self.winfo_screenwidth(), self.winfo_screenheight()
         self.windims = (int(screen_w // 2 - 0.105 * screen_w), int(screen_h * 0.95))
 
@@ -43,12 +63,13 @@ class App(tk.CTk):
         icon_path = str(ASSET_DIR / "icon.ico")
         self.iconbitmap(icon_path)
 
+        # --- State Management ---
         self.uploaded_files = []
-
         self.user_inputs = user_inputs
         self.key_prefix_active = False
         self.floating_label_timer_id = None
         
+        # --- Layout Initialization ---
         self.pages()
         self.user_inputs = user_inputs
         self.after(500, lambda: self.focus())
@@ -58,7 +79,7 @@ class App(tk.CTk):
         self.shortcut_label = tk.CTkLabel(self, text="F1: Keyboard shortcuts", font=("Arial", 12), text_color="gray")
         self.shortcut_label.place(relx=0.97, rely=0.03, anchor="ne")
         
-        # ========== KEY BINDINGS ==========
+        # --- Key Bindings ---
         self.bind_all("<Control-Return>", lambda e: self._show_next_enter())  # Ctrl + Enter = Next
         self.bind_all("<Control-Right>", lambda e: self._show_next_right())  # Ctrl + → = Next
         self.bind_all("<Control-Left>", lambda e: self._show_prev())  # Ctrl + ← = Previous
@@ -75,8 +96,12 @@ class App(tk.CTk):
             self.bind_all(str(i), lambda e, i=i: self.page_jump_prefix(i))
         self.bind_all("0", lambda e: self.page_jump_prefix(10))
 
-# ---------------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------------------------
+    #                                  UI FEEDBACK (FLASH LABEL)
+    # ---------------------------------------------------------------------------------------------
+    
     def flash_label(self, text, color="lightgreen", time = 1500):
+        """Displays a temporary feedback message at the bottom of the window."""
         self.floating_label.configure(text=text, text_color=color)
         
         if self.floating_label_timer_id:
@@ -85,11 +110,13 @@ class App(tk.CTk):
         self.floating_label_timer_id = self.after(time, lambda: self.floating_label.configure(text=""))
         
     def _show_next_right(self):
+        """Visual wrapper for Next action."""
         if self.current_page < len(self.pages):
             self.flash_label(f"➡️ Next → Page {self.current_page + 1}: {self.page_titles[self.current_page]}")
             self.go_next()
 
     def _show_next_enter(self):
+        """Visual wrapper for Enter key action."""
         if self.current_page < len(self.pages):
             self.flash_label(f"➡️ Next → Page {self.current_page + 1}: {self.page_titles[self.current_page]}")
             self.go_next()
@@ -97,19 +124,23 @@ class App(tk.CTk):
             self.flash_label("✅ Done! Report saved successfully.", color="skyblue", time = 5000)
             self.save_entire_report()
             
-
     def _show_prev(self):
+        """Visual wrapper for Previous action."""
         if self.current_page > 1:
             self.flash_label(f"⬅️ Back to Page {self.current_page - 1}: {self.page_titles[self.current_page - 2]}")
             self.go_previous()
 
     def _show_save(self):
+        """Visual wrapper for Save action."""
         self.apply_page()
         self.flash_label("💾 Saved current page!")
 
-# ---------------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------------------------
+    #                                   LIFECYCLE & HELPERS
+    # ---------------------------------------------------------------------------------------------
 
     def on_close(self):
+        """Cleanup handler when closing the window."""
         for file in self.uploaded_files:
             if file.exists() and file.name.startswith("Fig"):
                 try:
@@ -119,16 +150,16 @@ class App(tk.CTk):
         self.destroy()
         
     def save_entire_report(self):
+        """Calls the backend to finalize and save the Word document."""
         docgen.save_document()
-        #CTkMessagebox(title="Saved", message="Entire report saved successfully.", icon="check")
 
-# ---------------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------------------------
+    #                                     PAGE NAVIGATION
+    # ---------------------------------------------------------------------------------------------
 
     def activate_page_jump_mode(self, event=None):
         self.key_prefix_active = True
-        #CTkMessagebox(title="Page Jump Mode", message="Press 1–0 to jump to page", icon="info")
         self.flash_label("⌨️ Page jump mode: Press 1–0")
-
 
     def jump_to_page_by_index(self, index, event=None):
         self.jump_to_page(f"{index}. {self.page_titles[index - 1]}")
@@ -143,12 +174,14 @@ class App(tk.CTk):
         self.save_current_inputs()
         self.current_page = len(self.pages)
         self.load_page()
-        #CTkMessagebox(title="Ready to Submit", message="You're on the last page. Press 'Done' to save your report.", icon="info")
         self.flash_label("🔚 Jumped to last page — press Done to finish.")
 
-# ---------------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------------------------
+    #                                     HELP / SHORTCUTS
+    # ---------------------------------------------------------------------------------------------
 
     def show_shortcuts_popup(self, event=None):
+        """Displays a popup window with keyboard shortcuts."""
         if self.help_window and self.help_window.winfo_exists():
             self.help_window.destroy()
             self.help_window = None
@@ -187,9 +220,12 @@ class App(tk.CTk):
         )
         label.pack(padx=20, pady=(0, 20))
         
-# ---------------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------------------------
+    #                                     PAGE CONTENT DEFINITIONS
+    # ---------------------------------------------------------------------------------------------
         
     def pages(self):
+        """Defines the structure and fields for all 10 pages."""
         self.pages = [
             [("College", "entry", 1), ("Department", "entry", 1)],
             [("Project Title", "entry", 1), ("Name And USN", "text", 3), ("Guide Name", "entry", 1), ("Designation", "entry", 1)],
@@ -254,9 +290,12 @@ class App(tk.CTk):
 
         self.load_page()
 
-# ---------------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------------------------
+    #                                  PAGE LOADING & RENDERING
+    # ---------------------------------------------------------------------------------------------
 
     def load_page(self):
+        """Renders the current page's input fields."""
         for widget in self.input_frame.winfo_children():
             widget.destroy()
         self.entries.clear()
@@ -307,9 +346,12 @@ class App(tk.CTk):
         self.prev_button.configure(state="normal" if self.current_page > 1 else "disabled")
         self.next_button.configure(text="Done" if self.current_page == len(self.pages) else "Next →")
 
-# ---------------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------------------------
+    #                                  DATA HANDLING & FLOW
+    # ---------------------------------------------------------------------------------------------
 
     def save_current_inputs(self):
+        """Scrapes current input widgets and stores them in self.user_inputs."""
         page_data = {}
         for label, widget, typ in self.entries:
             if typ == "entry":
@@ -318,15 +360,11 @@ class App(tk.CTk):
                 page_data[label] = widget.get("1.0", tk.END).strip()
         self.user_inputs[self.current_page] = page_data
 
-# ---------------------------------------------------------------------------------
-
     def go_previous(self):
         self.save_current_inputs()
         if self.current_page > 1:
             self.current_page -= 1
             self.load_page()
-
-# ---------------------------------------------------------------------------------
 
     def go_next(self):
         self.save_current_inputs()
@@ -337,15 +375,10 @@ class App(tk.CTk):
             self.load_page()
         else:
             docgen.save_document()
-
-# ---------------------------------------------------------------------------------
             
     def apply_page(self):
         self.save_current_inputs()
         docgen.replace_bookmarks(self.user_inputs[self.current_page])
-        #CTkMessagebox(title="Saved", message="Changes applied to document.", icon="check")
-    
-# ---------------------------------------------------------------------------------
 
     def jump_to_page(self, selection):
         try:
@@ -357,6 +390,10 @@ class App(tk.CTk):
             print(f"Page jump failed: {e}")
 
     def browse_and_upload_images(self, ch_num):
+        """
+        Opens a file dialog for image selection and copies them to assets.
+        Auto-increments figure numbers (Fig X.Y).
+        """
         files = filedialog.askopenfilenames(
             title="Select image(s)",
             filetypes=[("Image Files", "*.png *.jpg *.jpeg *.bmp *.gif")],
@@ -376,9 +413,18 @@ class App(tk.CTk):
             self.flash_label(f"📸 Uploaded: {dest.name}", time=2000)
             self.uploaded_files.append(dest)
 
-# =================================================================================
+
+# =================================================================================================
+#                                         ENTRY POINT
+# =================================================================================================
 
 def launch_gui(college, department):
+    """
+    Launches the main GUI loop.
+    
+    :param college: The selected college name.
+    :param department: The selected department name.
+    """
     # Initialize user_inputs with page 1 already filled
     user_inputs = [{},  # dummy for index 0, unused
                    {"College": college, "Department": department}]

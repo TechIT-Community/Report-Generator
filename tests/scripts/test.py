@@ -1,3 +1,16 @@
+"""
+Automated Test Script for Report Generator.
+Mocks user interactions (clicks, typing, file selection) to verify the end-to-end flow.
+
+Key Features:
+- Monkey patches `tkinter.filedialog` to auto-select images.
+- Monkey patches `StartScreen` to auto-fill college/dept and proceed.
+- Monkey patches `MainApp` logic to simulate typing into all fields (Long/Short text).
+- Verifies image placement logic by forcibly uploading images in every chapter.
+
+Usage:
+    python tests/scripts/test.py
+"""
 
 import sys
 import os
@@ -20,31 +33,38 @@ PATHS = [PROJECT_ROOT / "screenshots" / "test1.png",
 
 TEST_IMAGE_PATH = random.choice(PATHS)
 
-# =================================================================================
-# Monkey Patching
-# =================================================================================
+# =================================================================================================
+#                                       MONKEY PATCHES
+# =================================================================================================
 
-# 1. Patch file dialog to always return our test image
+# -------------------------- Patch 1: File Dialog --------------------------
+
+# Patch file dialog to always return our test image
 original_askopenfilenames = tkinter.filedialog.askopenfilenames
 
 def mock_askopenfilenames(*args, **kwargs):
+    """Intercepts file dialog to return random test images without user interaction."""
     print("🤖 [Mock] File dialog opened. Auto-selecting 5 test images.")
+    # Return 5 random images from the available set
     return [str(random.choice(PATHS)) for _ in range(5)]
 
 tkinter.filedialog.askopenfilenames = mock_askopenfilenames
 
-# 2. Patch StartScreen to auto-select and launch
-import app.Main as MainApp
+
+# -------------------------- Patch 2: Start Screen --------------------------
+
+import app.frontend.main as MainApp # Updated import path
 
 original_start_init = MainApp.StartScreen.__init__
 
 def mock_start_init(self, *args, **kwargs):
+    """Intercepts StartScreen init to trigger auto-start sequence."""
     original_start_init(self, *args, **kwargs)
     print("🤖 [Mock] StartScreen initialized. selecting defaults...")
-    
     self.after(1000, lambda: self._auto_start())
 
 def _auto_start(self):
+    """Simulates selecting dropdowns and clicking Start."""
     print("🤖 [Mock] Auto-starting application...")
     self.college_var.set("BNMIT")
     self.dept_var.set("COMPUTER SCIENCE AND ENGINEERING")
@@ -57,18 +77,21 @@ MainApp.StartScreen.__init__ = mock_start_init
 MainApp.StartScreen._auto_start = _auto_start
 
 
-# 3. Patch Main GUI to auto-fill
-import gui
+# -------------------------- Patch 3: Main GUI Logic --------------------------
+
+import app.frontend.gui as gui # Updated import path
 
 original_gui_init = gui.App.__init__
 
 def mock_gui_init(self, user_inputs):
+    """Intercepts Main GUI init to trigger the test sequence."""
     original_gui_init(self, user_inputs)
     print("🤖 [Mock] Main GUI initialized. Starting auto-pilot...")
     self.has_uploaded_images = False # Flag to track if we've tested uploads
     self.after(2000, self.run_test_sequence)
 
 def run_test_sequence(self):
+    """Recursive function to fill page inputs, upload images, and click Next."""
     if self.current_page > len(self.pages):
         print("🤖 [Mock] Reached end of pages. Test complete.")
         return
@@ -158,6 +181,7 @@ def run_test_sequence(self):
         self.after(1000, self.next_button.invoke)
 
 def go_next_and_loop(self):
+    """advance page and callback loop."""
     self.go_next()
     self.after(1000, self.run_test_sequence)
 
@@ -166,9 +190,9 @@ gui.App.run_test_sequence = run_test_sequence
 gui.App.go_next_and_loop = go_next_and_loop
 
 
-# =================================================================================
-# Main Execution
-# =================================================================================
+# =================================================================================================
+#                                         MAIN EXECUTION
+# =================================================================================================
 
 if __name__ == "__main__":
     print(f"🚀 Starting Test Script...")
