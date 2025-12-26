@@ -224,18 +224,22 @@ class App(tk.CTk):
     #                                     PAGE CONTENT DEFINITIONS
     # ---------------------------------------------------------------------------------------------
         
+    # ---------------------------------------------------------------------------------------------
+    #                                     PAGE CONTENT DEFINITIONS
+    # ---------------------------------------------------------------------------------------------
+        
     def pages(self):
-        """Defines the structure and fields for all 10 pages."""
+        """Defines the structure and fields for all 6 pages."""
+        # Pages 1-4: Standard Info
+        # Page 5: "Chapters" (Contains Tabs for Ch1-Ch5)
+        # Page 6: References
+        
         self.pages = [
             [("College", "entry", 1), ("Department", "entry", 1)],
             [("Project Title", "entry", 1), ("Name And USN", "text", 3), ("Guide Name", "entry", 1), ("Designation", "entry", 1)],
             [("Name USN", "text", 3), ("Sem", "entry", 1), ("Year", "entry", 1)],
             [("Abstract", "text", 5)],
-            [("Chapter 1 Title", "entry", 1), ("Chapter 1 Content", "text", 6)],
-            [("Chapter 2 Title", "entry", 1), ("Chapter 2 Content", "text", 6)],
-            [("Chapter 3 Title", "entry", 1), ("Chapter 3 Content", "text", 6)],
-            [("Chapter 4 Title", "entry", 1), ("Chapter 4 Content", "text", 6)],
-            [("Chapter 5 Title", "entry", 1), ("Chapter 5 Content", "text", 6)],
+            "CHAPTERS_TAB_INTERFACE", # Special Marker for Page 5
             [("References", "text", 5)]
         ]
         
@@ -244,15 +248,15 @@ class App(tk.CTk):
             "Title Page",
             "Certificate Page",
             "Acknowledgement Page",
-            "Chapter 1",
-            "Chapter 2",
-            "Chapter 3",
-            "Chapter 4",
-            "Chapter 5",
+            "Chapters",
             "References"
         ]
 
         self.current_page = 1
+        
+        # --- TAB STATE ---
+        self.chapter_tabs = []    # Stores tab dicts: {"name": str, "frame": CTkFrame, "entries": [], "data": {}}
+        self.active_tab = None
 
         self.title_label = tk.CTkLabel(self, text="REPORT GENERATOR", font=("Arial", 24, "bold"))
         self.title_label.pack(pady=30)
@@ -261,7 +265,7 @@ class App(tk.CTk):
         self.page_title_label.pack()
 
         self.input_frame = tk.CTkFrame(self, fg_color = "#1a1a1a")
-        self.input_frame.pack(pady=40)
+        self.input_frame.pack(pady=40, fill="both", expand=True, padx=40) # Expanded for tabs
         
         self.save_button = tk.CTkButton(self, text="💾 Save", command=self.apply_page)
         self.save_button.pack(pady=(10, 0))
@@ -286,7 +290,6 @@ class App(tk.CTk):
 
         self.floating_label = tk.CTkLabel(self, text="", font=("Arial", 14), text_color="lightgreen")
         self.floating_label.pack(side="bottom", pady=(5, 0))
-        #self.floating_label.after(300, lambda: self.floating_label.configure(text=""))
 
         self.load_page()
 
@@ -296,17 +299,30 @@ class App(tk.CTk):
 
     def load_page(self):
         """Renders the current page's input fields."""
+        # Cleanup general inputs
         for widget in self.input_frame.winfo_children():
             widget.destroy()
         self.entries.clear()
+        
+        # Cleanup old tabs references from memory if leaving page 5
+        if self.current_page != 5:
+            self.chapter_tabs = []
+            self.active_tab = None
 
         self.page_title_label.configure(text=f"{self.current_page}: {self.page_titles[self.current_page - 1]}")
         self.page_selector.set(f"{self.current_page}. {self.page_titles[self.current_page - 1]}")
 
-        current_fields = self.pages[self.current_page - 1]
+        # Check for Special Page 5 (Chapters)
+        current_page_def = self.pages[self.current_page - 1]
+        
+        if current_page_def == "CHAPTERS_TAB_INTERFACE":
+            self.render_chapter_interface()
+            return
+
+        # STANDARD PAGE RENDERING
         saved_data = self.user_inputs[self.current_page] if self.current_page < len(self.user_inputs) else {}
 
-        for label_text, input_type, height in current_fields:
+        for label_text, input_type, height in current_page_def:
             label_key = label_text.replace(" ", "")
             label = tk.CTkLabel(self.input_frame, text=label_text + ":", font=("Arial", 16))
             label.pack(pady=(10, 2))
@@ -329,22 +345,118 @@ class App(tk.CTk):
 
             self.entries.append((label_key, widget, input_type))
 
-            # If this is a chapter content field, allow image upload
-            if label_key.startswith("Chapter") and "Content" in label_key and 4 <= self.current_page <= 9:
-                chapter_number = self.current_page - 4  # Pages 4 to 8 → Chapters 1 to 5
+        self.update_nav_buttons()
 
-                image_upload_frame = tk.CTkFrame(self.input_frame, fg_color="#1a1a1a")
-                image_upload_frame.pack(pady=(0, 10))
-
-                upload_label = tk.CTkLabel(image_upload_frame, text=f"Upload images for Chapter {chapter_number}:", font=("Arial", 14))
-                upload_label.pack()
-
-                upload_btn = tk.CTkButton(image_upload_frame, text="Upload Images", 
-                                          command=lambda ch=chapter_number: self.browse_and_upload_images(ch))
-                upload_btn.pack(pady=(5, 0))
-
+    def update_nav_buttons(self):
         self.prev_button.configure(state="normal" if self.current_page > 1 else "disabled")
         self.next_button.configure(text="Done" if self.current_page == len(self.pages) else "Next →")
+
+    # ---------------------------------------------------------------------------------------------
+    #                                  CUSTOM TAB MANAGER (For Page 5)
+    # ---------------------------------------------------------------------------------------------
+
+    def render_chapter_interface(self):
+        """Builds the custom tab controller for Chapters 1-5."""
+        
+        # 1. Tab Navigation Bar
+        self.tab_bar = tk.CTkFrame(self.input_frame, fg_color="transparent")
+        self.tab_bar.pack(fill="x", pady=(0, 10))
+        
+        # 2. Content Container
+        self.tab_content_container = tk.CTkFrame(self.input_frame, fg_color="transparent")
+        self.tab_content_container.pack(fill="both", expand=True)
+
+        # Initialize Tabs if empty
+        if not self.chapter_tabs:
+            for i in range(1, 6):
+                self.create_chapter_tab(i)
+        
+        # Restore active tab or default to Ch1
+        if not self.active_tab and self.chapter_tabs:
+            self.set_active_tab(self.chapter_tabs[0])
+        else:
+            # Re-render bar if returning to page
+            self.render_tab_buttons()
+            if self.active_tab:
+                 self.active_tab["frame"].pack(fill="both", expand=True)
+
+    def create_chapter_tab(self, number):
+        """Creates data structure and UI frame for a Chapter Tab."""
+        tab = {
+            "name": f"Chapter {number}",
+            "id": number,
+            "frame": tk.CTkFrame(self.tab_content_container, fg_color="transparent"),
+            "entries": [], # Stores widget refs specific to this tab
+            "data": {}     # Local data cache
+        }
+        
+        # Populate UI inside the frame (Hidden by default)
+        self.build_chapter_ui(tab)
+        self.chapter_tabs.append(tab)
+
+    def build_chapter_ui(self, tab):
+        """Constructs the standard Chapter Title/Content/Upload widgets inside the tab frame."""
+        frame = tab["frame"]
+        
+        # Pre-load data from GLOBAL storage if exists
+        saved_data = self.user_inputs[self.current_page] if self.current_page < len(self.user_inputs) else {}
+        
+        # Fields Definition
+        title_key = f"Chapter{tab['id']}Title"
+        content_key = f"Chapter{tab['id']}Content"
+        
+        # 1. Title Input
+        tk.CTkLabel(frame, text=f"{tab['name']} Title:", font=("Arial", 16)).pack(pady=(5, 2))
+        title_entry = tk.CTkEntry(frame, width=450, fg_color="#2A2D2E")
+        title_entry.pack(pady=(0, 10))
+        if title_key in saved_data:
+            title_entry.insert(0, saved_data[title_key])
+            
+        # 2. Content Input
+        tk.CTkLabel(frame, text=f"{tab['name']} Content:", font=("Arial", 16)).pack(pady=(5, 2))
+        border = tk.CTkFrame(frame, fg_color="#565b5e", corner_radius=6)
+        border.pack(pady=(0, 10), padx=4)
+        content_text = tk.CTkTextbox(border, width=440, height=180, wrap="word", fg_color="#2A2D2E", border_color="#565b5e")
+        content_text.pack(padx=1.5, pady=1.5)
+        if content_key in saved_data:
+             content_text.insert("1.0", saved_data[content_key])
+
+        # 3. Upload Button
+        tk.CTkLabel(frame, text=f"Upload images for {tab['name']}:", font=("Arial", 14)).pack(pady=(10, 2))
+        upload_btn = tk.CTkButton(frame, text="Upload Images", 
+                                  command=lambda ch=tab['id']: self.browse_and_upload_images(ch))
+        upload_btn.pack(pady=(5, 10))
+        
+        # Store refs for scraping later
+        tab["entries"].append((title_key, title_entry, "entry"))
+        tab["entries"].append((content_key, content_text, "text"))
+
+    def set_active_tab(self, tab):
+        """Switches the visible Chapter Tab."""
+        if self.active_tab:
+            self.active_tab["frame"].pack_forget()
+            
+        self.active_tab = tab
+        self.active_tab["frame"].pack(fill="both", expand=True)
+        self.render_tab_buttons()
+
+    def render_tab_buttons(self):
+        """Redraws the tab navigation bar."""
+        for widget in self.tab_bar.winfo_children():
+            widget.destroy()
+            
+        for tab in self.chapter_tabs:
+            is_active = (tab is self.active_tab)
+            btn = tk.CTkButton(
+                self.tab_bar,
+                text=tab["name"],
+                width=100,
+                fg_color="#1f538d" if is_active else "#333333",
+                hover_color="#2b71ba" if is_active else "#444444",
+                command=lambda t=tab: self.set_active_tab(t)
+            )
+            btn.pack(side="left", padx=5, fill="x", expand=True)
+
 
     # ---------------------------------------------------------------------------------------------
     #                                  DATA HANDLING & FLOW
@@ -352,6 +464,25 @@ class App(tk.CTk):
 
     def save_current_inputs(self):
         """Scrapes current input widgets and stores them in self.user_inputs."""
+        
+        # CASE 1: CHAPTERS TAB INTERFACE (Page 5)
+        if self.current_page == 5 and self.chapter_tabs:
+            # We must scrape ALL tabs, not just the active one, because user might have typed in others
+            combined_data = {}
+            
+            for tab in self.chapter_tabs:
+                for label, widget, typ in tab["entries"]:
+                    if typ == "entry":
+                         combined_data[label] = widget.get()
+                    elif typ == "text":
+                         combined_data[label] = widget.get("1.0", tk.END).strip()
+                         
+            # Merge into the single Page 5 data slot
+            # Note: We overwrite completely to ensure latest state is captured
+            self.user_inputs[self.current_page] = combined_data
+            return
+
+        # CASE 2: STANDARD PAGE
         page_data = {}
         for label, widget, typ in self.entries:
             if typ == "entry":
@@ -368,6 +499,9 @@ class App(tk.CTk):
 
     def go_next(self):
         self.save_current_inputs()
+        
+        # When sending to backend, we always send the current page's data
+        # For Page 5, this now contains aggregated data for ALL chapters
         docgen.replace_bookmarks(self.user_inputs[self.current_page])
 
         if self.current_page < len(self.pages):
@@ -428,7 +562,10 @@ def launch_gui(college, department):
     # Initialize user_inputs with page 1 already filled
     user_inputs = [{},  # dummy for index 0, unused
                    {"College": college, "Department": department}]
-    user_inputs.extend({} for _ in range(9))  # Total 10 pages (1-indexed)
+    
+    # Needs to be sparse list for 6 pages (Indices 0-6, so size 7)
+    # 0=Dummy, 1-4=Info, 5=Chapters, 6=References
+    user_inputs.extend({} for _ in range(7)) 
 
     tk.set_appearance_mode("dark")
     tk.set_default_color_theme("dark-blue")

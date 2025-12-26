@@ -98,97 +98,89 @@ def run_test_sequence(self):
 
     print(f"🤖 [Mock] Processing Page {self.current_page}...")
     
-    # Fill inputs
-    for label, widget, typ in self.entries:
-        if typ == "entry":
-             current_text = widget.get()
-             if not current_text:
-                 widget.insert(0, f"Auto-Text for {label}")
-        elif typ == "text":
-            current_text = widget.get("1.0", "end-1c")
-            if not current_text.strip():
-                if label == "NameAndUSN":
-                    # Specific format: 3 lines
-                    content = "Auto-Content for NameAndUSN\n" * 3
-                elif label == "NameUSN":
-                    # Specific format: 3 times in one line (mostly)
-                    content = "Auto-Content for NameUSN, " * 3
-                elif label == "References":
-                    # Explicit references content
-                    content = "[1] Auto-Ref 1\n[2] Auto-Ref 2\n[3] Auto-Ref 3"
-                else:
-                    # Variable length: Make Chapter 2 (Page 5, index 4 in 0-based list but here check page num)
-                    # Page 1-3 info, Page 4=Ch1, Page 5=Ch2
-                    if self.current_page == 4:
+    # CASE 1: STANDARD PAGES (Not 5)
+    if self.current_page != 5:
+        # Fill inputs
+        for label, widget, typ in self.entries:
+            if typ == "entry":
+                 current_text = widget.get()
+                 if not current_text:
+                     widget.insert(0, f"Auto-Text for {label}")
+            elif typ == "text":
+                current_text = widget.get("1.0", "end-1c")
+                if not current_text.strip():
+                    if label == "NameAndUSN":
+                        # Specific format: 3 lines
+                        content = "Auto-Content for NameAndUSN\n" * 3
+                    elif label == "NameUSN":
+                        # Specific format: 3 times in one line (mostly)
+                        content = "Auto-Content for NameUSN, " * 3
+                    elif label == "References":
+                        # Explicit references content
+                        content = "[1] Auto-Ref 1\n[2] Auto-Ref 2\n[3] Auto-Ref 3"
+                    elif label == "Abstract":
                          # Abstract: Normal/Short
                          content = f"Auto-Content for Abstract. " * 8
-                    elif self.current_page == 5:
-                        # Chapter 1: Long
-                         content = f"Auto-Content for {label} (Long Version). " * 200
-                    elif self.current_page == 6:
-                        # Chapter 2: Short (2 lines)
-                        content = "Line 1 of Chapter 2.\nLine 2 of Chapter 2."
-                    elif self.current_page == 7:
-                        # Chapter 3: Medium (8 lines)
-                        content = "Line 1 of Chapter 3.\nLine 2.\nLine 3.\nLine 4.\nLine 5.\nLine 6.\nLine 7.\nLine 8 of Chapter 3."
                     else:
-                        # Chapter 4, 5: Normal
                         content = f"Auto-Content for {label}. " * 50
-                
-                widget.insert("1.0", content)
-    
-    # Helper to recursively find button with text "Upload Images"
-    def find_upload_button(parent):
-        for child in parent.winfo_children():
-            if isinstance(child, ctk.CTkButton) and child.cget("text") == "Upload Images":
-                return child
-            if isinstance(child, ctk.CTkFrame):
-                result = find_upload_button(child)
-                if result: return result
-        return None
+                    
+                    widget.insert("1.0", content)
 
-    # Upload images logic
-    # Page 1-3 are info, 4-8 are chapters 1-5
-    # So valid image pages are page indices 4,5,6,7,8 (1-indexed)
-    
-    is_chapter_page = 4 <= self.current_page <= 8
-    
-    if is_chapter_page:
-        # Special case for Ch1 (Page 5): Test the bug "Upload -> Save -> Upload -> Next"
-        if self.current_page == 5:
-            if not hasattr(self, "ch1_test_step"):
-                self.ch1_test_step = 0
-
-            if self.ch1_test_step == 0:
-                print("🤖 [Mock] Ch1 Step 0: First Upload Batch...")
-                btn = find_upload_button(self.input_frame)
-                if btn: btn.invoke()
-                
-                print("🤖 [Mock] Ch1 Step 0: Clicking Save (Apply)...")
-                self.save_button.invoke() # Stays on page
-                
-                self.ch1_test_step = 1
-                self.after(2000, self.run_test_sequence) # Loop back to same page
-                return
-
-            elif self.ch1_test_step == 1:
-                print("🤖 [Mock] Ch1 Step 1: Second Upload Batch (Testing Insertion Order)...")
-                btn = find_upload_button(self.input_frame)
-                if btn: btn.invoke()
-                
-                self.ch1_test_step = 2
-                # Now proceed to Next naturally
+    # CASE 2: CHAPTERS TABS (Page 5)
+    else:
+        # Iterate through all 5 tabs
+        # Need to access self.chapter_tabs (from gui.py logic)
         
-        # Normal logic for other chapters (or Ch1 after step 1)
-        elif True: # Always runs for others
-            print("🤖 [Mock] Triggering Image Upload for this chapter...")
+        # NOTE: self.chapter_tabs is available because we patched methods onto the instance
+        if not hasattr(self, "chapter_tabs") or not self.chapter_tabs:
+            print("⚠️ [Mock] Page 5 but no chapter tabs found!")
+        
+        for tab in self.chapter_tabs:
+            print(f"  > [Mock] Filling data for tab: {tab['name']}")
             
-            btn = find_upload_button(self.input_frame)
-            if btn:
-                btn.invoke()
-                self.has_uploaded_images = True
-            else:
-                print("⚠️ [Mock] Could not find upload button!")
+            # Switch to this tab to ensure widgets are reliable (though they exist in memory regardless)
+            self.set_active_tab(tab) 
+            self.update() # Force UI refresh
+            
+            # Fill inputs in THIS tab
+            # tab['entries'] stores (label, widget, type)
+            for label, widget, typ in tab["entries"]:
+                if typ == "entry":
+                     if not widget.get():
+                         widget.insert(0, f"Auto-Title for {label}")
+                elif typ == "text":
+                    if not widget.get("1.0", "end-1c").strip():
+                        # Vary content length based on chapter
+                        if "Chapter 1" in tab['name']:
+                             content = f"Auto-Content for {label} (Long). " * 200
+                        elif "Chapter 2" in tab['name']:
+                            content = "Line 1.\nLine 2."
+                        else:
+                            content = f"Auto-Content for {label}. " * 50
+                        widget.insert("1.0", content)
+            
+            # Upload Images Logic for THIS tab
+            if "Chapter 1" in tab['name']:
+                 print("  > [Mock] Uploading images (Scenario Test)...")
+                 # Reuse the upload verification logic
+                 
+                 # Helper to recursively find button with text "Upload Images"
+                 # Since we are in a tab, search inside tab['frame']
+                 def find_upload_button(parent):
+                    for child in parent.winfo_children():
+                        if isinstance(child, ctk.CTkButton) and child.cget("text") == "Upload Images":
+                            return child
+                        if isinstance(child, ctk.CTkFrame):
+                            result = find_upload_button(child)
+                            if result: return result
+                    return None
+                 
+                 btn = find_upload_button(tab['frame'])
+                 if btn:
+                     btn.invoke()
+                     self.has_uploaded_images = True
+                 else:
+                     print(f"⚠️ [Mock] Could not find upload button in {tab['name']}!")
 
     # Move Next
     if self.current_page < len(self.pages):
@@ -200,6 +192,7 @@ def run_test_sequence(self):
         
         print("🤖 [Mock] Clicking Done...")
         self.after(1000, self.next_button.invoke)
+
 
 def go_next_and_loop(self):
     """advance page and callback loop."""
