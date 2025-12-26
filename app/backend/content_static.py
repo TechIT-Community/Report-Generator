@@ -21,6 +21,13 @@ def position_windows(word, doc):
     """
     Positions the Word window and the GUI application side by side.
     
+    Sequence:
+    1. Restore window (SW_SHOWNORMAL).
+    2. Wait for it to exit minimized/iconic state.
+    3. Set Position & Size.
+    4. Set Foreground.
+    5. Set Zoom and Scroll.
+    
     :param word: The Word Application object.
     :param doc: The active Document object.
     """
@@ -34,30 +41,58 @@ def position_windows(word, doc):
     width = int((half_width + 0.11 * screen_width))
 
     hwnd_word = win32gui.FindWindow("OpusApp", None) # Find the Word window
+    
     if hwnd_word:
-        win32gui.ShowWindow(hwnd_word, win32con.SW_RESTORE) # Restore the window if minimized
-        try:
-            win32gui.SetForegroundWindow(hwnd_word) # Bring Word to the foreground
-        except Exception:
-            pass
+        import time
+        
+        # 1. Restore the window
+        # SW_SHOWNORMAL (1) activates and displays a window. If the window is minimized or maximized, 
+        # the system restores it to its original size and position.
+        win32gui.ShowWindow(hwnd_word, win32con.SW_SHOWNORMAL)
+        
+        # 2. Polling loop to ensure window is actually restored
+        for _ in range(20): # Wait up to 2 seconds (20 * 0.1)
+            is_minimized = win32gui.IsIconic(hwnd_word)
+            if not is_minimized:
+                break
+            time.sleep(0.1)
             
-        # Set position and size
-        win32gui.SetWindowPos( 
-            hwnd_word, None,
-            left, 0,
-            width, height,
-            win32con.SWP_NOZORDER
-        ) 
+        time.sleep(0.2) # Small buffer for animation completion
 
+        # 3. Position the window
+        # Only position if we successfully restored it
+        if not win32gui.IsIconic(hwnd_word):
+            try:
+                win32gui.SetWindowPos( 
+                    hwnd_word, None,
+                    left, 0,
+                    width, height,
+                    win32con.SWP_NOZORDER
+                )
+            except Exception as e:
+                print(f"⚠️ Failed to position Word window: {e}")
+                
+            # 4. Bring to foreground
+            try:
+                win32gui.SetForegroundWindow(hwnd_word)
+            except Exception:
+                pass
+        else:
+            print("⚠️ Word window failed to restore, skipping positioning.")
+
+    # 5. Zoom and Scroll (Content readiness)
     import time
-    time.sleep(0.5)
+    time.sleep(0.2) 
 
     try:
+        # Use simple Zoom percentage
         if doc:
             doc.ActiveWindow.View.Zoom.Percentage = 110
         else:
-            word.ActiveWindow.View.Zoom.Percentage = 110 # Change zoom level
+            word.ActiveWindow.View.Zoom.Percentage = 110
     except Exception as e:
+        print(f"⚠️ Warning: Check zoom settings: {e}")
+
         print(f"Warning: Could not set zoom: {e}")
 
     window = word.ActiveWindow # Get the active window
@@ -155,6 +190,7 @@ def generate_static_pages(doc, word, base_dir: Path):
     # Title formatting
     set_format(word.Selection, size=15, bold=True, align=c.wdAlignParagraphCenter, underline=c.wdUnderlineNone)
 
+    position_windows(word, doc)
     word.Selection.TypeText(
         "VISVESVARAYA TECHNOLOGICAL UNIVERSITY\n"
         "“Jnana Sangama”, Belagavi – 590 018"

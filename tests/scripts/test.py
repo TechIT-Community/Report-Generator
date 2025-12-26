@@ -137,6 +137,16 @@ def run_test_sequence(self):
                 
                 widget.insert("1.0", content)
     
+    # Helper to recursively find button with text "Upload Images"
+    def find_upload_button(parent):
+        for child in parent.winfo_children():
+            if isinstance(child, ctk.CTkButton) and child.cget("text") == "Upload Images":
+                return child
+            if isinstance(child, ctk.CTkFrame):
+                result = find_upload_button(child)
+                if result: return result
+        return None
+
     # Upload images logic
     # Page 1-3 are info, 4-8 are chapters 1-5
     # So valid image pages are page indices 4,5,6,7,8 (1-indexed)
@@ -144,24 +154,35 @@ def run_test_sequence(self):
     is_chapter_page = 4 <= self.current_page <= 8
     
     if is_chapter_page:
-        # ALWAYS upload for testing smart placement
-        self.has_uploaded_images = False # Reset flag for each page
-        if True: # Always runs
+        # Special case for Ch1 (Page 5): Test the bug "Upload -> Save -> Upload -> Next"
+        if self.current_page == 5:
+            if not hasattr(self, "ch1_test_step"):
+                self.ch1_test_step = 0
+
+            if self.ch1_test_step == 0:
+                print("🤖 [Mock] Ch1 Step 0: First Upload Batch...")
+                btn = find_upload_button(self.input_frame)
+                if btn: btn.invoke()
+                
+                print("🤖 [Mock] Ch1 Step 0: Clicking Save (Apply)...")
+                self.save_button.invoke() # Stays on page
+                
+                self.ch1_test_step = 1
+                self.after(2000, self.run_test_sequence) # Loop back to same page
+                return
+
+            elif self.ch1_test_step == 1:
+                print("🤖 [Mock] Ch1 Step 1: Second Upload Batch (Testing Insertion Order)...")
+                btn = find_upload_button(self.input_frame)
+                if btn: btn.invoke()
+                
+                self.ch1_test_step = 2
+                # Now proceed to Next naturally
+        
+        # Normal logic for other chapters (or Ch1 after step 1)
+        elif True: # Always runs for others
             print("🤖 [Mock] Triggering Image Upload for this chapter...")
             
-            # Find the upload button. It's buried in the widget hierarchy.
-            # In gui.py: self.input_frame -> image_upload_frame -> upload_btn
-            
-            # Helper to recursively find button with text "Upload Images"
-            def find_upload_button(parent):
-                for child in parent.winfo_children():
-                    if isinstance(child, ctk.CTkButton) and child.cget("text") == "Upload Images":
-                        return child
-                    if isinstance(child, ctk.CTkFrame):
-                        result = find_upload_button(child)
-                        if result: return result
-                return None
-
             btn = find_upload_button(self.input_frame)
             if btn:
                 btn.invoke()

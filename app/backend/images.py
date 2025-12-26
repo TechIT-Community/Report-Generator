@@ -72,6 +72,37 @@ def insert_images_in_chapter(doc, chapter_num: int, start_range, asset_dir: Path
     insert_range = doc.Range(chapter_end, chapter_end)
     insert_range.Collapse(c.wdCollapseStart)
 
+    # FIX: Check for existing figures to append AFTER them (preserve order)
+    # Search for the highest existing figure index in the text scan range
+    existing_indices = []
+    # Regex to find "Fig X.Y" where X is chapter_num
+    matches = re.finditer(rf"Fig {chapter_num}\.(\d+)", existing_text)
+    for m in matches:
+        try:
+            existing_indices.append(int(m.group(1)))
+        except ValueError:
+            pass
+            
+    if existing_indices:
+        last_index = max(existing_indices)
+        last_label = f"Fig {chapter_num}.{last_index}"
+        
+        # Locate this label in the document to move cursor after it
+        search_rng = scan_range.Duplicate
+        # Find the text "Fig X.Y"
+        if search_rng.Find.Execute(FindText=last_label, Forward=True, Wrap=0): # 0 = wdFindStop
+            # FOUND: search_rng now covers "Fig X.Y"
+            # Move to end of this range
+            search_rng.Collapse(c.wdCollapseEnd)
+            
+            # The caption is usually followed by a paragraph mark (inserted by InsertParagraphAfter)
+            # Try to move past potential paragraph mark to start next insertion cleanly
+            search_rng.MoveEnd(c.wdParagraph, 1) 
+            search_rng.Collapse(c.wdCollapseEnd)
+            
+            insert_range = search_rng.Duplicate
+
+
     # -------------------------- Insertion Loop --------------------------
 
     for img in image_files:

@@ -16,8 +16,12 @@ import customtkinter as tk  # Modern UI
 from CTkMessagebox import CTkMessagebox
 from pathlib import Path  # Path handling
 from PIL import Image  # Fix: Needed for CTkImage
- 
-# Do not import gui here to avoid Word opening prematurely
+import sys
+
+# Add project root to sys.path to resolve 'app' package
+project_root = Path(__file__).resolve().parent.parent.parent
+if str(project_root) not in sys.path:
+    sys.path.append(str(project_root))
 
 # =================================================================================================
 #                                       CONFIGURATION
@@ -109,7 +113,15 @@ class StartScreen(tk.CTk):
 
         self.selected_college = college
         self.selected_dept = dept
-        self.quit()
+        
+        self.selected_college = college
+        self.selected_dept = dept
+        
+        # Withdraw (hide) window first to stop visual updates/animations
+        self.withdraw()
+        
+        # Quit the mainloop after a brief pause to allow pending tasks to clear
+        self.after(100, self.quit)
 
 # =================================================================================================
 #                                     MAIN EXECUTION
@@ -134,8 +146,8 @@ def main():
         dept = app.selected_dept
         app.destroy() # Clean up start screen resources
         
-        # Import gui locally to avoid issues with Word initialization
-        from . import gui
+        # Import gui using absolute path now that sys.path is set
+        import app.frontend.gui as gui
         gui.launch_gui(college, dept)
 
 # =================================================================================================
