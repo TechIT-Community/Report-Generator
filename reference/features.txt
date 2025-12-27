@@ -3,9 +3,7 @@ TO DO -
     General
         1. scrolling
 
-        2. seperate files for seperate sections 
-
-        3. AI
+        2. AI
 
 
     GUI
@@ -50,3 +48,5 @@ DONE -
     8. Fix Images - currently get added in the wrong order
 
     9. Page 0 - department as dropdown
+
+    10. seperate files for seperate sections 
