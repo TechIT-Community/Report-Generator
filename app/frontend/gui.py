@@ -513,7 +513,9 @@ class App(tk.CTk):
             self.flash_label("⚠️ Cannot delete the last chapter!", color="orange")
             return
         
+        removed_id = tab["id"]
         removed_name = tab["name"]
+        total_before = len(self.chapter_tabs)
         
         if tab is self.active_tab:
             tab["frame"].pack_forget()
@@ -522,6 +524,41 @@ class App(tk.CTk):
         
         # CRITICAL: Clear old user_inputs[5] to prevent stale keys
         self.user_inputs[5] = {}
+        
+        # ===== IMAGE RENAMING LOGIC =====
+        # 1. Delete all images for the removed chapter (Fig {removed_id}.*)
+        for img_file in ASSET_DIR.glob(f"Fig {removed_id}.*"):
+            try:
+                img_file.unlink()
+                print(f"DEBUG: Deleted image {img_file.name}")
+                # Remove from uploaded_files list
+                if img_file in self.uploaded_files:
+                    self.uploaded_files.remove(img_file)
+            except Exception as e:
+                print(f"WARNING: Could not delete {img_file}: {e}")
+        
+        # 2. Rename images for chapters AFTER the removed one
+        # e.g., if chapter 3 was removed, chapter 4 becomes 3, chapter 5 becomes 4
+        for old_ch in range(removed_id + 1, total_before + 1):
+            new_ch = old_ch - 1
+            for img_file in list(ASSET_DIR.glob(f"Fig {old_ch}.*")):
+                # Extract the figure index (e.g., "Fig 4.2" -> index=2)
+                try:
+                    parts = img_file.stem.split('.')
+                    if len(parts) >= 2:
+                        fig_index = parts[1]
+                        new_name = f"Fig {new_ch}.{fig_index}{img_file.suffix}"
+                        new_path = ASSET_DIR / new_name
+                        img_file.rename(new_path)
+                        print(f"DEBUG: Renamed {img_file.name} -> {new_name}")
+                        
+                        # Update uploaded_files list
+                        if img_file in self.uploaded_files:
+                            idx = self.uploaded_files.index(img_file)
+                            self.uploaded_files[idx] = new_path
+                except Exception as e:
+                    print(f"WARNING: Could not rename {img_file}: {e}")
+        # ===== END IMAGE RENAMING =====
         
         # Re-index all remaining tabs to keep IDs sequential
         for i, t in enumerate(self.chapter_tabs, start=1):
@@ -543,7 +580,7 @@ class App(tk.CTk):
         self.save_current_inputs()
         
         self.set_active_tab(self.chapter_tabs[0])
-        self.flash_label(f"🗑️ Removed {removed_name}. Chapters re-indexed.", color="lightcoral")
+        self.flash_label(f"🗑️ Removed {removed_name}. Chapters & images re-indexed.", color="lightcoral")
 
     # ---------------------------------------------------------------------------------------------
     #                                  DATA HANDLING & FLOW
