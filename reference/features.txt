@@ -10,13 +10,11 @@ TO DO -
     
         1. allow free dynamic adding of text boxes and images (client side)
     
-        2. separate pages into sections and chapters into tabs (tabs also dynamic)
+        2. Terminal with logs
 
-        3. Terminal with logs
+        3. access and preview to already uploaded assets OR upload new one instead of the latter each time
 
-        4. access and preview to already uploaded assets OR upload new one instead of the latter each time
-
-        5. text box dropdown for - title, heading, subheading, content, subscript, superscript, etc, etc choosing other font things
+        4. text box dropdown for - title, heading, subheading, content, subscript, superscript, etc, etc choosing other font things
 
     
     DOCGEN
@@ -50,3 +48,5 @@ DONE -
     9. Page 0 - department as dropdown
 
     10. seperate files for seperate sections 
+
+    11. separate pages into sections and chapters into tabs (tabs also dynamic)

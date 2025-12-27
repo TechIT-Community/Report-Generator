@@ -77,7 +77,9 @@ class App(tk.CTk):
         
         # Shortcut Label
         self.shortcut_label = tk.CTkLabel(self, text="F1: Keyboard shortcuts", font=("Arial", 12), text_color="gray")
-        self.shortcut_label.place(relx=0.97, rely=0.03, anchor="ne")
+        self.shortcut_label.place(relx=0.97, rely=0.04, anchor="ne")
+        self.save_label = tk.CTkLabel(self, text="Ctrl+Shift+S: Save entire report", font=("Arial", 12), text_color="gray")
+        self.save_label.place(relx=0.97, rely=0.08, anchor="ne")
         
         # --- Key Bindings ---
         self.bind_all("<Control-Return>", lambda e: self._show_next_enter())  # Ctrl + Enter = Next
@@ -85,16 +87,21 @@ class App(tk.CTk):
         self.bind_all("<Control-Left>", lambda e: self._show_prev())  # Ctrl + ← = Previous
 
         self.bind_all("<Control-s>", lambda e: self._show_save())
+        self.bind_all("<Return>", lambda e: self._smart_enter_save(e)) # "Enter" to Save
         self.bind_all("<Control-Shift-S>", lambda e: self.save_entire_report())
         self.bind_all("<Control-q>", self.jump_to_last_with_prompt)
         self.bind_all("<Escape>", self.jump_to_last_with_prompt)
         self.bind_all("<F1>", self.show_shortcuts_popup)
+        
+        # Chapter Cycling (Page 5)
+        self.bind_all("<Control-Up>", lambda e: self.cycle_chapter_tab(-1))
+        self.bind_all("<Control-Down>", lambda e: self.cycle_chapter_tab(1))
 
         # Page jump prefix mode
         self.bind_all("<Control-k>", self.activate_page_jump_mode)
-        for i in range(1, 10):
+        for i in range(1, 7):
             self.bind_all(str(i), lambda e, i=i: self.page_jump_prefix(i))
-        self.bind_all("0", lambda e: self.page_jump_prefix(10))
+
 
     # ---------------------------------------------------------------------------------------------
     #                                  UI FEEDBACK (FLASH LABEL)
@@ -112,13 +119,13 @@ class App(tk.CTk):
     def _show_next_right(self):
         """Visual wrapper for Next action."""
         if self.current_page < len(self.pages):
-            self.flash_label(f"➡️ Next → Page {self.current_page + 1}: {self.page_titles[self.current_page]}")
+            self.flash_label(f"➡️ Next Page {self.current_page + 1}: {self.page_titles[self.current_page]}")
             self.go_next()
 
     def _show_next_enter(self):
         """Visual wrapper for Enter key action."""
         if self.current_page < len(self.pages):
-            self.flash_label(f"➡️ Next → Page {self.current_page + 1}: {self.page_titles[self.current_page]}")
+            self.flash_label(f"➡️ Next Page {self.current_page + 1}: {self.page_titles[self.current_page]}")
             self.go_next()
         else:
             self.flash_label("✅ Done! Report saved successfully.", color="skyblue", time = 5000)
@@ -134,6 +141,24 @@ class App(tk.CTk):
         """Visual wrapper for Save action."""
         self.apply_page()
         self.flash_label("💾 Saved current page!")
+
+    def _smart_enter_save(self, event):
+        """Handle Enter key: Newline for Text widgets, Save for others."""
+        focused = self.focus_get()
+        if "text" in str(focused).lower(): 
+            return # Allow newline
+        self._show_save()
+
+    def cycle_chapter_tab(self, direction):
+        """Cycle chapter tabs on Page 5. direction: -1 (Up), 1 (Down)."""
+        if self.current_page != 5 or not self.chapter_tabs or not self.active_tab:
+            return
+        try:
+            current_idx = self.chapter_tabs.index(self.active_tab)
+            new_idx = (current_idx + direction) % len(self.chapter_tabs)
+            self.set_active_tab(self.chapter_tabs[new_idx])
+        except ValueError:
+            pass
 
     # ---------------------------------------------------------------------------------------------
     #                                   LIFECYCLE & HELPERS
@@ -162,7 +187,7 @@ class App(tk.CTk):
 
     def activate_page_jump_mode(self, event=None):
         self.key_prefix_active = True
-        self.flash_label("⌨️ Page jump mode: Press 1–0")
+        self.flash_label("⌨️ Page jump mode: Press 1–6")
 
     def jump_to_page_by_index(self, index, event=None):
         self.jump_to_page(f"{index}. {self.page_titles[index - 1]}")
@@ -192,7 +217,7 @@ class App(tk.CTk):
 
         self.help_window = tk.CTkToplevel(self)
         self.help_window.title("Shortcut Help")
-        self.help_window.geometry("420x280")
+        self.help_window.geometry("420x380")
         self.help_window.resizable(False, False)
         self.help_window.attributes("-topmost", True)
 
@@ -206,12 +231,14 @@ class App(tk.CTk):
 
         shortcuts_text = (
             "• F1: Show/Hide this help\n\n"
-            "• Ctrl + Enter / Ctrl + →: Next\n"
-            "• Ctrl + ←: Previous\n"
-            "• Ctrl + S: Save current page\n"
+            "• Tab / Ctrl + Tab: Go to the next input field\n"
+            "• Ctrl + Enter / Ctrl + →: Next Page\n"
+            "• Ctrl + ←: Previous Page\n"
+            "• Ctrl + ↑ / Ctrl + ↓: Cycle Chapter Tabs (Page 5)\n"
+            "• Ctrl + S / Enter: Save current page\n"
             "• Ctrl + Shift + S: Save entire report\n"
-            "• Ctrl + Q or Esc: Jump to last page and prompt\n\n"
-            "• Ctrl + K, then 1–9 or 0: Jump to pages 1–10\n"
+            "• Ctrl + Q / Esc: Jump to Generate Page (Done)\n\n"
+            "• Ctrl + K (then 1-6): Jump to Page X\n"
         )
 
         label = tk.CTkLabel(
@@ -312,6 +339,12 @@ class App(tk.CTk):
         # if self.current_page != 5:
         #     self.chapter_tabs = []
         #     self.active_tab = None
+
+        # ADJUST LAYOUT: For Page 5 (Chapters), use less top padding so Flash Label isn't covered
+        if self.current_page == 5:
+            self.input_frame.pack_configure(pady=(10, 40))
+        else:
+            self.input_frame.pack_configure(pady=40)
 
         self.page_title_label.configure(text=f"{self.current_page}: {self.page_titles[self.current_page - 1]}")
         self.page_selector.set(f"{self.current_page}. {self.page_titles[self.current_page - 1]}")
@@ -460,7 +493,7 @@ class App(tk.CTk):
         # Upload Button
         tk.CTkLabel(frame, text=f"Images for {tab['name']}:", font=("Arial", 14)).pack(anchor="w", pady=(5, 2))
         upload_btn = tk.CTkButton(
-            frame, text="📁 Upload Images", width=150, height=35,
+            frame, text="📁 Upload Images", width=160, height=35,
             command=lambda ch=tab['id']: self.browse_and_upload_images(ch)
         )
         upload_btn.pack(anchor="w", pady=(0, 10))
