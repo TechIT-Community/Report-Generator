@@ -104,12 +104,11 @@ def replace_bookmarks(doc, word, data_dict: dict, asset_dir: Path):
 
     # These bookmarks should have a newline after the inserted value
     # NOTE: GuideName and Designation removed from here to prevent layout breaks (handled in static)
-    newline_bookmark_names = {
-        "ProjectTitle", "NameAndUSN", 
-        "Department_2", "Department_3",
-        "Chapter1Title", "Chapter2Title", "Chapter3Title", "Chapter4Title", "Chapter5Title",
-        "Chapter1Content", "Chapter2Content", "Chapter3Content", "Chapter4Content", "Chapter5Content"
-    }
+    # DYNAMIC: Generate based on keys present in data_dict
+    newline_bookmark_names = {"ProjectTitle", "NameAndUSN", "Department_2", "Department_3"}
+    for key in data_dict.keys():
+        if key.startswith("Chapter") and ("Title" in key or "Content" in key):
+            newline_bookmark_names.add(key)
 
     rebookmarks = []  # To store bookmarks that need to be re-added after replacement
 
@@ -146,7 +145,8 @@ def replace_bookmarks(doc, word, data_dict: dict, asset_dir: Path):
             word.ActiveWindow.ScrollIntoView(word.Selection.Range, True)
             
             # --- Handle images (ChapterContent logic) ---
-            chapter_match = re.match(r"Chapter(\d)Content", name)
+            # FIXED: \d+ to support >9 chapters
+            chapter_match = re.match(r"Chapter(\d+)Content", name)
             if chapter_match:
                 chapter_num = int(chapter_match.group(1))
                 insert_images_in_chapter(doc, chapter_num, new_range, asset_dir)
@@ -211,32 +211,36 @@ def update_index_page_numbers(doc):
     Updates the Table of Contents (TOC) page numbers by looking up the actual
     page numbers of the Chapter Titles and References.
     
-    Uses `wdActiveEndAdjustedPageNumber` to handle section restarts correctly.
+    DYNAMICALLY handles any number of chapters by checking which bookmarks exist.
     """
     # Attempt to use wdActiveEndAdjustedPageNumber (4) for restart-aware numbering
     wdActiveEndAdjustedPageNumber = getattr(c, 'wdActiveEndAdjustedPageNumber', 4)
 
-    # 1. Update Chapter 1-5 Page Numbers
-    for i in range(1, 6):
+    # 1. Update Chapter Page Numbers (DYNAMIC - check up to 20 chapters)
+    for i in range(1, 21):  # Support up to 20 chapters
         title_bm = f"Chapter{i}Title_2"
         page_bm = f"Chapter{i}Page"  # This is in the index table
         
-        if doc.Bookmarks.Exists(title_bm) and doc.Bookmarks.Exists(page_bm):
-            title_range = doc.Bookmarks(title_bm).Range
-            # Use AdjustedPageNumber to respect the footer restart
-            page_number = title_range.Information(wdActiveEndAdjustedPageNumber)
+        # Stop if this chapter doesn't exist
+        if not doc.Bookmarks.Exists(title_bm) or not doc.Bookmarks.Exists(page_bm):
+            print(f"DEBUG update_index: Stopped at Chapter {i} (no bookmark)")
+            break
+            
+        title_range = doc.Bookmarks(title_bm).Range
+        # Use AdjustedPageNumber to respect the footer restart
+        page_number = title_range.Information(wdActiveEndAdjustedPageNumber)
 
-            # Replace the index placeholder bookmark with the actual page number
-            bm_range = doc.Bookmarks(page_bm).Range
-            bm_start = bm_range.Start
-            bm_range.Text = str(page_number) 
+        # Replace the index placeholder bookmark with the actual page number
+        bm_range = doc.Bookmarks(page_bm).Range
+        bm_start = bm_range.Start
+        bm_range.Text = str(page_number) 
 
-            # Re-bookmark the range
-            new_range = doc.Range(bm_start, bm_start + len(str(page_number)))
-            try:
-                doc.Bookmarks.Add(page_bm, new_range)
-            except:
-                print(f"⚠️ Could not re-add bookmark: {page_bm}")
+        # Re-bookmark the range
+        new_range = doc.Range(bm_start, bm_start + len(str(page_number)))
+        try:
+            doc.Bookmarks.Add(page_bm, new_range)
+        except:
+            print(f"⚠️ Could not re-add bookmark: {page_bm}")
                 
     # 2. Update Reference Page Number
     if doc.Bookmarks.Exists("References") and doc.Bookmarks.Exists("RefPage"):
@@ -253,3 +257,4 @@ def update_index_page_numbers(doc):
             doc.Bookmarks.Add("RefPage", new_range)
         except:
             print(f"⚠️ Could not re-add bookmark: RefPage")
+

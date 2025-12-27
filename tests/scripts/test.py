@@ -128,12 +128,19 @@ def run_test_sequence(self):
 
     # CASE 2: CHAPTERS TABS (Page 5)
     else:
-        # Iterate through all 5 tabs
+        # Iterate through all tabs
         # Need to access self.chapter_tabs (from gui.py logic)
         
         # NOTE: self.chapter_tabs is available because we patched methods onto the instance
         if not hasattr(self, "chapter_tabs") or not self.chapter_tabs:
             print("⚠️ [Mock] Page 5 but no chapter tabs found!")
+        
+        # TEST: Add a 6th chapter dynamically
+        if not hasattr(self, "_added_test_chapter"):
+            print("  > [Mock] DYNAMIC CHAPTERS TEST: Adding Chapter 6...")
+            self.add_new_chapter_tab()
+            self._added_test_chapter = True
+
         
         for tab in self.chapter_tabs:
             print(f"  > [Mock] Filling data for tab: {tab['name']}")

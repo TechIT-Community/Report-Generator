@@ -122,6 +122,48 @@ def make_borders(doc, word):
         br.Color = c.wdColorAutomatic # Automatic color (Black)
 
 
+def delete_part2_content(doc):
+    """
+    Deletes all content after the Part1End bookmark (TOC, Chapters, References).
+    Called before regenerating Part 2 to allow dynamic chapter count changes.
+    
+    Also deletes any sections beyond section 2 (since Part 2 creates new sections).
+    
+    :param doc: The Word Document object.
+    :return: True if deletion was successful, False otherwise.
+    """
+    if not doc.Bookmarks.Exists("Part1End"):
+        print("DEBUG delete_part2: Part1End bookmark not found")
+        return False
+    
+    try:
+        # Get the position of Part1End bookmark
+        part1_end = doc.Bookmarks("Part1End").Range.End
+        doc_end = doc.Content.End
+        
+        if part1_end >= doc_end - 1:
+            print("DEBUG delete_part2: No Part 2 content to delete")
+            return True  # Nothing to delete
+        
+        # Select and delete everything from Part1End to end of document
+        delete_range = doc.Range(part1_end, doc_end)
+        delete_range.Delete()
+        
+        # Also need to delete extra sections that Part 2 created (sections 3+)
+        # Keep only sections 1 and 2
+        while doc.Sections.Count > 2:
+            # Delete the last section by selecting its content
+            last_section = doc.Sections(doc.Sections.Count)
+            last_section.Range.Delete()
+        
+        print(f"DEBUG delete_part2: Deleted Part 2 content. Document now has {doc.Sections.Count} sections")
+        return True
+        
+    except Exception as e:
+        print(f"ERROR delete_part2: {e}")
+        return False
+
+
 def page_numbers(doc):
     """
     Configures page numbering logic:
@@ -169,10 +211,12 @@ def page_numbers(doc):
 #                                   MAIN GENERATION LOGIC
 # =================================================================================================
 
-def generate_static_pages(doc, word, base_dir: Path):
+def generate_static_pages_part1(doc, word, base_dir: Path):
     """
-    Inserts all static content blocks into the Word document, creating bookmarks and placeholders.
-    Sequence: Title -> Certificate -> Acknowledgement -> Abstract -> TOC -> Chapters -> References.
+    PART 1: Inserts static content blocks BEFORE the chapters.
+    Sequence: Title -> Certificate -> Acknowledgement -> Abstract.
+    
+    NOTE: TOC, Chapters, and References are generated in Part 2.
     
     :param doc: The Word Document object.
     :param word: The Word Application object.
@@ -638,7 +682,28 @@ def generate_static_pages(doc, word, base_dir: Path):
     cursor.InsertBreak(c.wdSectionBreakNextPage) 
     cursor.Collapse(c.wdCollapseEnd)
     cursor.Select()
+    
+    # Mark end of Part 1 with a bookmark for Part 2 regeneration
+    part1_end_range = doc.Range(doc.Content.End - 1, doc.Content.End - 1)
+    doc.Bookmarks.Add("Part1End", part1_end_range)
 
+    # PART 1 ENDS HERE. TOC, Chapters, and References are handled in Part 2.
+
+
+# =================================================================================================
+#                                   PART 2: DYNAMIC CHAPTERS
+# =================================================================================================
+
+def generate_static_pages_part2(doc, word, base_dir: Path, num_chapters: int):
+    """
+    PART 2: Generates dynamic sections based on user's chapter count.
+    Sequence: TOC -> Chapters (1 to N) -> References.
+    
+    :param doc: The Word Document object.
+    :param word: The Word Application object.
+    :param base_dir: Base directory path for loading assets (images).
+    :param num_chapters: The number of chapters to generate.
+    """
     # ---------------------------------------------------------------------------------------------
     #                                     TABLE OF CONTENTS
     # ---------------------------------------------------------------------------------------------
@@ -658,16 +723,12 @@ def generate_static_pages(doc, word, base_dir: Path):
     word.Selection.TypeText("Table of Contents")
     word.Selection.TypeParagraph()
 
-    # -- TOC Table Structure --
-    data = [
-        ["S.No", "Title", "Page No"],
-        ["1", "___", "___"],
-        ["2", "___", "___"],
-        ["3", "___", "___"],
-        ["4", "___", "___"],
-        ["5", "___", "___"],
-        ["6", "References", "___"],
-    ]
+    # -- Dynamic TOC Table Structure --
+    data = [["S.No", "Title", "Page No"]]
+    for i in range(1, num_chapters + 1):
+        data.append([str(i), "___", "___"])
+    data.append([str(num_chapters + 1), "References", "___"])
+    
     bold_cells = [(0, 0), (0, 1), (0, 2)]
     
     cursor.Collapse(c.wdCollapseEnd)
@@ -694,19 +755,22 @@ def generate_static_pages(doc, word, base_dir: Path):
             cell.Range.Text = cell_val
             if (i, j) in bold_cells:
                 cell.Range.Font.Bold = True
-            if j == 1 and i > 0 and i < 6:
+            # Chapter Title placeholders (Column 2, Rows 1 to N)
+            if j == 1 and 1 <= i <= num_chapters:
                 placeholder = "___"
                 cell.Range.Text = placeholder
                 bm_start = cell.Range.Start
                 bm_range = doc.Range(bm_start, bm_start + len(placeholder))
                 doc.Bookmarks.Add(f"Chapter{i}Title", bm_range)
-            if j == 2 and i > 0 and i < 6:
+            # Chapter Page Number placeholders (Column 3, Rows 1 to N)
+            if j == 2 and 1 <= i <= num_chapters:
                 placeholder = "___"
                 cell.Range.Text = placeholder
                 bm_start = cell.Range.Start
                 bm_range = doc.Range(bm_start, bm_start + len(placeholder))
                 doc.Bookmarks.Add(f"Chapter{i}Page", bm_range)
-            if j == 2 and i == 6:
+            # References Page Number (Last Row, Column 3)
+            if j == 2 and i == num_chapters + 1:
                 placeholder = "___"
                 cell.Range.Text = placeholder
                 bm_start = cell.Range.Start
@@ -725,10 +789,10 @@ def generate_static_pages(doc, word, base_dir: Path):
     cursor.Select()
 
     # ---------------------------------------------------------------------------------------------
-    #                                     CHAPTER CONTENT
+    #                                     CHAPTER CONTENT (Dynamic)
     # ---------------------------------------------------------------------------------------------
 
-    for i in range(1, 6):
+    for i in range(1, num_chapters + 1):
         cursor.Collapse(c.wdCollapseEnd)
         cursor = doc.Range(doc.Content.End - 1, doc.Content.End - 1)
         cursor.InsertBreak(c.wdSectionBreakNextPage)
@@ -819,4 +883,90 @@ def generate_static_pages(doc, word, base_dir: Path):
     # ---------------------------------------------------------------------------------------------
 
     make_borders(doc, word)
-    page_numbers(doc)
+    page_numbers_dynamic(doc, num_chapters)
+
+
+def page_numbers_dynamic(doc, num_chapters: int):
+    """
+    Configures page numbering logic for dynamic chapter count.
+    
+    ACTUAL SECTION STRUCTURE (verified by testing):
+    - Section 1: Title + Certificate + Acknowledgement + Abstract (no footer)
+    - Section 2: TOC (start numbering)
+    - Sections 3 to (2 + num_chapters): Chapters (continue numbering, hide first page)
+    - Section (4 + num_chapters): References (continue numbering, show footer)
+    
+    NOTE: There are 4 sections "consumed" before References (1 pre + 2 TOC + 1 gap), 
+    so References = 4 + num_chapters, NOT 3 + num_chapters.
+    
+    :param doc: The Word Document object.
+    :param num_chapters: The number of chapters.
+    """
+    total_sections = doc.Sections.Count
+    print(f"DEBUG page_numbers: {total_sections} sections, {num_chapters} chapters expected")
+    
+    for idx, sec in enumerate(doc.Sections, start=1):
+        sec.Range.InsertAfter("\r")
+        if idx > 1:
+            for hf_type in [c.wdHeaderFooterPrimary, c.wdHeaderFooterFirstPage]:
+                sec.Footers(hf_type).LinkToPrevious = False
+                sec.Headers(hf_type).LinkToPrevious = False
+
+        # Section 1: Title/Cert/Ack/Abstract - No numbering
+        if idx == 1:
+            for hf_type in [c.wdHeaderFooterPrimary, c.wdHeaderFooterFirstPage]:
+                sec.Footers(hf_type).Range.Text = ""
+                sec.Headers(hf_type).Range.Text = ""
+            continue
+
+        # Section 2: TOC - Use Roman numerals (i, ii, iii...)
+        if idx == 2:
+            sec.PageSetup.DifferentFirstPageHeaderFooter = False
+            footer = sec.Footers(c.wdHeaderFooterPrimary)
+            pnums = footer.PageNumbers
+            pnums.RestartNumberingAtSection = True
+            pnums.StartingNumber = 1
+            pnums.NumberStyle = c.wdPageNumberStyleLowercaseRoman  # Roman numerals
+            pnums.Add(c.wdAlignParagraphCenter, False)
+
+        # Sections 3 to (2 + num_chapters): Chapters - Restart at 1 for Chapter 1, then continue
+        if 3 <= idx <= 2 + num_chapters:
+            sec.PageSetup.DifferentFirstPageHeaderFooter = True
+            pfooter = sec.Footers(c.wdHeaderFooterPrimary)
+            ppnums = pfooter.PageNumbers
+            
+            # ALL chapters must use Arabic numbers (not just Chapter 1)
+            ppnums.NumberStyle = c.wdPageNumberStyleArabic
+            
+            # Chapter 1 (Section 3) restarts numbering at 1
+            if idx == 3:
+                ppnums.RestartNumberingAtSection = True
+                ppnums.StartingNumber = 1
+            else:
+                ppnums.RestartNumberingAtSection = False
+                
+            ppnums.Add(c.wdAlignParagraphCenter, False)
+            sec.Footers(c.wdHeaderFooterFirstPage).Range.Text = ""
+
+        # References section: Use dynamic detection - it's the LAST section
+        # After regeneration, section count = 2 + num_chapters + 1 (for References)
+        if idx == total_sections and idx > 2 + num_chapters:
+            print(f"DEBUG page_numbers: Applying References footer at section {idx} (last section, {num_chapters} chapters)")
+            sec.PageSetup.DifferentFirstPageHeaderFooter = False  # Show footer on ALL pages
+            
+            # Explicitly break link from previous section
+            sec.Footers(c.wdHeaderFooterPrimary).LinkToPrevious = False
+            sec.Headers(c.wdHeaderFooterPrimary).LinkToPrevious = False
+            
+            # Set PageNumbers properties FIRST (Arabic style, continue numbering)
+            pfooter = sec.Footers(c.wdHeaderFooterPrimary)
+            pnums = pfooter.PageNumbers
+            pnums.NumberStyle = c.wdPageNumberStyleArabic  # Must use Arabic, not Roman
+            pnums.RestartNumberingAtSection = False  # Continue from chapters
+            
+            # Clear any existing content and insert a PAGE field
+            footer_range = pfooter.Range
+            footer_range.Text = ""  # Clear
+            footer_range.ParagraphFormat.Alignment = c.wdAlignParagraphCenter
+            footer_range.Fields.Add(footer_range, c.wdFieldPage)  # Insert {PAGE} field
+

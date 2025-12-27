@@ -151,7 +151,10 @@ class App(tk.CTk):
         
     def save_entire_report(self):
         """Calls the backend to finalize and save the Word document."""
-        docgen.save_document()
+        self.save_current_inputs()  # Ensure current page data is saved
+        full_data = self.aggregate_all_data()
+        num_chapters = len(self.chapter_tabs) if self.chapter_tabs else 5
+        docgen.save_document(num_chapters, full_data)
 
     # ---------------------------------------------------------------------------------------------
     #                                     PAGE NAVIGATION
@@ -304,10 +307,11 @@ class App(tk.CTk):
             widget.destroy()
         self.entries.clear()
         
-        # Cleanup old tabs references from memory if leaving page 5
-        if self.current_page != 5:
-            self.chapter_tabs = []
-            self.active_tab = None
+        # NOTE: Do NOT clear chapter_tabs when leaving page 5 - we need to persist state
+        # The tabs are only cleared on app restart.
+        # if self.current_page != 5:
+        #     self.chapter_tabs = []
+        #     self.active_tab = None
 
         self.page_title_label.configure(text=f"{self.current_page}: {self.page_titles[self.current_page - 1]}")
         self.page_selector.set(f"{self.current_page}. {self.page_titles[self.current_page - 1]}")
@@ -317,6 +321,7 @@ class App(tk.CTk):
         
         if current_page_def == "CHAPTERS_TAB_INTERFACE":
             self.render_chapter_interface()
+            self.update_nav_buttons()  # FIX: Ensure Done/Next button updates
             return
 
         # STANDARD PAGE RENDERING
@@ -356,29 +361,49 @@ class App(tk.CTk):
     # ---------------------------------------------------------------------------------------------
 
     def render_chapter_interface(self):
-        """Builds the custom tab controller for Chapters 1-5."""
+        """Builds the custom tab controller for Chapters with scrollable tabs."""
         
-        # 1. Tab Navigation Bar
-        self.tab_bar = tk.CTkFrame(self.input_frame, fg_color="transparent")
-        self.tab_bar.pack(fill="x", pady=(0, 10))
+        # 1. Top Section: Tab Navigation (scrollable horizontally)
+        top_frame = tk.CTkFrame(self.input_frame, fg_color="transparent")
+        top_frame.pack(fill="x", pady=(0, 10))
+        
+        # Tab label
+        tk.CTkLabel(top_frame, text="Chapters:", font=("Arial", 14, "bold")).pack(side="left", padx=(0, 10))
+        
+        # Scrollable tab container using horizontal pack
+        self.tab_bar = tk.CTkScrollableFrame(top_frame, orientation="horizontal", height=45, fg_color="#2A2D2E")
+        self.tab_bar.pack(side="left", fill="x", expand=True)
+        
+        # Add button (fixed to right)
+        add_btn = tk.CTkButton(
+            top_frame, text="+", width=40, height=35, font=("Arial", 16, "bold"),
+            fg_color="#2a7a2a", hover_color="#1f5a1f",
+            command=self.add_new_chapter_tab
+        )
+        add_btn.pack(side="right", padx=(10, 0))
         
         # 2. Content Container
         self.tab_content_container = tk.CTkFrame(self.input_frame, fg_color="transparent")
         self.tab_content_container.pack(fill="both", expand=True)
 
-        # Initialize Tabs if empty
-        if not self.chapter_tabs:
-            for i in range(1, 6):
-                self.create_chapter_tab(i)
+        # Determine how many tabs to create from saved data
+        saved_chapter_data = self.user_inputs[5] if len(self.user_inputs) > 5 else {}
+        saved_chapter_count = 0
+        for key in saved_chapter_data.keys():
+            if key.startswith("Chapter") and "Title" in key:
+                saved_chapter_count += 1
         
-        # Restore active tab or default to Ch1
-        if not self.active_tab and self.chapter_tabs:
+        num_tabs_to_create = saved_chapter_count if saved_chapter_count > 0 else 5
+        
+        # Clear old tab references
+        self.chapter_tabs = []
+        self.active_tab = None
+        
+        for i in range(1, num_tabs_to_create + 1):
+            self.create_chapter_tab(i)
+        
+        if self.chapter_tabs:
             self.set_active_tab(self.chapter_tabs[0])
-        else:
-            # Re-render bar if returning to page
-            self.render_tab_buttons()
-            if self.active_tab:
-                 self.active_tab["frame"].pack(fill="both", expand=True)
 
     def create_chapter_tab(self, number):
         """Creates data structure and UI frame for a Chapter Tab."""
@@ -386,48 +411,60 @@ class App(tk.CTk):
             "name": f"Chapter {number}",
             "id": number,
             "frame": tk.CTkFrame(self.tab_content_container, fg_color="transparent"),
-            "entries": [], # Stores widget refs specific to this tab
-            "data": {}     # Local data cache
+            "entries": [],
+            "data": {}
         }
         
-        # Populate UI inside the frame (Hidden by default)
         self.build_chapter_ui(tab)
         self.chapter_tabs.append(tab)
 
     def build_chapter_ui(self, tab):
-        """Constructs the standard Chapter Title/Content/Upload widgets inside the tab frame."""
+        """Creates the input widgets inside a chapter tab's frame."""
         frame = tab["frame"]
-        
-        # Pre-load data from GLOBAL storage if exists
         saved_data = self.user_inputs[self.current_page] if self.current_page < len(self.user_inputs) else {}
         
-        # Fields Definition
         title_key = f"Chapter{tab['id']}Title"
         content_key = f"Chapter{tab['id']}Content"
         
-        # 1. Title Input
-        tk.CTkLabel(frame, text=f"{tab['name']} Title:", font=("Arial", 16)).pack(pady=(5, 2))
-        title_entry = tk.CTkEntry(frame, width=450, fg_color="#2A2D2E")
-        title_entry.pack(pady=(0, 10))
+        # Header with delete button
+        header = tk.CTkFrame(frame, fg_color="transparent")
+        header.pack(fill="x", pady=(5, 10))
+        
+        tk.CTkLabel(header, text=f"{tab['name']}", font=("Arial", 18, "bold")).pack(side="left")
+        
+        # Delete button (red X)
+        del_btn = tk.CTkButton(
+            header, text="✕ Delete", width=80, height=28,
+            fg_color="#8B0000", hover_color="#B22222",
+            font=("Arial", 12),
+            command=lambda t=tab: self.remove_chapter_tab(t)
+        )
+        del_btn.pack(side="right")
+        
+        # Title Input
+        tk.CTkLabel(frame, text=f"Title:", font=("Arial", 14)).pack(anchor="w", pady=(0, 2))
+        title_entry = tk.CTkEntry(frame, width=500, height=35, fg_color="#2A2D2E")
+        title_entry.pack(anchor="w", pady=(0, 10))
         if title_key in saved_data:
             title_entry.insert(0, saved_data[title_key])
             
-        # 2. Content Input
-        tk.CTkLabel(frame, text=f"{tab['name']} Content:", font=("Arial", 16)).pack(pady=(5, 2))
+        # Content Input
+        tk.CTkLabel(frame, text=f"Content:", font=("Arial", 14)).pack(anchor="w", pady=(0, 2))
         border = tk.CTkFrame(frame, fg_color="#565b5e", corner_radius=6)
-        border.pack(pady=(0, 10), padx=4)
-        content_text = tk.CTkTextbox(border, width=440, height=180, wrap="word", fg_color="#2A2D2E", border_color="#565b5e")
-        content_text.pack(padx=1.5, pady=1.5)
+        border.pack(anchor="w", pady=(0, 10))
+        content_text = tk.CTkTextbox(border, width=490, height=150, wrap="word", fg_color="#2A2D2E")
+        content_text.pack(padx=2, pady=2)
         if content_key in saved_data:
-             content_text.insert("1.0", saved_data[content_key])
+            content_text.insert("1.0", saved_data[content_key])
 
-        # 3. Upload Button
-        tk.CTkLabel(frame, text=f"Upload images for {tab['name']}:", font=("Arial", 14)).pack(pady=(10, 2))
-        upload_btn = tk.CTkButton(frame, text="Upload Images", 
-                                  command=lambda ch=tab['id']: self.browse_and_upload_images(ch))
-        upload_btn.pack(pady=(5, 10))
+        # Upload Button
+        tk.CTkLabel(frame, text=f"Images for {tab['name']}:", font=("Arial", 14)).pack(anchor="w", pady=(5, 2))
+        upload_btn = tk.CTkButton(
+            frame, text="📁 Upload Images", width=150, height=35,
+            command=lambda ch=tab['id']: self.browse_and_upload_images(ch)
+        )
+        upload_btn.pack(anchor="w", pady=(0, 10))
         
-        # Store refs for scraping later
         tab["entries"].append((title_key, title_entry, "entry"))
         tab["entries"].append((content_key, content_text, "text"))
 
@@ -441,7 +478,7 @@ class App(tk.CTk):
         self.render_tab_buttons()
 
     def render_tab_buttons(self):
-        """Redraws the tab navigation bar."""
+        """Redraws the tab buttons in the scrollable tab bar."""
         for widget in self.tab_bar.winfo_children():
             widget.destroy()
             
@@ -449,14 +486,64 @@ class App(tk.CTk):
             is_active = (tab is self.active_tab)
             btn = tk.CTkButton(
                 self.tab_bar,
-                text=tab["name"],
-                width=100,
+                text=f"Ch {tab['id']}",
+                width=60,
+                height=32,
                 fg_color="#1f538d" if is_active else "#333333",
                 hover_color="#2b71ba" if is_active else "#444444",
+                font=("Arial", 12),
                 command=lambda t=tab: self.set_active_tab(t)
             )
-            btn.pack(side="left", padx=5, fill="x", expand=True)
+            btn.pack(side="left", padx=3, pady=3)
 
+    def add_new_chapter_tab(self):
+        """Adds a new chapter tab dynamically."""
+        next_id = len(self.chapter_tabs) + 1
+        self.create_chapter_tab(next_id)
+        self.set_active_tab(self.chapter_tabs[-1])
+        
+        # Immediately save to keep user_inputs[5] in sync
+        self.save_current_inputs()
+        
+        self.flash_label(f"✅ Added Chapter {next_id}")
+
+    def remove_chapter_tab(self, tab):
+        """Removes a chapter tab. Minimum 1 chapter required."""
+        if len(self.chapter_tabs) <= 1:
+            self.flash_label("⚠️ Cannot delete the last chapter!", color="orange")
+            return
+        
+        removed_name = tab["name"]
+        
+        if tab is self.active_tab:
+            tab["frame"].pack_forget()
+        tab["frame"].destroy()
+        self.chapter_tabs.remove(tab)
+        
+        # CRITICAL: Clear old user_inputs[5] to prevent stale keys
+        self.user_inputs[5] = {}
+        
+        # Re-index all remaining tabs to keep IDs sequential
+        for i, t in enumerate(self.chapter_tabs, start=1):
+            t["id"] = i
+            t["name"] = f"Chapter {i}"
+            # Update entry keys to match new ID
+            new_entries = []
+            for label, widget, typ in t["entries"]:
+                if "Title" in label:
+                    new_label = f"Chapter{i}Title"
+                elif "Content" in label:
+                    new_label = f"Chapter{i}Content"
+                else:
+                    new_label = label
+                new_entries.append((new_label, widget, typ))
+            t["entries"] = new_entries
+        
+        # Immediately save current state to user_inputs[5]
+        self.save_current_inputs()
+        
+        self.set_active_tab(self.chapter_tabs[0])
+        self.flash_label(f"🗑️ Removed {removed_name}. Chapters re-indexed.", color="lightcoral")
 
     # ---------------------------------------------------------------------------------------------
     #                                  DATA HANDLING & FLOW
@@ -502,17 +589,33 @@ class App(tk.CTk):
         
         # When sending to backend, we always send the current page's data
         # For Page 5, this now contains aggregated data for ALL chapters
-        docgen.replace_bookmarks(self.user_inputs[self.current_page])
+        # NOTE: We do NOT call replace_bookmarks during navigation anymore.
+        # All bookmarks are replaced at once during save_document (Done).
 
         if self.current_page < len(self.pages):
             self.current_page += 1
             self.load_page()
         else:
-            docgen.save_document()
+            # DONE: Aggregate all data and call save_document with num_chapters
+            full_data = self.aggregate_all_data()
+            num_chapters = len(self.chapter_tabs) if self.chapter_tabs else 5
+            docgen.save_document(num_chapters, full_data)
             
     def apply_page(self):
         self.save_current_inputs()
-        docgen.replace_bookmarks(self.user_inputs[self.current_page])
+        # NOTE: Bookmark replacement is now deferred to save_document.
+        # This button just saves current inputs locally.
+        self.flash_label("💾 Inputs saved locally. Press 'Done' to generate document.")
+
+    def aggregate_all_data(self):
+        """
+        Aggregates data from all pages (1-6) into a single dictionary.
+        """
+        full_data = {}
+        for page_num, page_data in enumerate(self.user_inputs):
+            if isinstance(page_data, dict):
+                full_data.update(page_data)
+        return full_data
 
     def jump_to_page(self, selection):
         try:
