@@ -76,11 +76,10 @@ def initialize():
             doc.PageSetup.BottomMargin = cm_to_pt(1.7)
             doc.PageSetup.LeftMargin = cm_to_pt(2.1)
             doc.PageSetup.RightMargin = cm_to_pt(1.7)
-        except Exception as e:
-            print(f"Setup error: {e}")
+        except Exception:
+            pass  # Silently handle setup errors
 
-        # Generate PART 1 structure immediately (Title Page → Abstract)
-        print(f"DEBUG: Calling generate_static_pages_part1. Doc: {doc}, Word: {word}, BaseDir: {BASE_DIR}")
+        # Generate PART 1: Title Page, Certificate, Acknowledgement, Abstract
         generate_static_pages_part1(doc, word, BASE_DIR)
 
 
@@ -88,7 +87,11 @@ def finalize_document(num_chapters: int):
     """
     Generates (or regenerates) the dynamic parts of the document (TOC, Chapters, References).
     
-    If Part 2 already exists, it will be deleted first to allow dynamic chapter count changes.
+    Regeneration Logic:
+    - Checks if Part 2 has been generated previously.
+    - If yes, deletes it using `content_static.delete_part2_content`.
+    - Then generates the fresh structure with the new chapter count.
+    
     This enables users to add/remove chapters and press "Done" multiple times.
     
     :param num_chapters: The final count of chapters from the GUI.
@@ -97,14 +100,13 @@ def finalize_document(num_chapters: int):
     if not doc:
         return
     
-    # If Part 2 already exists, delete it first
+    # If Part 2 already exists, delete it first to allow regeneration
     if _document_finalized:
-        print(f"DEBUG: Regenerating Part 2 - deleting old content first...")
         from .content_static import delete_part2_content
         delete_part2_content(doc)
         _document_finalized = False
-        
-    print(f"DEBUG: Calling generate_static_pages_part2 with {num_chapters} chapters.")
+    
+    # Generate PART 2: TOC, Chapters (1 to N), References
     generate_static_pages_part2(doc, word, BASE_DIR, num_chapters)
     _document_finalized = True
 

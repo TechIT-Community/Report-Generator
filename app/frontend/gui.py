@@ -508,7 +508,17 @@ class App(tk.CTk):
         self.flash_label(f"✅ Added Chapter {next_id}")
 
     def remove_chapter_tab(self, tab):
-        """Removes a chapter tab. Minimum 1 chapter required."""
+        """
+        Removes a chapter tab and handles asset cleanup/renaming.
+        
+        Logic:
+        1. Prevents deletion if only 1 chapter remains.
+        2. Unpacks the UI frame and destroys widgets.
+        3. Clears old data from `user_inputs`.
+        4. Asset Management:
+           - Deletes images associated with the removed chapter (Fig X.*).
+           - Renames images for subsequent chapters to maintain sequence (e.g., if Ch 3 deleted, Ch 4 images -> Ch 3).
+        """
         if len(self.chapter_tabs) <= 1:
             self.flash_label("⚠️ Cannot delete the last chapter!", color="orange")
             return
@@ -525,24 +535,22 @@ class App(tk.CTk):
         # CRITICAL: Clear old user_inputs[5] to prevent stale keys
         self.user_inputs[5] = {}
         
-        # ===== IMAGE RENAMING LOGIC =====
         # 1. Delete all images for the removed chapter (Fig {removed_id}.*)
         for img_file in ASSET_DIR.glob(f"Fig {removed_id}.*"):
             try:
                 img_file.unlink()
-                print(f"DEBUG: Deleted image {img_file.name}")
-                # Remove from uploaded_files list
+                # Also remove from our tracking list
                 if img_file in self.uploaded_files:
                     self.uploaded_files.remove(img_file)
-            except Exception as e:
-                print(f"WARNING: Could not delete {img_file}: {e}")
+            except Exception:
+                pass  # Silently ignore deletion failures
         
         # 2. Rename images for chapters AFTER the removed one
         # e.g., if chapter 3 was removed, chapter 4 becomes 3, chapter 5 becomes 4
         for old_ch in range(removed_id + 1, total_before + 1):
             new_ch = old_ch - 1
             for img_file in list(ASSET_DIR.glob(f"Fig {old_ch}.*")):
-                # Extract the figure index (e.g., "Fig 4.2" -> index=2)
+                # Parse figure index from filename (e.g., "Fig 4.2.png" -> index=2)
                 try:
                     parts = img_file.stem.split('.')
                     if len(parts) >= 2:
@@ -550,14 +558,13 @@ class App(tk.CTk):
                         new_name = f"Fig {new_ch}.{fig_index}{img_file.suffix}"
                         new_path = ASSET_DIR / new_name
                         img_file.rename(new_path)
-                        print(f"DEBUG: Renamed {img_file.name} -> {new_name}")
                         
-                        # Update uploaded_files list
+                        # Update our tracking list with new path
                         if img_file in self.uploaded_files:
                             idx = self.uploaded_files.index(img_file)
                             self.uploaded_files[idx] = new_path
-                except Exception as e:
-                    print(f"WARNING: Could not rename {img_file}: {e}")
+                except Exception:
+                    pass  # Silently ignore rename failures
         # ===== END IMAGE RENAMING =====
         
         # Re-index all remaining tabs to keep IDs sequential

@@ -21,12 +21,14 @@ def position_windows(word, doc):
     """
     Positions the Word window and the GUI application side by side.
     
+    Layout:
+    - [ GUI Application (Left 45%) ] [ Word Document (Right 55%) ]
+    
     Sequence:
-    1. Restore window (SW_SHOWNORMAL).
-    2. Wait for it to exit minimized/iconic state.
-    3. Set Position & Size.
-    4. Set Foreground.
-    5. Set Zoom and Scroll.
+    1. Restore window (SW_SHOWNORMAL) if minimized.
+    2. Wait for restore (polling).
+    3. Set Position & Size using win32gui.SetWindowPos.
+    4. Set Zoom (110%) and Scroll to middle.
     
     :param word: The Word Application object.
     :param doc: The active Document object.
@@ -46,21 +48,18 @@ def position_windows(word, doc):
         import time
         
         # 1. Restore the window
-        # SW_SHOWNORMAL (1) activates and displays a window. If the window is minimized or maximized, 
-        # the system restores it to its original size and position.
         win32gui.ShowWindow(hwnd_word, win32con.SW_SHOWNORMAL)
         
         # 2. Polling loop to ensure window is actually restored
-        for _ in range(20): # Wait up to 2 seconds (20 * 0.1)
+        for _ in range(20): # Wait up to 2 seconds
             is_minimized = win32gui.IsIconic(hwnd_word)
             if not is_minimized:
                 break
             time.sleep(0.1)
             
-        time.sleep(0.2) # Small buffer for animation completion
+        time.sleep(0.2) 
 
         # 3. Position the window
-        # Only position if we successfully restored it
         if not win32gui.IsIconic(hwnd_word):
             try:
                 win32gui.SetWindowPos( 
@@ -80,24 +79,21 @@ def position_windows(word, doc):
         else:
             print("⚠️ Word window failed to restore, skipping positioning.")
 
-    # 5. Zoom and Scroll (Content readiness)
+    # 5. Zoom and Scroll
     import time
     time.sleep(0.2) 
 
     try:
-        # Use simple Zoom percentage
         if doc:
             doc.ActiveWindow.View.Zoom.Percentage = 110
         else:
             word.ActiveWindow.View.Zoom.Percentage = 110
-    except Exception as e:
-        print(f"⚠️ Warning: Check zoom settings: {e}")
+    except Exception:
+        pass # Ignore zoom errors
 
-        print(f"Warning: Could not set zoom: {e}")
-
-    window = word.ActiveWindow # Get the active window
+    window = word.ActiveWindow 
     if doc:
-        window.ScrollIntoView(doc.Range(0, doc.Content.End // 2), True) # Scroll to middle
+        window.ScrollIntoView(doc.Range(0, doc.Content.End // 2), True)
 
 
 def make_borders(doc, word):
@@ -125,53 +121,55 @@ def make_borders(doc, word):
 def delete_part2_content(doc):
     """
     Deletes all content after the Part1End bookmark (TOC, Chapters, References).
-    Called before regenerating Part 2 to allow dynamic chapter count changes.
     
-    Also deletes any sections beyond section 2 (since Part 2 creates new sections).
+    Purpose:
+    - This function allows the report to be regenerated multiple times in the same session.
+    - It clears Part 2 (Dynamic Content) while keeping Part 1 (Static Content) intact.
+    - Used when the user changes chapter count/content and presses "Done" again.
+
+    Logic:
+    1. Locate 'Part1End' bookmark (at end of Abstract).
+    2. Delete everything from that point to end of document.
+    3. Remove any extra sections created during previous generation.
     
     :param doc: The Word Document object.
     :return: True if deletion was successful, False otherwise.
     """
+    # Part1End bookmark marks the boundary between static and dynamic content
     if not doc.Bookmarks.Exists("Part1End"):
-        print("DEBUG delete_part2: Part1End bookmark not found")
         return False
     
     try:
-        # Get the position of Part1End bookmark
         part1_end = doc.Bookmarks("Part1End").Range.End
         doc_end = doc.Content.End
         
+        # Nothing to delete if Part1End is at the end
         if part1_end >= doc_end - 1:
-            print("DEBUG delete_part2: No Part 2 content to delete")
-            return True  # Nothing to delete
+            return True
         
-        # Select and delete everything from Part1End to end of document
+        # Delete everything from Part1End to end of document
         delete_range = doc.Range(part1_end, doc_end)
         delete_range.Delete()
         
-        # Also need to delete extra sections that Part 2 created (sections 3+)
-        # Keep only sections 1 and 2
+        # Remove extra sections created by Part 2 (keep only sections 1-2)
         while doc.Sections.Count > 2:
-            # Delete the last section by selecting its content
             last_section = doc.Sections(doc.Sections.Count)
             last_section.Range.Delete()
         
-        print(f"DEBUG delete_part2: Deleted Part 2 content. Document now has {doc.Sections.Count} sections")
         return True
         
-    except Exception as e:
-        print(f"ERROR delete_part2: {e}")
+    except Exception:
         return False
 
 
 def page_numbers(doc):
     """
-    Configures page numbering logic:
-    - No numbers on Title/Certificate pages (Section 1-2).
-    - Roman numerals for Acknowledgement/Abstract (Section 3).
-    - Regular numbers for Chapters (Section 4+).
+    [DEPRECATED] This function is no longer used.
+    Please use `page_numbers_dynamic` instead, which handles variable chapter counts correctly.
     
-    :param doc: The Word Document object.
+    Legacy config:
+    - No numbers on Title/Certificate pages (Section 1-2).
+    - Roman numerals for Section 3.
     """
     for idx, sec in enumerate(doc.Sections, start=1):
         sec.Range.InsertAfter("\r")
@@ -890,55 +888,54 @@ def page_numbers_dynamic(doc, num_chapters: int):
     """
     Configures page numbering logic for dynamic chapter count.
     
-    ACTUAL SECTION STRUCTURE (verified by testing):
-    - Section 1: Title + Certificate + Acknowledgement + Abstract (no footer)
-    - Section 2: TOC (start numbering)
-    - Sections 3 to (2 + num_chapters): Chapters (continue numbering, hide first page)
-    - Section (4 + num_chapters): References (continue numbering, show footer)
-    
-    NOTE: There are 4 sections "consumed" before References (1 pre + 2 TOC + 1 gap), 
-    so References = 4 + num_chapters, NOT 3 + num_chapters.
+    Section Structure:
+    - Section 1: Title + Certificate + Acknowledgement + Abstract (no page numbers)
+    - Section 2: TOC (Roman numerals: i, ii, iii...)
+    - Sections 3 to (2 + N): Chapters 1-N (Arabic: 1, 2, 3..., first page hidden)
+    - Last Section: References (Arabic, continues from chapters)
     
     :param doc: The Word Document object.
     :param num_chapters: The number of chapters.
     """
     total_sections = doc.Sections.Count
-    print(f"DEBUG page_numbers: {total_sections} sections, {num_chapters} chapters expected")
     
     for idx, sec in enumerate(doc.Sections, start=1):
+        # Insert paragraph to ensure section is properly separated
         sec.Range.InsertAfter("\r")
+        
+        # Break header/footer links so each section can have independent formatting
         if idx > 1:
             for hf_type in [c.wdHeaderFooterPrimary, c.wdHeaderFooterFirstPage]:
                 sec.Footers(hf_type).LinkToPrevious = False
                 sec.Headers(hf_type).LinkToPrevious = False
 
-        # Section 1: Title/Cert/Ack/Abstract - No numbering
+        # Section 1: Front matter (no page numbers)
         if idx == 1:
             for hf_type in [c.wdHeaderFooterPrimary, c.wdHeaderFooterFirstPage]:
                 sec.Footers(hf_type).Range.Text = ""
                 sec.Headers(hf_type).Range.Text = ""
             continue
 
-        # Section 2: TOC - Use Roman numerals (i, ii, iii...)
+        # Section 2: Table of Contents (Roman numerals starting at i)
         if idx == 2:
             sec.PageSetup.DifferentFirstPageHeaderFooter = False
             footer = sec.Footers(c.wdHeaderFooterPrimary)
             pnums = footer.PageNumbers
             pnums.RestartNumberingAtSection = True
             pnums.StartingNumber = 1
-            pnums.NumberStyle = c.wdPageNumberStyleLowercaseRoman  # Roman numerals
+            pnums.NumberStyle = c.wdPageNumberStyleLowercaseRoman
             pnums.Add(c.wdAlignParagraphCenter, False)
 
-        # Sections 3 to (2 + num_chapters): Chapters - Restart at 1 for Chapter 1, then continue
+        # Sections 3 to (2 + N): Chapter pages (Arabic, first page footer hidden)
         if 3 <= idx <= 2 + num_chapters:
             sec.PageSetup.DifferentFirstPageHeaderFooter = True
             pfooter = sec.Footers(c.wdHeaderFooterPrimary)
             ppnums = pfooter.PageNumbers
             
-            # ALL chapters must use Arabic numbers (not just Chapter 1)
+            # Use Arabic numerals for all chapters
             ppnums.NumberStyle = c.wdPageNumberStyleArabic
             
-            # Chapter 1 (Section 3) restarts numbering at 1
+            # Chapter 1 restarts numbering at 1; others continue
             if idx == 3:
                 ppnums.RestartNumberingAtSection = True
                 ppnums.StartingNumber = 1
@@ -946,27 +943,25 @@ def page_numbers_dynamic(doc, num_chapters: int):
                 ppnums.RestartNumberingAtSection = False
                 
             ppnums.Add(c.wdAlignParagraphCenter, False)
-            sec.Footers(c.wdHeaderFooterFirstPage).Range.Text = ""
+            sec.Footers(c.wdHeaderFooterFirstPage).Range.Text = ""  # Hide first page footer
 
-        # References section: Use dynamic detection - it's the LAST section
-        # After regeneration, section count = 2 + num_chapters + 1 (for References)
+        # References: Last section, continues Arabic numbering from chapters
         if idx == total_sections and idx > 2 + num_chapters:
-            print(f"DEBUG page_numbers: Applying References footer at section {idx} (last section, {num_chapters} chapters)")
-            sec.PageSetup.DifferentFirstPageHeaderFooter = False  # Show footer on ALL pages
+            sec.PageSetup.DifferentFirstPageHeaderFooter = False
             
-            # Explicitly break link from previous section
+            # Break link to prevent inheriting chapter's hidden first-page footer
             sec.Footers(c.wdHeaderFooterPrimary).LinkToPrevious = False
             sec.Headers(c.wdHeaderFooterPrimary).LinkToPrevious = False
             
-            # Set PageNumbers properties FIRST (Arabic style, continue numbering)
+            # Configure page numbers: Arabic, continue from chapters
             pfooter = sec.Footers(c.wdHeaderFooterPrimary)
             pnums = pfooter.PageNumbers
-            pnums.NumberStyle = c.wdPageNumberStyleArabic  # Must use Arabic, not Roman
-            pnums.RestartNumberingAtSection = False  # Continue from chapters
+            pnums.NumberStyle = c.wdPageNumberStyleArabic
+            pnums.RestartNumberingAtSection = False
             
-            # Clear any existing content and insert a PAGE field
+            # Insert page number field in centered footer
             footer_range = pfooter.Range
-            footer_range.Text = ""  # Clear
+            footer_range.Text = ""
             footer_range.ParagraphFormat.Alignment = c.wdAlignParagraphCenter
-            footer_range.Fields.Add(footer_range, c.wdFieldPage)  # Insert {PAGE} field
+            footer_range.Fields.Add(footer_range, c.wdFieldPage)
 
